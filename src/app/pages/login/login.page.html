@@ -1,0 +1,23 @@
+
+<ion-content padding>
+   <ion-img src="assets/imgs/logo.png"></ion-img>
+  <form [formGroup]="loginForm">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">{{'LOGIN.EMAIL' | translate }}</ion-label>
+        <ion-input formControlName="email" ></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="loginForm['controls']['email']"></app-control-error-message>
+
+      <ion-item>
+        <ion-label position="stacked">{{'LOGIN.PASSWORD' | translate }}</ion-label>
+        <ion-input formControlName="password"  type="password"  ></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="loginForm['controls']['password']"></app-control-error-message>
+    </ion-list>
+  <ion-button expand="block" color="primary" type="submit" [disabled]="!loginForm.valid" (click)="save()">{{'LOGIN.LOGIN' | translate}}</ion-button>
+  </form>
+    <!-- <ion-button [routerLink]="['/signup']" fill="clear" color='medium'>
+      {{'LOGIN.GO_SIGNUP' | translate }}
+    </ion-button> -->
+</ion-content>

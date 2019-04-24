@@ -1,0 +1,8 @@
+{
+    "apiUrl": "https://dashboard.myvrapeutic.com/api",
+    "maxTry":2,
+    "nativePaltform": "electron",
+    "env": "dev",
+    "lang":"en",
+    "dir":"ltr"
+}

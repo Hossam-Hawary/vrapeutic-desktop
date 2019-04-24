@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="secondary" (click)="userService.logout()" >
+      <ion-button>
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{'TABS.HOME' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <!-- <ion-card>
+    <ion-card-header>
+      <ion-card-title color="primary" *ngIf="connected">
+        <ion-icon name="checkmark-circle-outline" color="secondary"></ion-icon>
+        You're Connected
+      </ion-card-title>
+      <ion-card-title color="warning" *ngIf="!connected">
+        <ion-spinner></ion-spinner>
+        Not Connected Yet!
+      </ion-card-title>
+    </ion-card-header>
+  </ion-card> -->
+  <ion-list no-padding>
+    <ion-item *ngFor="let patient of patients" [routerLink]="['/patient/', patient.user_id]">
+      <ion-avatar slot="start">
+        <ion-img [src]="patient?.photo ||'assets/imgs/avatar.png'" ></ion-img>
+        <!-- <span class="onlineOffline_icon"
+          [ngStyle]="{'background-color':(chat.status === 'online'? '#4cd137' : '#c23616')}"></span> -->
+      </ion-avatar>
+      <div class="usernameSection" no-padding>
+        <h5>
+          <ion-icon  name="person" color="medium"></ion-icon>
+          {{patient?.name}}
+        </h5>
+        <p class="descText" no-margin no-padding>{{patient?.diagnosis}}</p>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>
