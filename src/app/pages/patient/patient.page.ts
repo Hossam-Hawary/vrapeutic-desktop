@@ -44,7 +44,13 @@ export class PatientPage implements OnInit {
     try {
       await this.helperService.showLoading();
       const result: any = await this.userService.getPatientSessionId(this.id, module.id);
-      const opened = this.fileService.runModule({ moduleId: module.id, roomId: result.success.room_id });
+      const opened = this.fileService.runModule(
+        {
+          moduleId: module.id,
+          moduleName: module.name,
+          roomId: result.success.room_id,
+          token: this.userService.getCurrentUser().token
+        });
       console.log(opened);
       if (!opened) {
         this.helperService.showError('We couldn\'t launch this module, it might be not downloaded yet!');
