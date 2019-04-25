@@ -9,18 +9,18 @@ export class FileService {
   message: string;
 
   constructor(private electronService: ElectronService, private ngZone: NgZone) {
-    this.electronService.ipcRenderer.on('getFilesResponse', (event, arg) => {
-      this.ngZone.run(() => {
-        const reply = `Asynchronous message reply:::::${arg}`;
-        console.log(reply, arg);
-        this.message = reply;
-      });
-    });
+    // this.electronService.ipcRenderer.on('getFilesResponse', (event, arg) => {
+    //   this.ngZone.run(() => {
+    //     const reply = `Asynchronous message reply:::::${arg}`;
+    //     console.log(reply, arg);
+    //     this.message = reply;
+    //   });
+    // });
   }
 
 
-  playPingPong() {
-    return this.electronService.ipcRenderer.sendSync('getFiles', 'asdfasdfasldfkjasldfjasl;dkfjla;skdfasdf');
+  runModule(options) {
+    return this.electronService.ipcRenderer.sendSync('run-module', options);
   }
 
     // this to make it work without errors on browser

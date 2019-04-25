@@ -2,15 +2,31 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
+import { shell } from 'electron';
+
+// const { dialog } = require('electron').remote;
 
 let win: BrowserWindow;
-ipcMain.on('getFiles', (event, arg) => {
-    event.returnValue = 'sync pong' + arg;
-    const files = fs.readdirSync(__dirname);
-    event.sender.send('getFilesResponse', {
-        msg: 'pong pong',
-        files
-    } );
+ipcMain.on('run-module', (event, arg) => {
+    // const files = fs.readdirSync(__dirname);
+    // const opened = shell.openExternal('https://github.com');
+    // const opened = shell.openItem('/home/hossam/Downloads/austin-neill-160129-unsplash.jpg');
+    try {
+        const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
+        console.log(modulePath);
+        if (!fs.existsSync(modulePath)) {
+            fs.mkdirSync(modulePath, { recursive: true });
+        }
+        fs.writeFileSync(path.join(modulePath, 'session.txt'), arg.roomId, { flag: 'w+'});
+        const opened = shell.openItem(path.join(modulePath, 'module.exe'));
+        event.returnValue = opened;
+    } catch ( err) {
+        event.returnValue = false;
+    }
+    // event.sender.send('getFilesResponse', {
+    //     msg: 'pong pong',
+    //     opened
+    // } );
     // win.webContents.send('getFilesResponse', 'hossam');
 });
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
+import { FileService } from '../../services/file/file.service';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-patient',
@@ -14,7 +15,8 @@ export class PatientPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
-    private helperService: HelperService) {}
+    private helperService: HelperService,
+    private fileService: FileService) {}
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
@@ -42,10 +44,14 @@ export class PatientPage implements OnInit {
     try {
       await this.helperService.showLoading();
       const result: any = await this.userService.getPatientSessionId(this.id, module.id);
-      console.log('sesssssionnnn', result.room_id);
+      const opened = this.fileService.runModule({ moduleId: module.id, roomId: result.success.room_id });
+      console.log(opened);
+      if (!opened) {
+        this.helperService.showError('We couldn\'t launch this module, it might be not downloaded yet!');
+      }
       this.helperService.removeLoading();
     } catch (err) {
-      console.log('loadPatients err', err);
+      console.log('getNewSessionId err', err);
       this.helperService.showError(err);
       return false;
     }
