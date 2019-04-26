@@ -9,10 +9,12 @@ import { shell } from 'electron';
 let win: BrowserWindow;
 ipcMain.on('run-module', (event, arg) => {
     try {
-        const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
+        // const modulePath = path.join(__dirname, '/../../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
+
+        const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId);
         fs.writeFileSync(
             path.join(modulePath, `${arg.moduleName}_Data`, 'room.txt'),
-            `${arg.roomId}\n${arg.token}`,
+            `${arg.roomId}`,
             { flag: 'w+'});
         const opened = shell.openItem(path.join(modulePath, `${arg.moduleName}.exe`));
         event.returnValue = opened;
@@ -35,6 +37,7 @@ function createWindow() {
     win = new BrowserWindow(
         {
           width: 800, height: 600,
+            icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/png/64x64.png'),
           webPreferences: {
             nodeIntegration: true
           }

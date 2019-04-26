@@ -1,6 +1,8 @@
 {
   "name": "vrapeutic-desktop",
-  "version": "0.0.0",
+  "productName": "Vrapeutic",
+  "description": "Vrapeutic desktop app for managing modules",
+  "version": "0.0.1",
   "main": "electron/dist/main.js",
   "scripts": {
     "ng": "ng",
@@ -9,7 +11,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "electron": "ng build --base-href ./ && tsc --p electron && electron ."
+    "electron": "ng build --prod --base-href ./ && tsc --p electron && electron .",
+    "package-linux": "electron-packager . Vrapeutic --overwrite --asar=true --platform=linux --arch=x64 --icon=1024x1024.png --prune=true --out=release-builds --extraResource=dist/vrapeutic-desktop/assets/modules/ --ignore=src/ --ignore=release-builds/",
+    "package-win": "electron-packager . Vrapeutic --overwrite --asar=true --platform=win32 --arch=ia32 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" --extraResource=dist/vrapeutic-desktop/assets/modules/ --ignore=src/ "    
   },
   "private": true,
   "dependencies": {
@@ -44,6 +48,7 @@
     "@types/node": "~8.9.4",
     "codelyzer": "~4.5.0",
     "electron": "^4.1.4",
+    "electron-packager": "^13.1.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.0.0",
