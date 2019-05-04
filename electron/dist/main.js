@@ -11,7 +11,7 @@ electron_1.ipcMain.on('run-module', function (event, arg) {
     try {
         // const modulePath = path.join(__dirname, '/../../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
         var modulePath = path.join(__dirname, '/../../../modules', arg.moduleId);
-        fs.writeFileSync(path.join(modulePath, arg.moduleName + "_Data", 'room.txt'), arg.roomId + "\n" + arg.token, { flag: 'w+' });
+        fs.writeFileSync(path.join(modulePath, arg.moduleName + "_Data", 'room.txt'), "" + arg.roomId, { flag: 'w+' });
         var opened = electron_2.shell.openItem(path.join(modulePath, arg.moduleName + ".exe"));
         event.returnValue = opened;
     }
