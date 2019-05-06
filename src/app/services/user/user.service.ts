@@ -28,6 +28,10 @@ export class UserService {
     return this.api.get(`/doctors/${this.currentUser.id}/patients/${patientId}`);
   }
 
+  addPatient(patientData) {
+    return this.api.post(`/patients/`, patientData );
+  }
+
   getPatientModules(patientId) {
     return this.api.get(`/patients/${patientId}/modules`);
   }

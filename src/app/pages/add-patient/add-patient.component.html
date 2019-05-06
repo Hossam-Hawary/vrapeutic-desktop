@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end" (click)="dismiss()">
+      <ion-icon name="close-circle-outline" color="light" ion-button></ion-icon>
+    </ion-buttons>
+    <ion-title>{{'PATIENT.Add_PATEINT' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <form [formGroup]="patientForm">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.NAME' | translate }}</ion-label>
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['name']"></app-control-error-message>
+
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.EMAIL' | translate }}</ion-label>
+        <ion-input formControlName="email"></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['email']"></app-control-error-message>
+
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.PHONE' | translate }}</ion-label>
+        <ion-input formControlName="phone"></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['phone']"></app-control-error-message>
+
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.AGE' | translate }}</ion-label>
+        <ion-input formControlName="age" type="number"></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['age']"></app-control-error-message>
+
+      <ion-radio-group formControlName="gender">
+        <ion-list-header>
+          {{'PATIENT.GENDER' | translate }}
+        </ion-list-header>
+      
+        <ion-item>
+          <ion-label>{{'PATIENT.MALE' | translate }}</ion-label>
+          <ion-radio value="male"></ion-radio>
+        </ion-item>
+      
+        <ion-item>
+          <ion-label>{{'PATIENT.FEMALE' | translate }}</ion-label>
+          <ion-radio value="female"></ion-radio>
+        </ion-item>
+        <app-control-error-message [control]="patientForm['controls']['gender']"></app-control-error-message>
+      </ion-radio-group>
+
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.DIAGNOSIS' | translate }}</ion-label>
+        <ion-textarea formControlName="diagnosis"></ion-textarea>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['diagnosis']"></app-control-error-message>
+
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.HAS_GUARDIAN' | translate }}</ion-label>
+        <ion-checkbox formControlName="has_guardian"></ion-checkbox>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['has_guardian']"></app-control-error-message>
+      
+      <ion-item *ngIf="patientForm['controls']['has_guardian'].value" >
+        <ion-label position="stacked">{{'PATIENT.GUARDIAN_NAME' | translate }}</ion-label>
+        <ion-input formControlName="guradian_name"></ion-input>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['guradian_name']"></app-control-error-message>
+      
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.NOTES' | translate }}</ion-label>
+        <ion-textarea formControlName="notes"></ion-textarea>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['notes']"></app-control-error-message>
+    </ion-list>
+    <ion-button expand="block" color="primary" type="submit" [disabled]="!patientForm.valid" (click)="save()">
+      {{'PATIENT.Add_PATEINT' | translate}}</ion-button>
+  </form>
+</ion-content>

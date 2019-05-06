@@ -39,8 +39,13 @@
         "PATIENTS": "Patients"
     },
     "PATIENT":{
+        "NAME": "Name",
+        "EMAIL": "Email",
         "PATIENT": "Patient",
         "AGE": "Age",
+        "GENDER": "Gender",
+        "MALE": "Male",
+        "FEMALE": "Female",
         "DIAGNOSIS": "Diagnosis",
         "MODULES":"Modules",
         "PHONE": "Phone",
@@ -48,7 +53,9 @@
         "GUARDIAN_NAME": "Guardian Name",
         "ADDRESS": "Address",
         "NOTES": "Notes",
-        "START_MODULE": "Start Module"
+        "START_MODULE": "Start Module",
+        "Add_PATEINT": "Add Patient",
+        "Add_PATEINT_MSG": "A new patient has been added successfully"
     },
     "VALIDATION": {
         "BLANK": "Can not be blank!",

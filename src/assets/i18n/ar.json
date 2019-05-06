@@ -39,8 +39,13 @@
         "PATIENTS":"المرضى"
     },
     "PATIENT":{
+        "NAME":"الإسم",
+        "EMAIL":"البريد الإلكتروني",
         "PATIENT":"المريض",
         "AGE": "السن",
+        "GENDER": "الجنس",
+        "FEMALE": "أنثي",
+        "MALE": "ذكر",
         "DIAGNOSIS": "التشخيص",
         "MODULES": "الوحدات العلاجية",
         "PHONE":"رقم الهاتف",
@@ -48,7 +53,9 @@
         "GUARDIAN_NAME":"أسم الرفيق",
         "ADDRESS":"العنوان",
         "NOTES":"الملاحظات",
-        "START_MODULE": "أبدأ الوحدة العلاجية"
+        "START_MODULE": "أبدأ الوحدة العلاجية",
+        "Add_PATEINT": "أضافة مريض",
+        "Add_PATEINT_MSG": "تم أضافة مريض جديد بنجاح"
     },
     "VALIDATION":{
         "BLANK":"لا يمكن أن يكون فارغ!",

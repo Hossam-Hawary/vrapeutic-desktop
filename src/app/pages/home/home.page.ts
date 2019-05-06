@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Platform, Events } from '@ionic/angular';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
+import { ModalController } from '@ionic/angular';
+import { AddPatientComponent } from './../add-patient/add-patient.component';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -18,7 +21,8 @@ currentUser: any;
       private platform: Platform,
       public userService: UserService,
       private helperService: HelperService,
-      private events: Events
+      private events: Events,
+      public modalController: ModalController
     ) {
   }
 
@@ -44,4 +48,18 @@ currentUser: any;
       this.helperService.showError(err);
     }
   }
+
+  async addPatient() {
+    const modal = await this.modalController.create({
+      component: AddPatientComponent,
+      animated: true,
+      backdropDismiss: true,
+      keyboardClose: true,
+      showBackdrop: true
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data.patient) { this.patients.push(data.patient); }
+  }
+
 }

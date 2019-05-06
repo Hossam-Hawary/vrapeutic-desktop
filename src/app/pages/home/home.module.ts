@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
 import { HomePage } from './home.page';
+import { AddPatientComponent } from './../add-patient/add-patient.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ComponentsModule } from '../../components/components.module';
 
 const routes: Routes = [
   {
@@ -21,8 +23,11 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    ReactiveFormsModule,
+    ComponentsModule
   ],
-  declarations: [HomePage]
+  declarations: [HomePage, AddPatientComponent],
+  entryComponents: [AddPatientComponent]
 })
 export class HomePageModule {}
