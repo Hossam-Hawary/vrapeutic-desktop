@@ -28,7 +28,7 @@ export class AddPatientComponent implements OnInit {
       age: ['', Validators.compose([Validators.required])],
       diagnosis: ['', Validators.compose([Validators.minLength(6), Validators.maxLength(200), Validators.required])],
       has_guardian: [true, Validators.compose([Validators.required])],
-      guradian_name: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(100)])],
+      guardian_name: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(100)])],
       notes: ['', Validators.compose([Validators.minLength(6), Validators.maxLength(200)])],
     });
   }

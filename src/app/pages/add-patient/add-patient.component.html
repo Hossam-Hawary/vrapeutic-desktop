@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="end" (click)="dismiss()">
-      <ion-icon name="close-circle-outline" color="light" ion-button></ion-icon>
+      {{'CANCEL' | translate }}
     </ion-buttons>
     <ion-title>{{'PATIENT.Add_PATEINT' | translate }}</ion-title>
   </ion-toolbar>
@@ -61,13 +61,13 @@
         <ion-checkbox formControlName="has_guardian"></ion-checkbox>
       </ion-item>
       <app-control-error-message [control]="patientForm['controls']['has_guardian']"></app-control-error-message>
-      
+
       <ion-item *ngIf="patientForm['controls']['has_guardian'].value" >
         <ion-label position="stacked">{{'PATIENT.GUARDIAN_NAME' | translate }}</ion-label>
-        <ion-input formControlName="guradian_name"></ion-input>
+        <ion-input formControlName="guardian_name"></ion-input>
       </ion-item>
-      <app-control-error-message [control]="patientForm['controls']['guradian_name']"></app-control-error-message>
-      
+      <app-control-error-message [control]="patientForm['controls']['guardian_name']"></app-control-error-message>
+
       <ion-item>
         <ion-label position="stacked">{{'PATIENT.NOTES' | translate }}</ion-label>
         <ion-textarea formControlName="notes"></ion-textarea>
