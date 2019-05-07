@@ -32,8 +32,12 @@ export class ApiService {
     ).toPromise();
   }
 
+
   put(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.put(this.config.apiUrl + endpoint, body, reqOpts).toPromise();
+    return this.http.put(this.config.apiUrl + endpoint, body, reqOpts).pipe(
+      retry(this.config.maxTry),
+      catchError(this.handleError)
+    ).toPromise();
   }
 
   delete(endpoint: string, params = {}, reqOpts = { params }) {

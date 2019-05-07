@@ -54,8 +54,10 @@
         "ADDRESS":"العنوان",
         "NOTES":"الملاحظات",
         "START_MODULE": "أبدأ الوحدة العلاجية",
-        "Add_PATEINT": "أضافة مريض",
-        "Add_PATEINT_MSG": "تم أضافة مريض جديد بنجاح"
+        "ADD_PATIENT": "أضافة مريض",
+        "EDIT_PATIENT": "تعديل بيانات المريض",
+        "ADD_PATIENT_MSG": "تم أضافة مريض جديد بنجاح",
+        "EDIT_PATEINT_MSG": "تم تغديل المريض بنجاح"
     },
     "VALIDATION":{
         "BLANK":"لا يمكن أن يكون فارغ!",

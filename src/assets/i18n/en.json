@@ -54,8 +54,10 @@
         "ADDRESS": "Address",
         "NOTES": "Notes",
         "START_MODULE": "Start Module",
-        "Add_PATEINT": "Add Patient",
-        "Add_PATEINT_MSG": "A new patient has been added successfully"
+        "ADD_PATIENT": "Add Patient",
+        "EDIT_PATIENT": "Edit Patient",
+        "ADD_PATIENT_MSG": "A new patient has been added successfully",
+        "EDIT_PATEINT_MSG": "The patient has been updated successfully"
     },
     "VALIDATION": {
         "BLANK": "Can not be blank!",

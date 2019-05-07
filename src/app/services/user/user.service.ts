@@ -32,6 +32,10 @@ export class UserService {
     return this.api.post(`/patients/`, patientData );
   }
 
+  editPatient(patientId, patientData) {
+    return this.api.put(`/patients/${patientId}`, patientData );
+  }
+
   getPatientModules(patientId) {
     return this.api.get(`/patients/${patientId}/modules`);
   }

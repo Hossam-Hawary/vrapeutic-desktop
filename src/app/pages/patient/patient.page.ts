@@ -3,6 +3,9 @@ import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
 import { FileService } from '../../services/file/file.service';
 import { ActivatedRoute } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { EditPatientComponent } from '../edit-patient/edit-patient.component';
+
 @Component({
   selector: 'app-patient',
   templateUrl: './patient.page.html',
@@ -16,7 +19,9 @@ export class PatientPage implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private helperService: HelperService,
-    private fileService: FileService) {}
+    private fileService: FileService,
+    public modalController: ModalController
+  ) {}
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
@@ -63,4 +68,17 @@ export class PatientPage implements OnInit {
     }
   }
 
+  async editPatient() {
+    const modal = await this.modalController.create({
+      component: EditPatientComponent,
+      componentProps: { patient: this.patient },
+      animated: true,
+      backdropDismiss: true,
+      keyboardClose: true,
+      showBackdrop: true
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data.patient) { this.patient = data.patient; }
+  }
 }
