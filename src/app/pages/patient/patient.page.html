@@ -46,8 +46,12 @@
             <ion-card-header>
               <ion-card-title color="medium">{{module?.name}}</ion-card-title>
             </ion-card-header>
-            <ion-button expand="block"  color="primary" (click)="getNewSessionId(module)">
+            <ion-button  color="primary" (click)="getNewSessionId(module)">
               {{'PATIENT.START_MODULE' | translate}}
+            </ion-button>
+            <ion-button  color="primary"
+              [routerLink]="['/patient/', patient.user_id, 'modules', module.id, 'charts']">
+              Show Statistics
             </ion-button>
           </ion-card>
         </ion-col>

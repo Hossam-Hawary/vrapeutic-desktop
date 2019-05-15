@@ -8,6 +8,7 @@ import { NgxElectronModule } from 'ngx-electron';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
 import { InterceptorModule } from './interceptor.module';
+import { ChartsModule } from 'ng2-charts';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -26,6 +27,7 @@ export function createTranslateLoader(http: HttpClient) {
     HttpClientModule,
     InterceptorModule,
     ComponentsModule,
+    ChartsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

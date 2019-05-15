@@ -11,10 +11,15 @@ import { EditPatientComponent } from '../edit-patient/edit-patient.component';
 import { ComponentsModule } from '../../components/components.module';
 
 const routes: Routes = [
+
   {
     path: '',
     component: PatientPage
   }
+];
+
+const pages = [
+  EditPatientComponent
 ];
 
 @NgModule({
@@ -27,7 +32,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     ComponentsModule
   ],
-  declarations: [PatientPage, EditPatientComponent],
-  entryComponents: [EditPatientComponent]
+  declarations: [PatientPage, ...pages],
+  entryComponents: [...pages]
 })
 export class PatientPageModule {}
