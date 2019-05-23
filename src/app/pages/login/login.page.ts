@@ -30,7 +30,7 @@ export class LoginPage implements OnInit {
     try {
       await this.helperService.showLoading();
       const result: any = await this.userService.login(this.loginForm.value);
-      this.userService.updateAndSaveCarrentUser(result.success);
+      this.userService.updateAndSaveCarrentUser(result);
       this.helperService.removeLoading();
     } catch (err) {
       this.helperService.showError(err);

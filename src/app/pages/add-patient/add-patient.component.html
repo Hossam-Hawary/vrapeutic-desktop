@@ -3,7 +3,7 @@
     <ion-buttons slot="end" (click)="dismiss()">
       {{'CANCEL' | translate }}
     </ion-buttons>
-    <ion-title>{{'PATIENT.Add_PATEINT' | translate }}</ion-title>
+    <ion-title>{{'PATIENT.ADD_PATIENT' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
@@ -28,10 +28,10 @@
       <app-control-error-message [control]="patientForm['controls']['phone']"></app-control-error-message>
 
       <ion-item>
-        <ion-label position="stacked">{{'PATIENT.AGE' | translate }}</ion-label>
-        <ion-input formControlName="age" type="number"></ion-input>
+        <ion-label position="stacked">{{'PATIENT.DATE_OF_BIRTH' | translate }}</ion-label>
+        <ion-datetime formControlName="date_of_birth" display-format="DD/MMM/YYYY" picker-format="DD MMMM YYYY"></ion-datetime>
       </ion-item>
-      <app-control-error-message [control]="patientForm['controls']['age']"></app-control-error-message>
+      <app-control-error-message [control]="patientForm['controls']['date_of_birth']"></app-control-error-message>
 
       <ion-radio-group formControlName="gender">
         <ion-list-header>
@@ -49,6 +49,12 @@
         </ion-item>
         <app-control-error-message [control]="patientForm['controls']['gender']"></app-control-error-message>
       </ion-radio-group>
+
+      <ion-item>
+        <ion-label position="stacked">{{'PATIENT.ADDRESS' | translate }}</ion-label>
+        <ion-textarea formControlName="address"></ion-textarea>
+      </ion-item>
+      <app-control-error-message [control]="patientForm['controls']['address']"></app-control-error-message>
 
       <ion-item>
         <ion-label position="stacked">{{'PATIENT.DIAGNOSIS' | translate }}</ion-label>
@@ -75,6 +81,6 @@
       <app-control-error-message [control]="patientForm['controls']['notes']"></app-control-error-message>
     </ion-list>
     <ion-button expand="block" color="primary" type="submit" [disabled]="!patientForm.valid" (click)="save()">
-      {{'PATIENT.Add_PATEINT' | translate}}</ion-button>
+      {{'PATIENT.ADD_PATIENT' | translate}}</ion-button>
   </form>
 </ion-content>

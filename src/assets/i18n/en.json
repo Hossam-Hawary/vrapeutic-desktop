@@ -42,7 +42,7 @@
         "NAME": "Name",
         "EMAIL": "Email",
         "PATIENT": "Patient",
-        "AGE": "Age",
+        "DATE_OF_BIRTH": "Birth Date",
         "GENDER": "Gender",
         "MALE": "Male",
         "FEMALE": "Female",

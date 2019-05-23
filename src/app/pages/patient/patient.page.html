@@ -17,7 +17,7 @@
     <ion-card-header>
       <ion-card-title color="primary">{{patient?.name}}</ion-card-title>
       <ion-card-subtitle color="medium">{{'PATIENT.DIAGNOSIS' | translate }}: {{patient?.diagnosis}}</ion-card-subtitle>
-      <ion-card-subtitle color="medium">{{'PATIENT.AGE' | translate }}: {{patient?.age}}</ion-card-subtitle>
+      <ion-card-subtitle color="medium">{{'PATIENT.DATE_OF_BIRTH' | translate }}: {{patient?.date_of_birth}}</ion-card-subtitle>
       <ion-card-subtitle color="medium">{{'PATIENT.PHONE' | translate }}: {{patient?.phone}}</ion-card-subtitle>
       <ion-card-subtitle color="medium">{{'PATIENT.HAS_GUARDIAN' | translate }}: {{ (patient?.has_guardian ? 'YES' : 'NO') | translate}}</ion-card-subtitle>
       <ion-card-subtitle color="medium" *ngIf="patient?.has_guardian" >{{'PATIENT.GUARDIAN_NAME' | translate }}: {{patient?.guardian_name}}</ion-card-subtitle>
@@ -50,7 +50,7 @@
               {{'PATIENT.START_MODULE' | translate}}
             </ion-button>
             <ion-button  color="primary"
-              [routerLink]="['/patient/', patient.user_id, 'modules', module.id, 'charts']">
+              [routerLink]="['/patient/', patient.id, 'modules', module.id, 'charts']">
               Show Statistics
             </ion-button>
           </ion-card>

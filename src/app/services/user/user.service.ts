@@ -16,20 +16,16 @@ export class UserService {
     return this.api.post('/login', userData);
   }
 
-  signup(data: any) {
-    return this.api.post('/doctors', data);
-  }
-
   getPatients() {
     return this.api.get(`/doctors/${this.currentUser.id}/patients`);
   }
 
   getPatient(patientId) {
-    return this.api.get(`/doctors/${this.currentUser.id}/patients/${patientId}`);
+    return this.api.get(`/patients/${patientId}`);
   }
 
   addPatient(patientData) {
-    return this.api.post(`/patients/`, patientData );
+    return this.api.post(`/doctors/${this.currentUser.id}/patients/`, patientData );
   }
 
   editPatient(patientId, patientData) {
@@ -37,17 +33,17 @@ export class UserService {
   }
 
   getPatientModules(patientId) {
-    return this.api.get(`/patients/${patientId}/modules`);
+    return this.api.get(`/patients/${patientId}/vr_modules`);
   }
 
   getPatientSessionId(patientId, moduleId) {
-    return this.api.get(`/start/patients/${patientId}/modules/${moduleId}`);
+    return this.api.post('/module_sessions', { patient_id: patientId, vr_module_id: moduleId});
   }
 
   async refreshUserData() {
     try {
       const result: any = await this.api.get(`/doctors/${this.currentUser.id}`);
-      this.updateAndSaveCarrentUser(result.success);
+      this.updateAndSaveCarrentUser(result);
     } catch (err) {
       console.log('refreshUserData Error', err);
     }

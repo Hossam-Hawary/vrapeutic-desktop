@@ -70,7 +70,7 @@ export class ApiService {
       if (error.status === 0) {
         msg = 'Connection Error';
       } else {
-        msg = error.error.error;
+        msg = error.error.message;
       }
 
     }

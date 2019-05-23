@@ -39,7 +39,7 @@ currentUser: any;
     try {
       await this.helperService.showLoading();
       const result: any = await this.userService.getPatients();
-      this.patients = result.success;
+      this.patients = result;
       setTimeout(() => {
         this.helperService.removeLoading();
       }, 500);

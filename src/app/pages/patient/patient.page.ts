@@ -33,9 +33,9 @@ export class PatientPage implements OnInit {
     try {
       await this.helperService.showLoading();
       let result: any = await this.userService.getPatient(this.id);
-      this.patient = result.success;
+      this.patient = result;
       result = await this.userService.getPatientModules(this.id);
-      this.modules = result.success;
+      this.modules = result;
       this.helperService.removeLoading();
       return true;
     } catch (err) {
@@ -53,7 +53,7 @@ export class PatientPage implements OnInit {
         {
           moduleId: module.id,
           moduleName: module.name,
-          roomId: result.success.room_id,
+          roomId: result.room_id,
           token: this.userService.getCurrentUser().token
         });
       console.log(opened);

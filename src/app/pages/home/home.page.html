@@ -28,7 +28,7 @@
     </ion-card-header>
   </ion-card> -->
   <ion-list no-padding>
-    <ion-item *ngFor="let patient of patients" [routerLink]="['/patient/', patient.user_id]">
+    <ion-item *ngFor="let patient of patients" [routerLink]="['/patient/', patient.id]">
       <ion-avatar slot="start">
         <ion-img [src]="patient?.photo ||'assets/imgs/avatar.png'" ></ion-img>
         <!-- <span class="onlineOffline_icon"
