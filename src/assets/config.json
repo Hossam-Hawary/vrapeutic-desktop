@@ -1,5 +1,5 @@
 {
-    "apiUrl": "http://localhost:3000/api/v1",
+    "apiUrl": "https://dashboard.myvrapeutic.com/api/v1",
     "maxTry":0,
     "nativePaltform": "electron",
     "env": "dev",

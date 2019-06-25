@@ -13,7 +13,8 @@ import { EditPatientComponent } from '../edit-patient/edit-patient.component';
 })
 export class PatientPage implements OnInit {
   patient: any;
-  modules: any;
+  modules: any[];
+  headsets;
   id: any;
   constructor(
     private route: ActivatedRoute,
@@ -32,10 +33,9 @@ export class PatientPage implements OnInit {
   async loadPatient() {
     try {
       await this.helperService.showLoading();
-      let result: any = await this.userService.getPatient(this.id);
-      this.patient = result;
-      result = await this.userService.getPatientModules(this.id);
-      this.modules = result;
+      this.patient = await this.userService.getPatient(this.id) as any[];
+      this.modules = await this.userService.getPatientModules(this.id)as any[];
+      this.headsets = await this.userService.getCenterHeadsets();
       this.helperService.removeLoading();
       return true;
     } catch (err) {
@@ -45,10 +45,10 @@ export class PatientPage implements OnInit {
     }
   }
 
-  async getNewSessionId(module) {
+  async getNewSessionId(module, headset) {
     try {
       await this.helperService.showLoading();
-      const result: any = await this.userService.getPatientSessionId(this.id, module.id);
+      const result: any = await this.userService.getPatientSessionId(this.id, module.id, headset);
       const opened = this.fileService.runModule(
         {
           moduleId: module.id,
@@ -80,5 +80,31 @@ export class PatientPage implements OnInit {
     await modal.present();
     const { data } = await modal.onDidDismiss();
     if (data.patient) { this.patient = data.patient; }
+  }
+
+  async selectHeadset(module) {
+    const inputs = [];
+    this.headsets.forEach(headset => {
+      inputs.push({
+        type: 'radio',
+        label: headset.name,
+        value: headset.id,
+        checked: this.headsets[0].id === headset.id
+      });
+    });
+
+    this.helperService.showAlert('', 'Select Headset',
+      [
+        {
+          text: 'Cancel',
+        }, {
+          text: 'Start',
+          handler: (headset) => {
+            this.getNewSessionId(module, headset);
+          }
+        }
+      ],
+      true, inputs
+    );
   }
 }

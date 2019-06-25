@@ -41,7 +41,7 @@ export class HelperService {
   }
 
   async showAlert(message: string, header?: string,
-                  buttons?: any[], backdropDismiss = true) {
+                  buttons?: any[], backdropDismiss = true, inputs = []) {
     buttons = buttons || [this.translate('OK')];
 
     await this.removeLoading();
@@ -52,7 +52,8 @@ export class HelperService {
       buttons,
       backdropDismiss,
       translucent: true,
-      keyboardClose: true
+      keyboardClose: true,
+      inputs
     });
 
     await alert.present();

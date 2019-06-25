@@ -23,8 +23,8 @@ export class ChartsComponent implements OnInit {
   ngOnInit() {
     this.patientId = this.route.snapshot.paramMap.get('patient_id');
     this.moduleId = this.route.snapshot.paramMap.get('module_id');
-    this.chartsService.getModuleStatistics(
-      { patient_id: this.patientId, module_id: this.moduleId });
+    // this.chartsService.getModuleStatistics(
+    //   { patient_id: this.patientId, module_id: this.moduleId });
 
   }
 

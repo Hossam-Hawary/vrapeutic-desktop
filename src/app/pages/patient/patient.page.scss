@@ -2,3 +2,7 @@ ion-card {
     border: 1px solid var(--ion-color-primary);
     border-radius: 1rem
 }
+
+ion-button {
+    --border-width: 1px;
+}
