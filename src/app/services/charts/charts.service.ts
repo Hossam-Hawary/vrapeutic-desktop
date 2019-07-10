@@ -7,7 +7,7 @@ import { ApiService } from '../api/api.service';
   providedIn: 'root'
 })
 export class ChartsService {
-
+  sessionsStatistics;
   ///////////////////////////////// line chart
 
   public lineChartOptions: (ChartOptions & { annotation: any, responsive: any }) = {
@@ -50,38 +50,25 @@ export class ChartsService {
   ];
 
   constructor(private api: ApiService) {
-   }
+  }
 
   async getModuleStatistics(options) {
     try {
       const result: any = await this.api.get(`/statistics`, options);
-      this.dayStatistics(result);
-      this.weekStatistics(result);
+      if (!result.length) { return; }
+
+      this.sessionsStatistics = result;
+      const session = this.sessionsStatistics[2];
+      const data = session[1].data;
+      const label = `${(new Date(session[0])).toDateString()} ${session[1].label}`;
+      const labels = session[1].labels.map(date => (new Date(date)).toLocaleTimeString());
+
+      this.barChartData = this.lineChartData = [{ data, label}];
+      this.barChartLabels = this.lineChartLabels = labels;
       return true;
     } catch (err) {
       console.log('Error with Statistics', err);
       return false;
     }
   }
-
-  dayStatistics(result) {
-    this.lineChartLabels = result.data.by_day.map((item) => item.date);
-    const attentions = result.data.by_day.map((item) => (item.attention / item.duration).toFixed(2));
-    const distraction = result.data.by_day.map((item) => (item.distraction / item.duration).toFixed(2));
-    this.lineChartData = [
-      { data: attentions, label: 'Attention' },
-      { data: distraction, label: 'Distruction' }
-    ];
-  }
-
-  weekStatistics(result) {
-    this.barChartLabels = result.data.by_week.map((item) => 'Week ' + item.week);
-    const attentions = result.data.by_week.map((item) => (item.attention / item.duration).toFixed(2));
-    const distraction = result.data.by_week.map((item) => (item.distraction / item.duration).toFixed(2));
-    this.barChartData = [
-      { data: attentions, label: 'Attention' },
-      { data: distraction, label: 'Distruction' }
-    ];
-  }
-
 }

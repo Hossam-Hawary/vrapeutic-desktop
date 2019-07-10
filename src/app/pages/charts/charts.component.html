@@ -8,28 +8,28 @@
 </ion-header>
 <ion-content padding>
 
-<div style="display: block;">
-  <canvas baseChart 
-    [datasets]="chartsService.lineChartData"
-    [labels]="chartsService.lineChartLabels"
-    [options]="chartsService.lineChartOptions"
-    [legend]="chartsService.lineChartLegend"
-    [chartType]="chartsService.lineChartType"
-    [colors]="chartsService.chartColors"
-    [plugins]="chartsService.lineChartPlugins">
-  </canvas>
-</div>
-<div style="display: block;">
-  <canvas baseChart
-    [datasets]="chartsService.barChartData"
-    [labels]="chartsService.barChartLabels"
-    [options]="chartsService.barChartOptions"
-    [legend]="chartsService.barChartLegend"
-    [chartType]="chartsService.barChartType"
-    [colors]="chartsService.chartColors"
-    [plugins]="chartsService.barChartPlugins"
-  >
-  </canvas>
-</div>
-
+  <div style="display: block;">
+      <canvas baseChart
+      [datasets]="chartsService.barChartData"
+      [labels]="chartsService.barChartLabels"
+      [options]="chartsService.barChartOptions"
+      [legend]="chartsService.barChartLegend"
+      [chartType]="chartsService.barChartType"
+      [colors]="chartsService.chartColors"
+      [plugins]="chartsService.barChartPlugins"
+      >
+    </canvas>
+  </div>
+  
+  <div style="display: block;">
+    <canvas baseChart 
+      [datasets]="chartsService.lineChartData"
+      [labels]="chartsService.lineChartLabels"
+      [options]="chartsService.lineChartOptions"
+      [legend]="chartsService.lineChartLegend"
+      [chartType]="chartsService.lineChartType"
+      [colors]="chartsService.chartColors"
+      [plugins]="chartsService.lineChartPlugins">
+    </canvas>
+  </div>
 </ion-content>

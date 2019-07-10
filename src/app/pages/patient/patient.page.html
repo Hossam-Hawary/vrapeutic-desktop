@@ -49,12 +49,12 @@
             <ion-grid>
               <ion-row>
                 <ion-col>
-                  <ion-button  expand="block"  color="primary" (click)="selectHeadset(module)">
+                  <ion-button  expand="block" size="small"  color="primary" (click)="selectHeadset(module)">
                     {{'PATIENT.START_MODULE' | translate}}
                   </ion-button>
                 </ion-col>
                 <ion-col>                 
-                  <ion-button fill="outline" expand="block" color="secondary"
+                  <ion-button fill="outline" size="small" expand="block" color="secondary"
                     [routerLink]="['/patient/', patient.id, 'modules', module.id, 'charts']">
                     Show Statistics
                   </ion-button>
