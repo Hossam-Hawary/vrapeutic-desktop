@@ -52,23 +52,28 @@ export class ChartsService {
   constructor(private api: ApiService) {
   }
 
+  // TODO: The response has been updated
   async getModuleStatistics(options) {
-    try {
-      const result: any = await this.api.get(`/statistics`, options);
-      if (!result.length) { return; }
+    // try {
+    //   const result: any = await this.api.get(`/statistics`, options);
+    //   if (!result.length) { return; }
 
-      this.sessionsStatistics = result;
-      const session = this.sessionsStatistics[2];
-      const data = session[1].data;
-      const label = `${(new Date(session[0])).toDateString()} ${session[1].label}`;
-      const labels = session[1].labels.map(date => (new Date(date)).toLocaleTimeString());
+    //   this.sessionsStatistics = result;
+    //   const session = this.sessionsStatistics[2];
+    //   const data = session[1].data;
+    //   const label = `${(new Date(session[0])).toDateString()} ${session[1].label}`;
+    //   const labels = session[1].labels.map(date => (new Date(date)).toLocaleTimeString());
 
-      this.barChartData = this.lineChartData = [{ data, label}];
-      this.barChartLabels = this.lineChartLabels = labels;
-      return true;
-    } catch (err) {
-      console.log('Error with Statistics', err);
-      return false;
-    }
+    //   this.barChartData = this.lineChartData = [{ data, label}];
+    //   this.barChartLabels = this.lineChartLabels = labels;
+    //   return true;
+    // } catch (err) {
+    //   console.log('Error with Statistics', err);
+    //   return false;
+    // }
+  }
+
+  sessionStatistics(moduleId) {
+    return this.api.get(`/statistics/${moduleId}`);
   }
 }

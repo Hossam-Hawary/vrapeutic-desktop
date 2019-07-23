@@ -37,11 +37,8 @@ export class PatientPage implements OnInit {
       this.modules = await this.userService.getPatientModules(this.id)as any[];
       this.headsets = await this.userService.getCenterHeadsets();
       this.helperService.removeLoading();
-      return true;
     } catch (err) {
-      console.log('loadPatients err', err);
       this.helperService.showError(err);
-      return false;
     }
   }
 
@@ -53,10 +50,8 @@ export class PatientPage implements OnInit {
         {
           moduleId: module.id,
           moduleName: module.name,
-          roomId: result.room_id,
-          token: this.userService.getCurrentUser().token
+          roomId: result.room_id
         });
-      console.log(opened);
       if (!opened) {
         this.helperService.showError('We couldn\'t launch this module, it might be not downloaded yet!');
       }

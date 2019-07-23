@@ -42,6 +42,12 @@ export class UserService {
       vr_module_id: moduleId, headset_id: headsetId});
   }
 
+  getPatientModuleSessions(patientId, moduleId) {
+    return this.api.get('/module_sessions', {
+      patient_id: patientId, doctor_id: this.currentUser.id,
+      vr_module_id: moduleId});
+  }
+
   getCenterHeadsets() {
     return this.api.get('/headsets');
   }

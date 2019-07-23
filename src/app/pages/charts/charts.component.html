@@ -7,7 +7,16 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
-
+  <ion-list>
+    <ion-list-header>
+      Sessions
+    </ion-list-header>
+    <ion-item *ngFor="let session of sessions" >
+      <ion-label (click)="getStatistics(session.id)" >
+        {{ session?.session_date }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
   <div style="display: block;">
       <canvas baseChart
       [datasets]="chartsService.barChartData"
