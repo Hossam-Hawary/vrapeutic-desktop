@@ -5,12 +5,11 @@ var path = require("path");
 var url = require("url");
 var fs = require("fs");
 var electron_2 = require("electron");
-// const { dialog } = require('electron').remote;
 var win;
 electron_1.ipcMain.on('run-module', function (event, arg) {
     try {
         // const modulePath = path.join(__dirname, '/../../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
-        var modulePath = path.join(__dirname, '/../../../modules', arg.moduleId);
+        var modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
         fs.writeFileSync(path.join(modulePath, arg.moduleName + "_Data", 'room.txt'), "" + arg.roomId, { flag: 'w+' });
         var opened = electron_2.shell.openItem(path.join(modulePath, arg.moduleName + ".exe"));
         event.returnValue = opened;

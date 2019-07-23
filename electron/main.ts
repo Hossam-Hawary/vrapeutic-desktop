@@ -4,21 +4,19 @@ import * as url from 'url';
 import * as fs from 'fs';
 import { shell } from 'electron';
 
-// const { dialog } = require('electron').remote;
-
 let win: BrowserWindow;
 ipcMain.on('run-module', (event, arg) => {
     try {
         // const modulePath = path.join(__dirname, '/../../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
 
-        const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId);
+        const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
         fs.writeFileSync(
             path.join(modulePath, `${arg.moduleName}_Data`, 'room.txt'),
             `${arg.roomId}`,
-            { flag: 'w+'});
+            { flag: 'w+' });
         const opened = shell.openItem(path.join(modulePath, `${arg.moduleName}.exe`));
         event.returnValue = opened;
-    } catch ( err) {
+    } catch (err) {
         event.returnValue = false;
     }
 });
@@ -36,11 +34,11 @@ function createWindow() {
     // fullscreen: true
     win = new BrowserWindow(
         {
-          width: 800, height: 600,
+            width: 800, height: 600,
             icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/png/64x64.png'),
-          webPreferences: {
-            nodeIntegration: true
-          }
+            webPreferences: {
+                nodeIntegration: true
+            }
         });
 
     win.loadURL(
