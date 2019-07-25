@@ -73,7 +73,11 @@ export class ChartsService {
     // }
   }
 
-  sessionStatistics(moduleId) {
+  loadSessionStatistics(moduleId) {
     return this.api.get(`/statistics/${moduleId}`);
+  }
+
+  loadAllSessionsStatistics(params) {
+    return this.api.get(`/statistics`, params);
   }
 }

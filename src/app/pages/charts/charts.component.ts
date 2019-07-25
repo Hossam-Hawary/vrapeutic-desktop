@@ -14,6 +14,7 @@ export class ChartsComponent implements OnInit {
   moduleId;
   sessions: any[] = [];
   sessionStatistics: any[] = [];
+  allSessionsStatistics: any[] = [];
   constructor(
     public chartsService: ChartsService,
     private userService: UserService,
@@ -26,7 +27,7 @@ export class ChartsComponent implements OnInit {
     this.moduleId = this.route.snapshot.paramMap.get('module_id');
     this.ModuleSessions();
     this.chartsService.getModuleStatistics(
-        { patient_id: this.patientId, vr_module_id: this.moduleId });
+      { patient_id: this.patientId, vr_module_id: this.moduleId });
 
   }
 
@@ -43,9 +44,145 @@ export class ChartsComponent implements OnInit {
   async getStatistics(sessionId) {
     try {
       await this.helperService.showLoading();
-      this.sessionStatistics = await this.chartsService.sessionStatistics(sessionId) as any[];
-      // TODO: You can use session's statistics as you like
+      this.sessionStatistics = await this.chartsService.loadSessionStatistics(sessionId) as any[];
       this.helperService.removeLoading();
+
+      // TODO: You can use session's statistics as you like
+
+      // [
+      //     {
+      //       "score": 0.15,
+      //       "character": "Hussein",
+      //       "Collectable": "Gem",
+      //       "distractor": "Camel",
+      //       "maze_path": "Circle",
+      //       "environment": "Desert",
+      //       "session_start_time": "2019-07-10T21:07:54.940Z",
+      //       "attempt_start_time": "2019-07-10T21:22:54.940Z",
+      //       "attempt_end_time": "2019-07-10T21:23:32.940Z",
+      //       "attempt_expected_time": "2019-07-10T21:23:24.940Z",
+      //       "expected_duration_in_seconds": 30,
+      //       "actual_duration_in_seconds": 38,
+      //       "level": "1"
+      //     },
+      //     {
+      //       ....
+      //     }
+      // ]
+    } catch (err) {
+      this.helperService.showError(err);
+    }
+  }
+
+  async getAllSessionsStatisticsMerged() {
+    this.allSessionsStatistics = await this.getAllSessionsStatistics() as any[];
+    if (!this.allSessionsStatistics.length) { return; }
+
+    // use statistics here
+
+    //   [
+    //     {
+    //       "score": 0.15,
+    //       "character": "Hussein",
+    //       "Collectable": "Gem",
+    //       "distractor": "Camel",
+    //       "maze_path": "Circle",
+    //       "environment": "Desert",
+    //       "session_start_time": "2019-07-10T21:07:54.940Z",
+    //       "attempt_start_time": "2019-07-10T21:22:54.940Z",
+    //       "attempt_end_time": "2019-07-10T21:23:32.940Z",
+    //       "attempt_expected_time": "2019-07-10T21:23:24.940Z",
+    //       "expected_duration_in_seconds": 30,
+    //       "actual_duration_in_seconds": 38,
+    //       "level": "1"
+    //     },
+    //     {
+    //       ....
+    //     }
+    // ]
+   }
+  async getAllSessionsStatisticsGroupedBySession() {
+    this.allSessionsStatistics = await this.getAllSessionsStatistics('session') as any[];
+    if (!this.allSessionsStatistics.length) { return; }
+
+    // use statistics here
+
+    // [
+      // {
+      //   "session_date": "2019-07-13T01:37:52.000+02:00",
+      //     "session_statistics": [
+      //       {
+      //         "score": 0.15,
+      //         "character": "Hussein",
+      //         "Collectable": "Gem",
+      //         "distractor": "Camel",
+      //         "maze_path": "Circle",
+      //         "environment": "Desert",
+      //         "session_start_time": "2019-07-10T21:07:54.940Z",
+      //         "attempt_start_time": "2019-07-10T21:22:54.940Z",
+      //         "attempt_end_time": "2019-07-10T21:23:32.940Z",
+      //         "attempt_expected_time": "2019-07-10T21:23:24.940Z",
+      //         "expected_duration_in_seconds": 30,
+      //         "actual_duration_in_seconds": 38,
+      //         "level": "1"
+      //       },
+      //       {
+      //         ...
+      //       }
+      //     ]
+      // },
+      // {
+      //  "session_date": "2019-06-13T01:37:52.000+02:00",
+      //  "session_statistics": [{...},{...}]
+      // }
+    // ]
+  }
+
+  async getAllSessionsStatisticsGroupedByWeek() {
+    this.allSessionsStatistics = await this.getAllSessionsStatistics('week') as any[];
+    if (!this.allSessionsStatistics.length) { return; }
+
+    // use statistics here
+
+    // [
+    //   [
+    //     "July 20, 2019", // beginning of week date (saturday)
+    //     0.1
+    //   ],
+    //   [
+    //     "July 06, 2019",
+    //     0.7627272727272726
+    //   ]
+    // ]
+  }
+
+  async getAllSessionsStatisticsGroupedByMonth() {
+    this.allSessionsStatistics = await this.getAllSessionsStatistics('month') as any[];
+    if (!this.allSessionsStatistics.length) { return; }
+
+    // use statistics here
+
+    // [
+    //   [
+    //     "July 01, 2019", // beginning of month date
+    //     0.1
+    //   ],
+    //   [
+    //     "June 01, 2019",
+    //     0.7627272727272726
+    //   ]
+    // ]
+  }
+
+  async getAllSessionsStatistics(groupedBy = null) {
+    // groupedBy: week, month, session
+    // groupedBy null will get all sessions in one array
+    try {
+      await this.helperService.showLoading();
+      const params = { patient_id: this.patientId, vr_module_id: this.moduleId, grouped_by: groupedBy };
+      const result: any[] = await this.chartsService.loadAllSessionsStatistics(params) as any[];
+      this.helperService.removeLoading();
+      return result;
     } catch (err) {
       this.helperService.showError(err);
     }
