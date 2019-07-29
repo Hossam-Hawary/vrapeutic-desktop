@@ -8,7 +8,7 @@ import { Events } from '@ionic/angular';
 export let TOKEN = '';
 @Injectable()
 export class HttpsRequestInterceptor implements HttpInterceptor {
-  constructor( private events: Events) {
+  constructor(private events: Events) {
     this.events.subscribe('userUpdate', (user) => {
       if (!user) {
         TOKEN = '';
