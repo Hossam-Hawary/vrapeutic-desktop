@@ -1,0 +1,8 @@
+
+<!-- <h1>Current Module: {{curModuleName}}</h1> -->
+<div *ngIf="validData.length">
+    <div *ngFor="let chart of chartsSettings" class="chart" style="height:300px; width:450px">    
+        <canvas id="{{chart.id}}"></canvas> 
+        <!-- <p>&nbsp;</p> -->
+    </div>
+</div>

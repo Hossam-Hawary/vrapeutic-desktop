@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ChartsComponent } from './charts.component';
 import { ChartsModule } from 'ng2-charts';
+import { StatsComponent } from '../stats/stats.component';
 
 const routes: Routes = [
 
@@ -26,6 +27,6 @@ const routes: Routes = [
     TranslateModule.forChild(),
     ChartsModule
   ],
-  declarations: [ChartsComponent],
+  declarations: [ChartsComponent, StatsComponent],
 })
 export class ChartsComponentModule {}

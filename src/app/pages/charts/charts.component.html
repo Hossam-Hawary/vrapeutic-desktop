@@ -17,28 +17,7 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <div style="display: block;">
-      <canvas baseChart
-      [datasets]="chartsService.barChartData"
-      [labels]="chartsService.barChartLabels"
-      [options]="chartsService.barChartOptions"
-      [legend]="chartsService.barChartLegend"
-      [chartType]="chartsService.barChartType"
-      [colors]="chartsService.chartColors"
-      [plugins]="chartsService.barChartPlugins"
-      >
-    </canvas>
-  </div>
-  
-  <div style="display: block;">
-    <canvas baseChart 
-      [datasets]="chartsService.lineChartData"
-      [labels]="chartsService.lineChartLabels"
-      [options]="chartsService.lineChartOptions"
-      [legend]="chartsService.lineChartLegend"
-      [chartType]="chartsService.lineChartType"
-      [colors]="chartsService.chartColors"
-      [plugins]="chartsService.lineChartPlugins">
-    </canvas>
+  <div>
+    <app-stats *ngIf="showStats" [allData]="sessionStatistics"></app-stats>
   </div>
 </ion-content>

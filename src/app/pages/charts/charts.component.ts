@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from './../../services/helper/helper.service';
 import { ActivatedRoute } from '@angular/router';
+import { StatsComponent } from '../stats/stats.component';
 
 @Component({
   selector: 'app-charts',
@@ -15,6 +16,7 @@ export class ChartsComponent implements OnInit {
   sessions: any[] = [];
   sessionStatistics: any[] = [];
   allSessionsStatistics: any[] = [];
+  showStats: boolean = false;
   constructor(
     public chartsService: ChartsService,
     private userService: UserService,
@@ -28,7 +30,6 @@ export class ChartsComponent implements OnInit {
     this.ModuleSessions();
     this.chartsService.getModuleStatistics(
       { patient_id: this.patientId, vr_module_id: this.moduleId });
-
   }
 
   async ModuleSessions() {
@@ -44,9 +45,10 @@ export class ChartsComponent implements OnInit {
   async getStatistics(sessionId) {
     try {
       await this.helperService.showLoading();
+      this.showStats = false;
       this.sessionStatistics = await this.chartsService.loadSessionStatistics(sessionId) as any[];
       this.helperService.removeLoading();
-
+      this.showStats = true;
       // TODO: You can use session's statistics as you like
 
       // [
@@ -76,6 +78,7 @@ export class ChartsComponent implements OnInit {
 
   async getAllSessionsStatisticsMerged() {
     this.allSessionsStatistics = await this.getAllSessionsStatistics() as any[];
+    console.log(this.allSessionsStatistics);
     if (!this.allSessionsStatistics.length) { return; }
 
     // use statistics here
