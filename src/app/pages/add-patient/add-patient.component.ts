@@ -21,13 +21,13 @@ export class AddPatientComponent implements OnInit {
 
   ngOnInit() {
     this.patientForm = this.formBuilder.group({
-      email: ['', Validators.compose([Validation.emailValidator, Validators.required])],
+      email: ['', Validators.compose([Validation.emailValidator])],
       name: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(100), Validators.required])],
-      address: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(200), Validators.required])],
+      address: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(200)])],
       phone: ['', Validators.compose([Validation.phoneValidator, Validators.required])],
       gender: ['male', Validators.compose([Validators.required])],
       date_of_birth: ['', Validators.compose([Validators.required])],
-      diagnosis: ['', Validators.compose([Validators.minLength(6), Validators.maxLength(200), Validators.required])],
+      diagnosis: ['', Validators.compose([Validators.minLength(6), Validators.maxLength(200)])],
       has_guardian: [true, Validators.compose([Validators.required])],
       guardian_name: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(100)])],
       notes: ['', Validators.compose([Validators.minLength(6), Validators.maxLength(200)])]

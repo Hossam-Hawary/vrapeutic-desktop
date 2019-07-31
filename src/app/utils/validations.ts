@@ -25,7 +25,7 @@ export class Validation {
         }
     }
     static emailValidator(control: FormControl): any {
-        const regex = new RegExp(/^[(A-Za-z) | \d ][\w+\-.]+[A-Za-z0-9]+@[a-z\d\-.]+\.[a-z]+$/);
+        const regex = new RegExp(/^([(A-Za-z) | \d ][\w+\-.]+[A-Za-z0-9]+@[a-z\d\-.]+\.[a-z]+)?$/);
         if (!regex.test(control.value)) {
             return {
                 invalidEmail: true

@@ -22,7 +22,7 @@ export class EditPatientComponent implements OnInit {
 
   ngOnInit() {
     this.patientForm = this.formBuilder.group({
-      email: [this.patient.email, Validators.compose([Validation.emailValidator, Validators.required])],
+      email: [this.patient.email, Validators.compose([Validation.emailValidator])],
       name: [this.patient.address, Validators.compose([Validators.minLength(3), Validators.maxLength(100), Validators.required])],
       address: [this.patient.name, Validators.compose([Validators.minLength(3), Validators.maxLength(200), Validators.required])],
       phone: [this.patient.phone, Validators.compose([Validation.phoneValidator, Validators.required])],
