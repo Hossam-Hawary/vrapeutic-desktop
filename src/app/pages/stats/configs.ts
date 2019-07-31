@@ -5,24 +5,26 @@ export let modules = [
         chartsConfigs: [
             {
                 id: '1',
-                chartType: 'bar',
+                chartType: 'line',
                 fieldNameX: 'session_start_time',
                 fieldNameY: 'score',
                 dataX: [],
                 dataY: [],
                 color: 'blue',
+                backgroundColor: 'white',
                 chartObject: null,
                 show: true,
                 legend: 'Score'
             },
             {
                 id: '2',
-                chartType: 'bar',
+                chartType: 'line',
                 fieldNameX: 'session_start_time',
                 fieldNameY: 'actual_duration_in_seconds',
                 dataX: [],
                 dataY: [],
                 color: 'red',
+                backgroundColor: 'white',
                 chartObject: null,
                 show: true,
                 legend: 'Actual Duration In Seconds'

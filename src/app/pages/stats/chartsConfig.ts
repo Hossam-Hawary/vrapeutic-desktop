@@ -8,6 +8,7 @@ export class ChartsConfig {
     dataX: any[];
     dataY: any[];
     color: string;
+    backgroundColor: string;
     chartObject: Chart;
     show: boolean;
     legend: string;

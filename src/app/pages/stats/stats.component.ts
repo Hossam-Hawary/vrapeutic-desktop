@@ -142,7 +142,7 @@ export class StatsComponent implements OnInit, AfterViewInit {
                 data: chartConfigs.dataY,
                 borderColor: chartConfigs.color,
                 backgroundColor: chartConfigs.color,
-                fill: true
+                fill: false
               }
             ]
           },
