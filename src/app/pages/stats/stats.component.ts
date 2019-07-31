@@ -194,8 +194,8 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
               xAxes: [{
                 display: true,
                 barPercentage: 0.5,
-                barThickness: 20,
-                maxBarThickness: 30,
+                barThickness: 30,
+                maxBarThickness: 40,
                 gridLines: {
                   offsetGridLines: true
                 }
@@ -216,9 +216,9 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
                 label: function(tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) {
                   let tooltipDataArr = ["score: " + tooltipItems.yLabel];
                   chartConfigs.tooltipFields.forEach((tooltipField: string, index: number) => {
-                    let tooltip = tooltipField + ": " + chartConfigs.tooltipData[index][tooltipItems.index];
+                    let tooltip = chartConfigs.tooltipData[index][tooltipItems.index];
                     if (tooltip.length) {
-                      tooltipDataArr.push(tooltip);
+                      tooltipDataArr.push(tooltipField + ": " + tooltip);
                     }
                   });
                   return tooltipDataArr;
@@ -226,11 +226,11 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
               },
               titleFontSize: 15,
               bodyFontSize: 15,
-              intersect: false
+              intersect: true
             },
             hover: {
               mode: 'index',
-              intersect: false
+              intersect: true
             },
             responsive: true
           }
