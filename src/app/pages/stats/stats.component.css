@@ -16,12 +16,9 @@ div.chart {
     overflow: scroll;
 }
 
-/* @media only screen and (min-width: 900px) {
+@media only screen and (max-width: 900px) {
     div.chart { 
-        width: 350px;
-        height: 150px;
-        margin: 0 auto;
-        margin-top: 1%;
-        display: flex;
+        width: 500px;
+        height: 350px;
     }
-} */
+}

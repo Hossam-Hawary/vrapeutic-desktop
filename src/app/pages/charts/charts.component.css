@@ -1,6 +1,7 @@
 .sessions-list {
     max-height: 40%;
     overflow: scroll;
+    cursor: pointer;
 }
 .selected {
     color: var(--ion-color-primary);

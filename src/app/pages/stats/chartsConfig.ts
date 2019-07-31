@@ -5,7 +5,7 @@ export class ChartsConfig {
     chartType: string;
     fieldNameX: string;
     fieldNameY: string;
-    tooltipField: string;
+    tooltipFields: string[];
     dataX: any[];
     dataY: any[];
     tooltipData: any[];

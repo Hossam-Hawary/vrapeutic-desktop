@@ -1,13 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output, OnDestroy} from '@angular/core';
 import { Chart } from 'chart.js';
 
-import {DBRecords} from './DBRecords';
-import {modules} from './configs';
+import {configs} from './configs';
 import {ChartsConfig} from './chartsConfig';
-import { setClassMetadata } from '@angular/core/src/render3';
-import { EventEmitter } from 'events';
-import { Subject } from 'rxjs';
-import { ConsoleReporter } from 'jasmine';
 
 // Important link
 // https://codepen.io/jordanwillis/pen/xqrjGp
@@ -32,13 +27,13 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   charts: Chart[];
   curModuleName: string;
   index = 0;
+  tooltipMap: Map<string, Map<string, any[]>>;
 
   constructor() {
   }
 
   ngOnInit() {
     this.zip = (a: any, b: any) => a.map((x: any, i: any) => [x, b[i]]);
-    // this.allData = DBRecords;
     this.initModule(this.index);
 
     console.log('stats');
@@ -49,14 +44,24 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.chartsSettings.forEach((chart: ChartsConfig) => {
       chart.dataX = [];
       chart.dataY = [];
+      chart.tooltipData = [];
     });
   }
 
   initModule(index: number) {
-    this.fieldsNames = modules[index].fieldsConfig.fieldsNames;
-    this.fieldsDataTypes = modules[index].fieldsConfig.fieldsDataTypes;
-    this.chartsSettings = modules[index].chartsConfigs;
-    this.curModuleName = modules[index].moduleName;
+    this.fieldsNames = configs[index].fieldsConfig.fieldsNames;
+    this.fieldsDataTypes = configs[index].fieldsConfig.fieldsDataTypes;
+    this.chartsSettings = configs[index].chartsConfigs;
+    this.curModuleName = configs[index].moduleName;
+
+    this.tooltipMap = new Map<string, Map<string, any[]>>();
+    this.chartsSettings.forEach((chart: ChartsConfig) => {
+      let map: Map<string, any[]> = new Map<string, any[]>();
+      chart.tooltipFields.forEach((toolTipField: string) => {
+        map.set(toolTipField, []);
+      })
+      this.tooltipMap.set(chart.id, map);
+    });
 
     this.charts = [];
 
@@ -135,20 +140,27 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         if (foundY) {
+          let tempTooltipData: any[] = []
           for (const [key, value] of this.zip(keys, values)) {
             if (key === chart.fieldNameX) {
               chart.dataX.push("Game #" + (i++).toString());
-              // let date = new Date(value);
-              // chart.dataX.push(date.toLocaleTimeString());
-            } else if (key == chart.tooltipField) {
-              chart.tooltipData.push(value);
-            }
+            } 
+            
+            chart.tooltipFields.forEach((tooltipField: string) => {
+              if(key == tooltipField) {
+                this.tooltipMap.get(chart.id).get(tooltipField).push(value);
+              }
+            });
           }
         }
       });
       while (chart.dataX.length > chart.dataY.length) {
         chart.dataX.pop();
       }
+      chart.tooltipFields.forEach((tooltipField: string) => {
+        chart.tooltipData.push(this.tooltipMap.get(chart.id).get(tooltipField));
+      });
+      console.log(chart.tooltipData);
     });
   }
 
@@ -166,7 +178,8 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
                 data: chartConfigs.dataY,
                 borderColor: chartConfigs.color,
                 backgroundColor: chartConfigs.color,
-                fill: false
+                fill: false,
+                borderWidth: 0
               }
             ]
           },
@@ -201,17 +214,25 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
               mode: 'single',
               callbacks: {
                 label: function(tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) {
-                  return [tooltipItems.yLabel, 
-                          chartConfigs.tooltipData[tooltipItems.index]];
+                  let tooltipDataArr = ["score: " + tooltipItems.yLabel];
+                  chartConfigs.tooltipFields.forEach((tooltipField: string, index: number) => {
+                    let tooltip = tooltipField + ": " + chartConfigs.tooltipData[index][tooltipItems.index];
+                    if (tooltip.length) {
+                      tooltipDataArr.push(tooltip);
+                    }
+                  });
+                  return tooltipDataArr;
                 }
-              }
+              },
+              titleFontSize: 15,
+              bodyFontSize: 15,
+              intersect: false
             },
             hover: {
               mode: 'index',
               intersect: false
             },
             responsive: true
-
           }
         });
 

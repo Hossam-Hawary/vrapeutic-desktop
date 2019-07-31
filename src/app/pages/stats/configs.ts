@@ -1,5 +1,5 @@
 
-export let modules = [
+export let configs = [
     {
         moduleName: 'Maze Arabic',
         chartsConfigs: [
@@ -8,7 +8,7 @@ export let modules = [
                 chartType: 'bar',
                 fieldNameX: 'attempt_end_time',
                 fieldNameY: 'open_time_score',
-                tooltipField: 'level',
+                tooltipFields: ['level', 'character', 'distractor', 'environment'],
                 dataX: [],
                 dataY: [],
                 tooltipData: [],
@@ -23,7 +23,7 @@ export let modules = [
                 chartType: 'bar',
                 fieldNameX: 'attempt_end_time',
                 fieldNameY: 'close_time_score',
-                tooltipField: 'level',
+                tooltipFields: ['level', 'character', 'distractor', 'environment'],
                 dataX: [],
                 dataY: [],
                 tooltipData: [],
