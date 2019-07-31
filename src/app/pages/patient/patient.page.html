@@ -63,6 +63,12 @@
             </ion-grid>
           </ion-card>
         </ion-col>
+        <div class="empty-content" *ngIf="!modules?.length">
+          <div class="illustration-wrapper">
+            <ion-icon name="videocam"></ion-icon>
+          </div>
+          <div class="empty-text">Patient Has No Modules!</div>
+        </div>
       </ion-row>
     </ion-grid>
   </ion-list>

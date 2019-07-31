@@ -15,24 +15,10 @@
 </ion-header>
 
 <ion-content padding>
-  <!-- <ion-card>
-    <ion-card-header>
-      <ion-card-title color="primary" *ngIf="connected">
-        <ion-icon name="checkmark-circle-outline" color="secondary"></ion-icon>
-        You're Connected
-      </ion-card-title>
-      <ion-card-title color="warning" *ngIf="!connected">
-        <ion-spinner></ion-spinner>
-        Not Connected Yet!
-      </ion-card-title>
-    </ion-card-header>
-  </ion-card> -->
-  <ion-list no-padding>
+  <ion-list no-padding *ngIf="patients?.length">
     <ion-item *ngFor="let patient of patients" [routerLink]="['/patient/', patient.id]">
       <ion-avatar slot="start">
         <ion-img [src]="patient?.photo ||'assets/imgs/avatar.png'" ></ion-img>
-        <!-- <span class="onlineOffline_icon"
-          [ngStyle]="{'background-color':(chat.status === 'online'? '#4cd137' : '#c23616')}"></span> -->
       </ion-avatar>
       <div class="usernameSection" no-padding>
         <h5>
@@ -43,4 +29,14 @@
       </div>
     </ion-item>
   </ion-list>
+  <div class="empty-content" *ngIf="!patients?.length">
+    <div class="illustration-wrapper">
+      <ion-icon name="heart-empty"></ion-icon>
+    </div>
+    <div class="empty-text">You Have No Patients Yet!</div>
+    <ion-button class="go-home-btn"
+        (click)="addPatient()" expand="block" color="primary">
+      Add Patient
+    </ion-button>
+  </div>
 </ion-content>

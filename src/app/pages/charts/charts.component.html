@@ -7,16 +7,22 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
-  <ion-list>
-    <ion-list-header>
-      Sessions
-    </ion-list-header>
+  <h5 class="selected">
+    Sessions
+  </h5>
+  <ion-list class="sessions-list" *ngIf="sessions?.length" >
     <ion-item *ngFor="let session of sessions" >
-      <ion-label (click)="getStatistics(session.id)" >
+      <ion-label (click)="getStatistics(session.id)" [ngClass]="{'selected': session.id == selectedSessionId}" >
         {{ session?.session_date }}
       </ion-label>
     </ion-item>
   </ion-list>
+    <div class="empty-content" *ngIf="!sessions?.length">
+      <div class="illustration-wrapper">
+        <ion-icon name="analytics"></ion-icon>
+      </div>
+      <div class="empty-text">No Sessions Available</div>
+    </div>
   <div>
     <app-stats *ngIf="showStats" [allData]="sessionStatistics"></app-stats>
   </div>

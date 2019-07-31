@@ -13,10 +13,11 @@ import { StatsComponent } from '../stats/stats.component';
 export class ChartsComponent implements OnInit {
   patientId;
   moduleId;
+  selectedSessionId;
   sessions: any[] = [];
   sessionStatistics: any[] = [];
   allSessionsStatistics: any[] = [];
-  showStats: boolean = false;
+  showStats = false;
   constructor(
     public chartsService: ChartsService,
     private userService: UserService,
@@ -43,6 +44,7 @@ export class ChartsComponent implements OnInit {
   }
 
   async getStatistics(sessionId) {
+    this.selectedSessionId = sessionId;
     try {
       await this.helperService.showLoading();
       this.showStats = false;
