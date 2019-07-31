@@ -5,8 +5,10 @@ export class ChartsConfig {
     chartType: string;
     fieldNameX: string;
     fieldNameY: string;
+    tooltipField: string;
     dataX: any[];
     dataY: any[];
+    tooltipData: any[];
     color: string;
     backgroundColor: string;
     chartObject: Chart;

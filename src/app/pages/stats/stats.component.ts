@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output, OnDestroy} from '@angular/core';
 import { Chart } from 'chart.js';
 
 import {DBRecords} from './DBRecords';
@@ -7,16 +7,18 @@ import {ChartsConfig} from './chartsConfig';
 import { setClassMetadata } from '@angular/core/src/render3';
 import { EventEmitter } from 'events';
 import { Subject } from 'rxjs';
+import { ConsoleReporter } from 'jasmine';
 
 // Important link
 // https://codepen.io/jordanwillis/pen/xqrjGp
+// https://stackoverflow.com/questions/42839551/how-to-show-multiple-values-in-point-hover-using-chart-js
 
 @Component({
   selector: 'app-stats',
   templateUrl: './stats.component.html',
   styleUrls: ['./stats.component.css']
 })
-export class StatsComponent implements OnInit, AfterViewInit {
+export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() allData: any[];
   @ViewChild('canvas') canvas: ElementRef;
@@ -43,6 +45,13 @@ export class StatsComponent implements OnInit, AfterViewInit {
     console.log(this.allData);
   }
 
+  ngOnDestroy() {
+    this.chartsSettings.forEach((chart: ChartsConfig) => {
+      chart.dataX = [];
+      chart.dataY = [];
+    });
+  }
+
   initModule(index: number) {
     this.fieldsNames = modules[index].fieldsConfig.fieldsNames;
     this.fieldsDataTypes = modules[index].fieldsConfig.fieldsDataTypes;
@@ -53,9 +62,6 @@ export class StatsComponent implements OnInit, AfterViewInit {
 
     this.validData = this.validateData(this.allData);
     this.collectStatsData(this.chartsSettings, this.validData);
-  }
-
-  switchModule(event) {
   }
 
   ngAfterViewInit(): void {
@@ -113,18 +119,36 @@ export class StatsComponent implements OnInit, AfterViewInit {
 
   collectStatsData(chartsData: ChartsConfig[], data: any[]) {
     chartsData.forEach((chart: ChartsConfig) => {
+      let i: number = 1;
       data.forEach((datum: any) => {
         const keys = Object.keys(datum);
         const values = Object.values(datum);
 
+        let foundY: boolean = false;
+
         for (const [key, value] of this.zip(keys, values)) {
-          if (key === chart.fieldNameX) {
-            chart.dataX.push(value);
-          } else if (key === chart.fieldNameY) {
-            chart.dataY.push(value);
+          if (key == chart.fieldNameY && value >= 0.0) {
+            foundY = true;
+            console.log((value * 100.0).toFixed(2));
+            chart.dataY.push((value * 100.0).toFixed(2));
+          }
+        }
+
+        if (foundY) {
+          for (const [key, value] of this.zip(keys, values)) {
+            if (key === chart.fieldNameX) {
+              chart.dataX.push("Game #" + (i++).toString());
+              // let date = new Date(value);
+              // chart.dataX.push(date.toLocaleTimeString());
+            } else if (key == chart.tooltipField) {
+              chart.tooltipData.push(value);
+            }
           }
         }
       });
+      while (chart.dataX.length > chart.dataY.length) {
+        chart.dataX.pop();
+      }
     });
   }
 
@@ -155,18 +179,39 @@ export class StatsComponent implements OnInit, AfterViewInit {
             },
             scales: {
               xAxes: [{
-                display: true
+                display: true,
+                barPercentage: 0.5,
+                barThickness: 20,
+                maxBarThickness: 30,
+                gridLines: {
+                  offsetGridLines: true
+                }
               }],
               yAxes: [{
                 display: true,
                 ticks: {
+                  suggestedMax: 100,
+                  suggestedMin: 0,
                   beginAtZero: true
                 }
               }],
             },
             tooltips: {
-              mode: 'nearest'
-            }
+              enabled: true,
+              mode: 'single',
+              callbacks: {
+                label: function(tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) {
+                  return [tooltipItems.yLabel, 
+                          chartConfigs.tooltipData[tooltipItems.index]];
+                }
+              }
+            },
+            hover: {
+              mode: 'index',
+              intersect: false
+            },
+            responsive: true
+
           }
         });
 

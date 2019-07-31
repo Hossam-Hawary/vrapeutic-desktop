@@ -5,30 +5,34 @@ export let modules = [
         chartsConfigs: [
             {
                 id: '1',
-                chartType: 'line',
-                fieldNameX: 'session_start_time',
-                fieldNameY: 'score',
+                chartType: 'bar',
+                fieldNameX: 'attempt_end_time',
+                fieldNameY: 'open_time_score',
+                tooltipField: 'level',
                 dataX: [],
                 dataY: [],
+                tooltipData: [],
                 color: 'blue',
                 backgroundColor: 'white',
                 chartObject: null,
                 show: true,
-                legend: 'Score'
+                legend: 'Open Time Task - Score %'
             },
             {
                 id: '2',
-                chartType: 'line',
-                fieldNameX: 'session_start_time',
-                fieldNameY: 'actual_duration_in_seconds',
+                chartType: 'bar',
+                fieldNameX: 'attempt_end_time',
+                fieldNameY: 'close_time_score',
+                tooltipField: 'level',
                 dataX: [],
                 dataY: [],
+                tooltipData: [],
                 color: 'red',
                 backgroundColor: 'white',
                 chartObject: null,
                 show: true,
-                legend: 'Actual Duration In Seconds'
-            }],
+                legend: 'Close Time Task - Score %'
+        }],
         fieldsConfig: {
             fieldsNames: ['character',
                           'collectibles',
@@ -41,8 +45,10 @@ export let modules = [
                           'attempt_expected_time',
                           'expected_duration_in_seconds',
                           'actual_duration_in_seconds',
-                          'score',
-                          'level'],
+                          'open_time_score',
+                          'close_time_score',
+                          'level',
+                          'attempt_type'],
             fieldsDataTypes: ['string',
                               'string',
                               'string',
@@ -55,6 +61,8 @@ export let modules = [
                               'number',
                               'number',
                               'number',
+                              'number',
+                              'string',
                               'string']
         }
     }
