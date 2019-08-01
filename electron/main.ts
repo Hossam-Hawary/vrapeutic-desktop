@@ -3,11 +3,14 @@ import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
 import { shell } from 'electron';
+import * as internalIp from 'internal-ip';
+const server = require("./server");
 
 let win: BrowserWindow;
 ipcMain.on('run-module', (event, arg) => {
     try {
         // const modulePath = path.join(__dirname, '/../../../dist/vrapeutic-desktop/assets/modules', arg.moduleId);
+        console.log('Ip.......', internalIp.v4.sync());
 
         const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
         fs.writeFileSync(
@@ -49,8 +52,8 @@ function createWindow() {
         })
     );
     // win.webContents.openDevTools();
-
     win.on('closed', () => {
         win = null;
     });
+
 }
