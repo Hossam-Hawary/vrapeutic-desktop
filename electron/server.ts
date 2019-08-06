@@ -16,15 +16,15 @@ server.listen(PORT, '0.0.0.0');
 
 console.log('Server started on port ' + PORT);
 
-let clients = [];
-let maxDesktopConnections = 1;
-let maxHeadsetConnections = 1;
-let ClientType = new Enum({Desktop: 'Desktop',
+var clients = [];
+var maxDesktopConnections = 1;
+var maxHeadsetConnections = 1;
+var ClientType = new Enum({Desktop: 'Desktop', 
                            Headset: 'Headset'});
 
 io.on('connection', (socket) => {
-    const clientId = shortid.generate();
-    const client = {
+    var clientId = shortid.generate();
+    var client = {
         id: clientId,
         clientType: null,
         rejected: false
@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
         console.log('remaining headset connections is', maxHeadsetConnections);
         client.clientType = clientData.clientType;
 
-        if (client.clientType === ClientType.Desktop) {
+        if (client.clientType == ClientType.Desktop) {
             if (maxDesktopConnections > 0) {
                 maxDesktopConnections--;
                 console.log('client accepted!');
@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
             }
         }
 
-        if (client.clientType === ClientType.Headset) {
+        if (client.clientType == ClientType.Headset) {
             if (maxHeadsetConnections > 0) {
                 maxHeadsetConnections--;
                 console.log('client accepted!');
@@ -71,42 +71,43 @@ io.on('connection', (socket) => {
         }
         console.log('remaining desktop connections is', maxDesktopConnections);
         console.log('remaining headset connections is', maxHeadsetConnections);
-
-        if (maxDesktopConnections === 0 && maxHeadsetConnections === 0) {
+        
+        if (maxDesktopConnections == 0 && maxHeadsetConnections == 0) {
             io.sockets.emit('roomReady');
             console.log('setting up room');
         }
-
+        
         console.log('-----------------------');
     });
 
-    socket.on('changeCameraRotation', (data) => {
-        socket.broadcast.emit('updateCameraRotation', data);
+    socket.on('changeControllerRotation', (data) => {
+        socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
     });
 
-    socket.on('changeCameraPosition', (data) => {
-        socket.broadcast.emit('updateCameraPosition', data);
+    socket.on('changeControllerPosition', (data) => {
+        socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
     });
 
     socket.on('fireFunction', (data) => {
         io.sockets.emit(data.functionName, data);
+        console.log(data.functionName + ' fired!');
     });
 
     socket.on('disconnect', () => {
         socket.broadcast.emit('clientDisconnected');
         console.log('disconnecting client...');
         console.log('-----------------------');
-
-        if (client.clientType === ClientType.Desktop) {
-            if (client.rejected === false) {
+        
+        if (client.clientType == ClientType.Desktop) {
+            if (client.rejected == false) {
                 maxDesktopConnections++;
             }
-        } else if (client.clientType === ClientType.Headset) {
-            if (client.rejected === false) {
+        } else if (client.clientType == ClientType.Headset) {
+            if (client.rejected == false) {
                 maxHeadsetConnections++;
             }
         }
-
+        
         console.log('maxDesktopConnections', maxDesktopConnections);
         console.log('maxHeadsetConnections', maxHeadsetConnections);
         console.log('-----------------------');
