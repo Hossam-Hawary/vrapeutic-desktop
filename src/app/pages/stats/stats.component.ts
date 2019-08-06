@@ -194,8 +194,8 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
               xAxes: [{
                 display: true,
                 barPercentage: 0.5,
-                barThickness: 30,
-                maxBarThickness: 40,
+                barThickness: 40,
+                maxBarThickness: 50,
                 gridLines: {
                   offsetGridLines: true
                 }
