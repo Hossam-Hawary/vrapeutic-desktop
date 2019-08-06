@@ -64,8 +64,16 @@ function createWindow() {
 
 function pushRoomFile(roomFilePath) {
     if (!headsetDevice) {return console.log('Please make sure you cnnected the Headset device first'); }
+    
+    const serverIp = internalIp.v4.sync();
+    let ipInfo = { ip: serverIp };
+    let data = JSON.stringify(ipInfo, null, 4);
+    let currentPath = path.join(__dirname, 'ip.json');
+    fs.writeFileSync(currentPath, data);
 
-    return client.push(headsetDevice.id, roomFilePath, '/sdcard/room.txt')
+    console.log('connecting to: ' + serverIp + ' to path: ' + currentPath);
+
+    return client.push(headsetDevice.id, currentPath, '/sdcard/Download/ip.json')
         .then((transfer) => {
             return new Promise((resolve, reject) => {
                 transfer.on('progress', (stats) => {
@@ -96,6 +104,7 @@ function trackDevices() {
             tracker.on('add', (device) => {
                 headsetDevice = device;
                 addHeadsetDevice(device);
+                pushRoomFile('');
             });
             tracker.on('remove', (device) => {
                 headsetDevice = null;
