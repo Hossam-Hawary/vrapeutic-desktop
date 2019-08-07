@@ -5,25 +5,48 @@ import * as fs from 'fs';
 import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
-import * as Promise from 'bluebird';
 const server = require('./server');
 const client = adb.createClient();
+
+const MAIN_EVENTS = {
+    error: 'main-error',
+    run_module: 'run-module',
+    switch_mode: 'switch-mode',
+    mode_switched: 'mode-switched',
+    module_deady: 'vr-module-ready',
+    device_connected: 'device-connected',
+    device_disconnected: 'device-disconnected',
+    unauthorized_device_connected: 'unauthorized-device-connected',
+    authorized_devices: 'authorized-devices',
+};
+
 let headsetDevice;
+let authorizedHeadsets = [];
+let onlineMode = true;
 
 let win: BrowserWindow;
-ipcMain.on('run-module', (event, arg) => {
+
+ipcMain.on(MAIN_EVENTS.switch_mode, (event, newMode) => {
+    onlineMode = newMode;
+    win.webContents.send(MAIN_EVENTS.mode_switched, onlineMode);
+});
+
+ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
+    authorizedHeadsets = newAuthorizedHeadsets;
+});
+
+ipcMain.on(MAIN_EVENTS.run_module, (event, arg) => {
     try {
         // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
+        // const roomFilePath = path.join(modulePath, 'room.txt');
         const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
         const roomFilePath = path.join(modulePath, `${arg.moduleName}_Data`, 'room.txt');
         const serverIp = internalIp.v4.sync();
-        console.log('Ip.......', serverIp, 'Pushing to the Device.....' );
         fs.writeFileSync(roomFilePath, `${arg.roomId}\n${serverIp}`, { flag: 'w+' });
-        // pushRoomFile(roomFilePath);
-        const opened = shell.openItem(path.join(modulePath, `${arg.moduleName}.exe`));
-        event.returnValue = opened;
+        prepareAndStartModule(roomFilePath, arg.moduleName, modulePath);
     } catch (err) {
-        event.returnValue = false;
+        win.webContents.send(MAIN_EVENTS.error, err);
+        win.webContents.send(MAIN_EVENTS.module_deady, { opened: false, headsetDevice, moduleName: arg.moduleName, err});
     }
 });
 
@@ -62,64 +85,57 @@ function createWindow() {
     trackDevices();
 }
 
-function pushRoomFile(roomFilePath) {
-    if (!headsetDevice) {return console.log('Please make sure you cnnected the Headset device first'); }
-    
-    const serverIp = internalIp.v4.sync();
-    let ipInfo = { ip: serverIp };
-    let data = JSON.stringify(ipInfo, null, 4);
-    let currentPath = path.join(__dirname, 'ip.json');
-    fs.writeFileSync(currentPath, data);
+async function prepareAndStartModule(roomFilePath, moduleName, modulePath) {
+    try {
+        if (onlineMode) {
+            return startDesktopModule(moduleName, modulePath);
+        }
 
-    console.log('connecting to: ' + serverIp + ' to path: ' + currentPath);
-
-    return client.push(headsetDevice.id, currentPath, '/sdcard/Download/ip.json')
-        .then((transfer) => {
-            return new Promise((resolve, reject) => {
-                transfer.on('progress', (stats) => {
-                    console.log(
-                        '[%s] Pushed %d bytes so far',
-                        headsetDevice.id,
-                        stats.bytesTransferred
-                    );
-                });
-                transfer.on('end', () => {
-                    console.log('[%s] Push complete', headsetDevice.id);
-                    resolve();
-                });
-                transfer.on('error', reject);
-            });
-        })
-        .then(() => {
-            console.log(`Done pushing ${roomFilePath} to the connected device ${headsetDevice.id}`);
-        })
-        .catch((err) => {
-        console.error('Something went wrong:', err.stack);
-    });
-}
-
-function trackDevices() {
-    client.trackDevices()
-        .then((tracker) => {
-            tracker.on('add', (device) => {
-                headsetDevice = device;
-                addHeadsetDevice(device);
-                pushRoomFile('');
-            });
-            tracker.on('remove', (device) => {
-                headsetDevice = null;
-                console.log('Device %s was unplugged', device.id);
-            });
-            tracker.on('end', () => {
-                console.log('Tracking stopped');
-            });
-        })
-        .catch((err) => {
-            console.error('Something went wrong:', err.stack);
+        if (!headsetDevice) {
+           return win.webContents.send(
+                MAIN_EVENTS.module_deady,
+                { ready: false, headsetDevice, moduleName, err: 'No Authorized Headset connected!' }
+            );
+        }
+        const transfer = await client.push(headsetDevice.id, roomFilePath, '/sdcard/Download/room.txt');
+        transfer.once('end', () => {
+            startDesktopModule(moduleName, modulePath);
         });
+
+    } catch (err) {
+        win.webContents.send(MAIN_EVENTS.module_deady, { ready: false, headsetDevice, err, moduleName});
+        win.webContents.send(MAIN_EVENTS.error, err);
+    }
 }
 
-function addHeadsetDevice(device) {
+function startDesktopModule(moduleName, modulePath) {
+    const opened = shell.openItem(path.join(modulePath, `${moduleName}.exe`));
+    win.webContents.send(MAIN_EVENTS.module_deady, { ready: opened, headsetDevice, moduleName });
+}
+
+async function trackDevices() {
+    try {
+        const tracker = await client.trackDevices();
+        tracker.on('add', (device) => {
+            authorizeHeadsetDevice(device);
+        });
+        tracker.on('remove', (device) => {
+            headsetDevice = null;
+            win.webContents.send(MAIN_EVENTS.device_disconnected, device);
+        });
+        tracker.on('end', () => {
+            console.log('Tracking stopped');
+        });
+    } catch (err) {
+        win.webContents.send(MAIN_EVENTS.error, err);
+    }
+}
+
+function authorizeHeadsetDevice(device) {
+    // if (!authorizedHeadsets.includes(device.id)) {
+    //     return win.webContents.send(MAIN_EVENTS.unauthorized_device_connected, device);
+    // }
+
     headsetDevice = device;
-    console.log('Device %s was plugged in', device.id);
+    win.webContents.send(MAIN_EVENTS.device_connected, device);
 }

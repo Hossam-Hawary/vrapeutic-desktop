@@ -13,6 +13,10 @@
 </ion-header>
 
 <ion-content padding>
+  <ion-item>
+    <ion-label>Online Mode</ion-label>
+    <ion-toggle [(ngModel)]="onlineMode" (ionChange)="switchMode()"></ion-toggle>
+  </ion-item>
   <ion-card>
     <ion-card-header>
       <ion-card-title color="primary">{{patient?.name}}</ion-card-title>
