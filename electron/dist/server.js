@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
         console.log('remaining desktop connections is', maxDesktopConnections);
         console.log('remaining headset connections is', maxHeadsetConnections);
         client.clientType = clientData.clientType;
-        if (client.clientType === ClientType.Desktop) {
+        if (client.clientType == ClientType.Desktop) {
             if (maxDesktopConnections > 0) {
                 maxDesktopConnections--;
                 console.log('client accepted!');
@@ -48,7 +48,7 @@ io.on('connection', function (socket) {
                 client.rejected = true;
             }
         }
-        if (client.clientType === ClientType.Headset) {
+        if (client.clientType == ClientType.Headset) {
             if (maxHeadsetConnections > 0) {
                 maxHeadsetConnections--;
                 console.log('client accepted!');
@@ -61,32 +61,33 @@ io.on('connection', function (socket) {
         }
         console.log('remaining desktop connections is', maxDesktopConnections);
         console.log('remaining headset connections is', maxHeadsetConnections);
-        if (maxDesktopConnections === 0 && maxHeadsetConnections === 0) {
+        if (maxDesktopConnections == 0 && maxHeadsetConnections == 0) {
             io.sockets.emit('roomReady');
             console.log('setting up room');
         }
         console.log('-----------------------');
     });
-    socket.on('changeCameraRotation', function (data) {
-        socket.broadcast.emit('updateCameraRotation', data);
+    socket.on('changeControllerRotation', function (data) {
+        socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
     });
-    socket.on('changeCameraPosition', function (data) {
-        socket.broadcast.emit('updateCameraPosition', data);
+    socket.on('changeControllerPosition', function (data) {
+        socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
     });
     socket.on('fireFunction', function (data) {
         io.sockets.emit(data.functionName, data);
+        console.log(data.functionName + ' fired!');
     });
     socket.on('disconnect', function () {
         socket.broadcast.emit('clientDisconnected');
         console.log('disconnecting client...');
         console.log('-----------------------');
-        if (client.clientType === ClientType.Desktop) {
-            if (client.rejected === false) {
+        if (client.clientType == ClientType.Desktop) {
+            if (client.rejected == false) {
                 maxDesktopConnections++;
             }
         }
-        else if (client.clientType === ClientType.Headset) {
-            if (client.rejected === false) {
+        else if (client.clientType == ClientType.Headset) {
+            if (client.rejected == false) {
                 maxHeadsetConnections++;
             }
         }
