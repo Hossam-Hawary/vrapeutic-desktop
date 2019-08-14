@@ -29,10 +29,16 @@ export class PatientPage implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
     this.loadPatient();
-    this.events.subscribe('vr-module-ready', (options) => {
+    this.events.subscribe('offline-headset-ready', (options) => {
+      if (!options.ready) {
+        this.helperService.showError(options.err);
+      }
+    });
+
+    this.events.subscribe('desktop-module-ready', (options) => {
       this.helperService.removeLoading();
       if (!options.ready) {
-        this.helperService.showError('We couldn\'t launch this module, it might be not downloaded yet!');
+        this.helperService.showError(options.err);
       }
     });
   }

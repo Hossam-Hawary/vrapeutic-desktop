@@ -13,11 +13,13 @@ const MAIN_EVENTS = {
     run_module: 'run-module',
     switch_mode: 'switch-mode',
     mode_switched: 'mode-switched',
-    module_deady: 'vr-module-ready',
+    offline_headset_ready: 'offline-headset-ready',
+    desktop_module_deady: 'desktop-module-ready',
     device_connected: 'device-connected',
     device_disconnected: 'device-disconnected',
     unauthorized_device_connected: 'unauthorized-device-connected',
     authorized_devices: 'authorized-devices',
+    authorized_devices_changed: 'authorized-devices-changed',
 };
 
 let headsetDevice;
@@ -28,26 +30,21 @@ let win: BrowserWindow;
 
 ipcMain.on(MAIN_EVENTS.switch_mode, (event, newMode) => {
     onlineMode = newMode;
-    win.webContents.send(MAIN_EVENTS.mode_switched, onlineMode);
+    win.webContents.send(MAIN_EVENTS.mode_switched, { onlineMode, headsetDevice });
 });
 
 ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
     authorizedHeadsets = newAuthorizedHeadsets;
+    headsetDevice = null;
+    win.webContents.send(MAIN_EVENTS.authorized_devices_changed, authorizedHeadsets);
 });
 
 ipcMain.on(MAIN_EVENTS.run_module, (event, arg) => {
-    try {
         // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
         // const roomFilePath = path.join(modulePath, 'room.txt');
         const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
-        const roomFilePath = path.join(modulePath, `${arg.moduleName}_Data`, 'room.txt');
-        const serverIp = internalIp.v4.sync();
-        fs.writeFileSync(roomFilePath, `${arg.roomId}\n${serverIp}`, { flag: 'w+' });
-        prepareAndStartModule(roomFilePath, arg.moduleName, modulePath);
-    } catch (err) {
-        win.webContents.send(MAIN_EVENTS.error, err);
-        win.webContents.send(MAIN_EVENTS.module_deady, { opened: false, headsetDevice, moduleName: arg.moduleName, err});
-    }
+        prepareRunningMode(modulePath, arg);
+        startDesktopModule(arg.moduleName, modulePath);
 });
 
 app.on('ready', createWindow);
@@ -85,32 +82,57 @@ function createWindow() {
     trackDevices();
 }
 
-async function prepareAndStartModule(roomFilePath, moduleName, modulePath) {
+function prepareRunningMode(modulePath, options) {
+    if (onlineMode) {
+       return  prepareDesktopModuleInOnlineMode(modulePath, options);
+    }
+
+    prepareHeadsetOnOfflineMode(options.moduleName);
+}
+
+function prepareDesktopModuleInOnlineMode(modulePath, options) {
     try {
-        if (onlineMode) {
-            return startDesktopModule(moduleName, modulePath);
-        }
+        const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
+        fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });
+    } catch (err) {
+        win.webContents.send(MAIN_EVENTS.error, err);
+        win.webContents.send(MAIN_EVENTS.desktop_module_deady, {
+            ready: false, moduleName: options.moduleName,
+            err: 'Something went wrong while starting the Desktop module, Make sure you have the VR module on your Desktop device'
+        });
+    }
+}
+
+async function prepareHeadsetOnOfflineMode(moduleName) {
+    try {
 
         if (!headsetDevice) {
            return win.webContents.send(
-                MAIN_EVENTS.module_deady,
+               MAIN_EVENTS.offline_headset_ready,
                 { ready: false, headsetDevice, moduleName, err: 'No Authorized Headset connected!' }
             );
         }
-        const transfer = await client.push(headsetDevice.id, roomFilePath, '/sdcard/Download/room.txt');
+
+        const ipInfo = { ip: internalIp.v4.sync() };
+        const data = JSON.stringify(ipInfo, null, 4);
+        const ipFilePath = path.join(__dirname, 'ip.json');
+        fs.writeFileSync(ipFilePath, data);
+        const transfer = await client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json');
         transfer.once('end', () => {
-            startDesktopModule(moduleName, modulePath);
+            win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice, moduleName });
         });
 
     } catch (err) {
-        win.webContents.send(MAIN_EVENTS.module_deady, { ready: false, headsetDevice, err, moduleName});
+        win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice,
+            err: 'ADB Faliure: Something went wrong while pushing file to connected headset',
+            moduleName});
         win.webContents.send(MAIN_EVENTS.error, err);
     }
 }
 
 function startDesktopModule(moduleName, modulePath) {
     const opened = shell.openItem(path.join(modulePath, `${moduleName}.exe`));
-    win.webContents.send(MAIN_EVENTS.module_deady, { ready: opened, headsetDevice, moduleName });
+    win.webContents.send(MAIN_EVENTS.desktop_module_deady, { ready: opened, moduleName });
 }
 
 async function trackDevices() {
@@ -132,6 +154,8 @@ async function trackDevices() {
 }
 
 function authorizeHeadsetDevice(device) {
+    // TODO: Authorize headset first
+
     // if (!authorizedHeadsets.includes(device.id)) {
     //     return win.webContents.send(MAIN_EVENTS.unauthorized_device_connected, device);
     // }
