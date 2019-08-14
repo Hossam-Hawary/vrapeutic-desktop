@@ -154,11 +154,10 @@ async function trackDevices() {
 }
 
 function authorizeHeadsetDevice(device) {
-    // TODO: Authorize headset first
 
-    // if (!authorizedHeadsets.includes(device.id)) {
-    //     return win.webContents.send(MAIN_EVENTS.unauthorized_device_connected, device);
-    // }
+    if (!authorizedHeadsets.includes(device.id)) {
+        return win.webContents.send(MAIN_EVENTS.unauthorized_device_connected, device);
+    }
 
     headsetDevice = device;
     win.webContents.send(MAIN_EVENTS.device_connected, device);

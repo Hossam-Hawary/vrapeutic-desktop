@@ -25,10 +25,13 @@ export class MainEventsService {
   }
 
   listenOnMainEvents() {
+    if (!this.electronService.ipcRenderer) { return; }
+
     const mainEvents = [
       'mode-switched', 'device-connected', 'device-disconnected', 'authorized-devices-changed',
       'offline-headset-ready', 'desktop-module-ready', 'main-error', 'unauthorized-device-connected'
     ];
+
     mainEvents.forEach((evName) => {
       this.electronService.ipcRenderer.on(evName, (ev, options) => {
         console.log(evName, options);

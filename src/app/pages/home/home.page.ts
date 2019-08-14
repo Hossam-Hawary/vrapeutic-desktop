@@ -4,6 +4,7 @@ import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
 import { ModalController } from '@ionic/angular';
 import { AddPatientComponent } from './../add-patient/add-patient.component';
+import { MainEventsService } from '../../services/main-events/main-events.service';
 
 @Component({
   selector: 'app-home',
@@ -17,12 +18,15 @@ currentUser: any;
   channel;
   patients: any[];
   connected: boolean;
+  loading: boolean;
     constructor(
       private platform: Platform,
       public userService: UserService,
       private helperService: HelperService,
       private events: Events,
-      public modalController: ModalController
+      public modalController: ModalController,
+      private mainEventsService: MainEventsService,
+
     ) {
   }
 
@@ -37,14 +41,19 @@ currentUser: any;
 
   async loadPatients() {
     try {
+      this.loading = true;
       await this.helperService.showLoading();
       const result: any = await this.userService.getPatients();
       this.patients = result;
+      this.loading = false;
       setTimeout(() => {
         this.helperService.removeLoading();
       }, 500);
+      const headsets: any[] = await this.userService.getCenterHeadsets() as any[];
+      this.mainEventsService.sendEventAsync('authorized-devices', headsets.map((h) => h.serial));
     } catch (err) {
       console.log('loadPatients err', err);
+      this.loading = false;
       this.helperService.showError(err);
     }
   }

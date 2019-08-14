@@ -29,7 +29,7 @@
       </div>
     </ion-item>
   </ion-list>
-  <div class="empty-content" *ngIf="!patients?.length">
+  <div class="empty-content" *ngIf="!loading && !patients?.length ">
     <div class="illustration-wrapper">
       <ion-icon name="heart-empty"></ion-icon>
     </div>

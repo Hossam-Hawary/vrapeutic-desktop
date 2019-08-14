@@ -15,7 +15,9 @@ export class PatientPage implements OnInit {
   patient: any;
   modules: any[];
   headsets;
-  onlineMode = true;
+  headsetConnected;
+  headsetUnauthorizedConnected;
+  offlineMode = true;
   id: any;
   constructor(
     private route: ActivatedRoute,
@@ -33,13 +35,30 @@ export class PatientPage implements OnInit {
       if (!options.ready) {
         this.helperService.showError(options.err);
       }
+
+      this.helperService.showToast('The Connected Headset is ready now, You can run the VR module on it');
     });
 
     this.events.subscribe('desktop-module-ready', (options) => {
       this.helperService.removeLoading();
       if (!options.ready) {
-        this.helperService.showError(options.err);
+        return this.helperService.showError(options.err);
       }
+
+      this.helperService.showToast('The Desktop Module is ready now');
+    });
+
+    this.events.subscribe('device-connected', (device) => {
+      this.headsetConnected = device;
+      this.helperService.showToast('An Authorized device is connected now');
+    });
+    this.events.subscribe('device-disconnected', () => {
+      this.headsetConnected = null;
+      this.headsetUnauthorizedConnected = null;
+    });
+    this.events.subscribe('unauthorized-device-connected', (device) => {
+      this.headsetUnauthorizedConnected = device;
+      this.helperService.showToast('The Device you just connected is not authorized!');
     });
   }
 
@@ -72,18 +91,21 @@ export class PatientPage implements OnInit {
     }
   }
 
-  async editPatient() {
-    const modal = await this.modalController.create({
-      component: EditPatientComponent,
-      componentProps: { patient: this.patient },
-      animated: true,
-      backdropDismiss: true,
-      keyboardClose: true,
-      showBackdrop: true
-    });
-    await modal.present();
-    const { data } = await modal.onDidDismiss();
-    if (data.patient) { this.patient = data.patient; }
+  runModule(module) {
+    if (this.offlineMode) {
+      return  this.runModuleOffline(module);
+    }
+    this.selectHeadset(module);
+
+  }
+
+  async runModuleOffline(module) {
+    await this.helperService.showLoading();
+    this.mainEventsService.sendEventAsync('run-module',
+      {
+        moduleId: module.id,
+        moduleName: module.name,
+      });
   }
 
   async selectHeadset(module) {
@@ -113,7 +135,20 @@ export class PatientPage implements OnInit {
   }
 
   switchMode() {
-    this.mainEventsService.sendEventAsync('switch-mode', this.onlineMode);
+    this.mainEventsService.sendEventAsync('switch-mode', !this.offlineMode);
   }
 
+  async editPatient() {
+    const modal = await this.modalController.create({
+      component: EditPatientComponent,
+      componentProps: { patient: this.patient },
+      animated: true,
+      backdropDismiss: true,
+      keyboardClose: true,
+      showBackdrop: true
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data.patient) { this.patient = data.patient; }
+  }
 }

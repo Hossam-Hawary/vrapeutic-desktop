@@ -3,8 +3,12 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end" (click)="editPatient()">
+    <ion-buttons slot="end">
       <ion-button>
+        Offline Mode
+        <ion-toggle [(ngModel)]="offlineMode" (ionChange)="switchMode()" color="light"></ion-toggle>
+      </ion-button>
+      <ion-button  (click)="editPatient()">
         <ion-icon name="create"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -13,10 +17,32 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-item>
-    <ion-label>Online Mode</ion-label>
-    <ion-toggle [(ngModel)]="onlineMode" (ionChange)="switchMode()"></ion-toggle>
-  </ion-item>
+  <div *ngIf="offlineMode" class='running-mode'>
+    <ion-icon color="medium" name="airplane"></ion-icon>
+      Offline Mode Is Enabled
+  </div>
+  <div *ngIf="!offlineMode" class='running-mode'>
+    <ion-icon color="success" name="wifi"></ion-icon>
+    Online Mode Is Enabled
+  </div>
+
+  <div *ngIf="offlineMode" class="headset-status">
+    <div *ngIf="headsetConnected" >
+      <ion-icon color= "success" name="checkmark-circle-outline"></ion-icon>
+      Headset Is Connected
+    </div>
+  
+    <div *ngIf="!headsetConnected && !headsetUnauthorizedConnected" >
+      <ion-icon color= "danger" name="close-circle-outline"></ion-icon>
+      No Headset Is Connected
+    </div>
+  
+    <div *ngIf="headsetUnauthorizedConnected" >
+      <ion-icon color= "warning" name="alert"></ion-icon>
+      Unauthorized Headset Is Connected
+    </div>
+  </div>
+
   <ion-card>
     <ion-card-header>
       <ion-card-title color="primary">{{patient?.name}}</ion-card-title>
@@ -53,7 +79,8 @@
             <ion-grid>
               <ion-row>
                 <ion-col>
-                  <ion-button  expand="block" size="small"  color="primary" (click)="selectHeadset(module)">
+                  <ion-button  expand="block" size="small"  color="primary" (click)="runModule(module)"
+                  [disabled] = "offlineMode && !headsetConnected">
                     {{'PATIENT.START_MODULE' | translate}}
                   </ion-button>
                 </ion-col>
@@ -69,7 +96,7 @@
         </ion-col>
         <div class="empty-content" *ngIf="!modules?.length">
           <div class="illustration-wrapper">
-            <ion-icon name="videocam"></ion-icon>
+            <ion-icon name="folder-open"></ion-icon>
           </div>
           <div class="empty-text">Patient Has No Modules!</div>
         </div>

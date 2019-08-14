@@ -49,11 +49,13 @@ var MAIN_EVENTS = {
     run_module: 'run-module',
     switch_mode: 'switch-mode',
     mode_switched: 'mode-switched',
-    module_deady: 'vr-module-ready',
+    offline_headset_ready: 'offline-headset-ready',
+    desktop_module_deady: 'desktop-module-ready',
     device_connected: 'device-connected',
     device_disconnected: 'device-disconnected',
     unauthorized_device_connected: 'unauthorized-device-connected',
     authorized_devices: 'authorized-devices',
+    authorized_devices_changed: 'authorized-devices-changed',
 };
 var headsetDevice;
 var authorizedHeadsets = [];
@@ -61,25 +63,19 @@ var onlineMode = true;
 var win;
 electron_1.ipcMain.on(MAIN_EVENTS.switch_mode, function (event, newMode) {
     onlineMode = newMode;
-    win.webContents.send(MAIN_EVENTS.mode_switched, onlineMode);
+    win.webContents.send(MAIN_EVENTS.mode_switched, { onlineMode: onlineMode, headsetDevice: headsetDevice });
 });
 electron_1.ipcMain.on(MAIN_EVENTS.authorized_devices, function (event, newAuthorizedHeadsets) {
     authorizedHeadsets = newAuthorizedHeadsets;
+    headsetDevice = null;
+    win.webContents.send(MAIN_EVENTS.authorized_devices_changed, authorizedHeadsets);
 });
 electron_1.ipcMain.on(MAIN_EVENTS.run_module, function (event, arg) {
-    try {
-        // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
-        // const roomFilePath = path.join(modulePath, 'room.txt');
-        var modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
-        var roomFilePath = path.join(modulePath, arg.moduleName + "_Data", 'room.txt');
-        var serverIp = internalIp.v4.sync();
-        fs.writeFileSync(roomFilePath, arg.roomId + "\n" + serverIp, { flag: 'w+' });
-        prepareAndStartModule(roomFilePath, arg.moduleName, modulePath);
-    }
-    catch (err) {
-        win.webContents.send(MAIN_EVENTS.error, err);
-        win.webContents.send(MAIN_EVENTS.module_deady, { opened: false, headsetDevice: headsetDevice, moduleName: arg.moduleName, err: err });
-    }
+    // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
+    // const roomFilePath = path.join(modulePath, 'room.txt');
+    var modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
+    prepareRunningMode(modulePath, arg);
+    startDesktopModule(arg.moduleName, modulePath);
 });
 electron_1.app.on('ready', createWindow);
 electron_1.app.on('activate', function () {
@@ -107,29 +103,51 @@ function createWindow() {
     });
     trackDevices();
 }
-function prepareAndStartModule(roomFilePath, moduleName, modulePath) {
+function prepareRunningMode(modulePath, options) {
+    if (onlineMode) {
+        return prepareDesktopModuleInOnlineMode(modulePath, options);
+    }
+    prepareHeadsetOnOfflineMode(options.moduleName);
+}
+function prepareDesktopModuleInOnlineMode(modulePath, options) {
+    try {
+        var roomFilePath = path.join(modulePath, options.moduleName + "_Data", 'room.txt');
+        fs.writeFileSync(roomFilePath, "" + options.roomId, { flag: 'w+' });
+    }
+    catch (err) {
+        win.webContents.send(MAIN_EVENTS.error, err);
+        win.webContents.send(MAIN_EVENTS.desktop_module_deady, {
+            ready: false, moduleName: options.moduleName,
+            err: 'Something went wrong while starting the Desktop module, Make sure you have the VR module on your Desktop device'
+        });
+    }
+}
+function prepareHeadsetOnOfflineMode(moduleName) {
     return __awaiter(this, void 0, void 0, function () {
-        var transfer, err_1;
+        var ipInfo, data, ipFilePath, transfer, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    if (onlineMode) {
-                        return [2 /*return*/, startDesktopModule(moduleName, modulePath)];
-                    }
                     if (!headsetDevice) {
-                        return [2 /*return*/, win.webContents.send(MAIN_EVENTS.module_deady, { ready: false, headsetDevice: headsetDevice, moduleName: moduleName, err: 'No Authorized Headset connected!' })];
+                        return [2 /*return*/, win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice: headsetDevice, moduleName: moduleName, err: 'No Authorized Headset connected!' })];
                     }
-                    return [4 /*yield*/, client.push(headsetDevice.id, roomFilePath, '/sdcard/Download/room.txt')];
+                    ipInfo = { ip: internalIp.v4.sync() };
+                    data = JSON.stringify(ipInfo, null, 4);
+                    ipFilePath = path.join(__dirname, 'ip.json');
+                    fs.writeFileSync(ipFilePath, data);
+                    return [4 /*yield*/, client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json')];
                 case 1:
                     transfer = _a.sent();
                     transfer.once('end', function () {
-                        startDesktopModule(moduleName, modulePath);
+                        win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice: headsetDevice, moduleName: moduleName });
                     });
                     return [3 /*break*/, 3];
                 case 2:
                     err_1 = _a.sent();
-                    win.webContents.send(MAIN_EVENTS.module_deady, { ready: false, headsetDevice: headsetDevice, err: err_1, moduleName: moduleName });
+                    win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice: headsetDevice,
+                        err: 'ADB Faliure: Something went wrong while pushing file to connected headset',
+                        moduleName: moduleName });
                     win.webContents.send(MAIN_EVENTS.error, err_1);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
@@ -139,7 +157,7 @@ function prepareAndStartModule(roomFilePath, moduleName, modulePath) {
 }
 function startDesktopModule(moduleName, modulePath) {
     var opened = electron_2.shell.openItem(path.join(modulePath, moduleName + ".exe"));
-    win.webContents.send(MAIN_EVENTS.module_deady, { ready: opened, headsetDevice: headsetDevice, moduleName: moduleName });
+    win.webContents.send(MAIN_EVENTS.desktop_module_deady, { ready: opened, moduleName: moduleName });
 }
 function trackDevices() {
     return __awaiter(this, void 0, void 0, function () {
