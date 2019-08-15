@@ -15,8 +15,9 @@ export class PatientPage implements OnInit {
   patient: any;
   modules: any[];
   headsets;
-  headsetConnected;
-  headsetUnauthorizedConnected;
+  headsetStates = { none: 0, ready: 1, unauthorized: 2, not_ready: 3, preparing: 5 };
+  headsetConnectedState = this.headsetStates.none;
+  headsetsPrepared = [];
   offlineMode = true;
   id: any;
   constructor(
@@ -31,35 +32,8 @@ export class PatientPage implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
     this.loadPatient();
-    this.events.subscribe('offline-headset-ready', (options) => {
-      if (!options.ready) {
-        this.helperService.showError(options.err);
-      }
-
-      this.helperService.showToast('The Connected Headset is ready now, You can run the VR module on it');
-    });
-
-    this.events.subscribe('desktop-module-ready', (options) => {
-      this.helperService.removeLoading();
-      if (!options.ready) {
-        return this.helperService.showError(options.err);
-      }
-
-      this.helperService.showToast('The Desktop Module is ready now');
-    });
-
-    this.events.subscribe('device-connected', (device) => {
-      this.headsetConnected = device;
-      this.helperService.showToast('An Authorized device is connected now');
-    });
-    this.events.subscribe('device-disconnected', () => {
-      this.headsetConnected = null;
-      this.headsetUnauthorizedConnected = null;
-    });
-    this.events.subscribe('unauthorized-device-connected', (device) => {
-      this.headsetUnauthorizedConnected = device;
-      this.helperService.showToast('The Device you just connected is not authorized!');
-    });
+    this.setupHeadsetEvents();
+    this.setupRunningModulesEvents();
   }
 
   async loadPatient() {
@@ -134,8 +108,53 @@ export class PatientPage implements OnInit {
     );
   }
 
+  setupHeadsetEvents() {
+    this.events.subscribe('device-connected', (device) => {
+      this.headsetConnectedState = this.headsetStates.preparing;
+      this.preparingConnectedHeadset();
+    });
+
+    this.events.subscribe('device-disconnected', () => {
+      this.headsetConnectedState = this.headsetStates.none;
+    });
+
+    this.events.subscribe('unauthorized-device-connected', (device) => {
+      this.headsetConnectedState = this.headsetStates.unauthorized;
+      this.helperService.showToast('The Device you just connected is not authorized!');
+    });
+
+    this.events.subscribe('offline-headset-ready', (options) => {
+      if (!options.ready) {
+        if (options.headsetDevice) { this.headsetConnectedState = this.headsetStates.not_ready; }
+        return this.helperService.showError(options.err);
+      }
+
+      if (!this.headsetsPrepared.some((h) => h.id === options.headsetDevice.id )) {
+         this.headsetsPrepared.push(options.headsetDevice);
+      }
+      this.headsetConnectedState = this.headsetStates.ready;
+      this.helperService.showToast('The Connected Headset is ready now, you can unplug it safely');
+    });
+  }
+
+  setupRunningModulesEvents() {
+    this.events.subscribe('desktop-module-ready', (options) => {
+      this.helperService.removeLoading();
+      if (!options.ready) {
+        return this.helperService.showError(options.err);
+      }
+
+      this.helperService.showToast('The Desktop Module is ready now');
+    });
+  }
+
   switchMode() {
-    this.mainEventsService.sendEventAsync('switch-mode', !this.offlineMode);
+    this.mainEventsService.sendEventAsync('switch-mode', this.offlineMode);
+  }
+
+  preparingConnectedHeadset() {
+    this.helperService.showToast('An Authorized device is connected');
+    this.helperService.showLoading('We are preparing the headset..., please don\'t unplug it now');
   }
 
   async editPatient() {

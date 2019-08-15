@@ -59,11 +59,11 @@ var MAIN_EVENTS = {
 };
 var headsetDevice;
 var authorizedHeadsets = [];
-var onlineMode = true;
+var offlineMode = true;
 var win;
 electron_1.ipcMain.on(MAIN_EVENTS.switch_mode, function (event, newMode) {
-    onlineMode = newMode;
-    win.webContents.send(MAIN_EVENTS.mode_switched, { onlineMode: onlineMode, headsetDevice: headsetDevice });
+    offlineMode = newMode;
+    win.webContents.send(MAIN_EVENTS.mode_switched, { offlineMode: offlineMode, headsetDevice: headsetDevice });
 });
 electron_1.ipcMain.on(MAIN_EVENTS.authorized_devices, function (event, newAuthorizedHeadsets) {
     authorizedHeadsets = newAuthorizedHeadsets;
@@ -104,10 +104,10 @@ function createWindow() {
     trackDevices();
 }
 function prepareRunningMode(modulePath, options) {
-    if (onlineMode) {
-        return prepareDesktopModuleInOnlineMode(modulePath, options);
+    if (offlineMode) {
+        return;
     }
-    prepareHeadsetOnOfflineMode(options.moduleName);
+    prepareDesktopModuleInOnlineMode(modulePath, options);
 }
 function prepareDesktopModuleInOnlineMode(modulePath, options) {
     try {
@@ -122,46 +122,13 @@ function prepareDesktopModuleInOnlineMode(modulePath, options) {
         });
     }
 }
-function prepareHeadsetOnOfflineMode(moduleName) {
-    return __awaiter(this, void 0, void 0, function () {
-        var ipInfo, data, ipFilePath, transfer, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    if (!headsetDevice) {
-                        return [2 /*return*/, win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice: headsetDevice, moduleName: moduleName, err: 'No Authorized Headset connected!' })];
-                    }
-                    ipInfo = { ip: internalIp.v4.sync() };
-                    data = JSON.stringify(ipInfo, null, 4);
-                    ipFilePath = path.join(__dirname, 'ip.json');
-                    fs.writeFileSync(ipFilePath, data);
-                    return [4 /*yield*/, client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json')];
-                case 1:
-                    transfer = _a.sent();
-                    transfer.once('end', function () {
-                        win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice: headsetDevice, moduleName: moduleName });
-                    });
-                    return [3 /*break*/, 3];
-                case 2:
-                    err_1 = _a.sent();
-                    win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice: headsetDevice,
-                        err: 'ADB Faliure: Something went wrong while pushing file to connected headset',
-                        moduleName: moduleName });
-                    win.webContents.send(MAIN_EVENTS.error, err_1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
-}
 function startDesktopModule(moduleName, modulePath) {
     var opened = electron_2.shell.openItem(path.join(modulePath, moduleName + ".exe"));
     win.webContents.send(MAIN_EVENTS.desktop_module_deady, { ready: opened, moduleName: moduleName });
 }
 function trackDevices() {
     return __awaiter(this, void 0, void 0, function () {
-        var tracker, err_2;
+        var tracker, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -181,8 +148,8 @@ function trackDevices() {
                     });
                     return [3 /*break*/, 3];
                 case 2:
-                    err_2 = _a.sent();
-                    win.webContents.send(MAIN_EVENTS.error, err_2);
+                    err_1 = _a.sent();
+                    win.webContents.send(MAIN_EVENTS.error, err_1);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }
@@ -190,10 +157,47 @@ function trackDevices() {
     });
 }
 function authorizeHeadsetDevice(device) {
-    if (!authorizedHeadsets.includes(device.id)) {
-        return win.webContents.send(MAIN_EVENTS.unauthorized_device_connected, device);
-    }
+    // if (!authorizedHeadsets.includes(device.id)) {
+    //     return win.webContents.send(MAIN_EVENTS.unauthorized_device_connected, device);
+    // }
     headsetDevice = device;
     win.webContents.send(MAIN_EVENTS.device_connected, device);
+    setTimeout(function () {
+        prepareHeadsetOnOfflineMode();
+    }, 5000);
+}
+function prepareHeadsetOnOfflineMode() {
+    return __awaiter(this, void 0, void 0, function () {
+        var ipInfo, data, ipFilePath, transfer, err_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    if (!headsetDevice) {
+                        return [2 /*return*/, win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice: headsetDevice, err: 'No Authorized Headset connected!' })];
+                    }
+                    ipInfo = { ip: internalIp.v4.sync() };
+                    data = JSON.stringify(ipInfo, null, 4);
+                    ipFilePath = path.join(__dirname, 'ip.json');
+                    fs.writeFileSync(ipFilePath, data);
+                    return [4 /*yield*/, client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json')];
+                case 1:
+                    transfer = _a.sent();
+                    transfer.once('end', function () {
+                        win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice: headsetDevice });
+                    });
+                    return [3 /*break*/, 3];
+                case 2:
+                    err_2 = _a.sent();
+                    win.webContents.send(MAIN_EVENTS.offline_headset_ready, {
+                        ready: false, headsetDevice: headsetDevice,
+                        err: err_2.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
+                    });
+                    win.webContents.send(MAIN_EVENTS.error, err_2);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
 }
 //# sourceMappingURL=main.js.map

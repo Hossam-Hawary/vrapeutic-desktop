@@ -60,12 +60,13 @@ export class HelperService {
     return alert;
   }
 
-  async showLoading() {
+  async showLoading(message?) {
     if (this.loading) { return this.loading; }
 
     this.loading = await this.loadingController.create({
       translucent: true,
-      keyboardClose: true
+      keyboardClose: true,
+      message
     });
     await this.loading.present();
     return this.loading;

@@ -24,13 +24,13 @@ const MAIN_EVENTS = {
 
 let headsetDevice;
 let authorizedHeadsets = [];
-let onlineMode = true;
+let offlineMode = true;
 
 let win: BrowserWindow;
 
 ipcMain.on(MAIN_EVENTS.switch_mode, (event, newMode) => {
-    onlineMode = newMode;
-    win.webContents.send(MAIN_EVENTS.mode_switched, { onlineMode, headsetDevice });
+    offlineMode = newMode;
+    win.webContents.send(MAIN_EVENTS.mode_switched, { offlineMode, headsetDevice });
 });
 
 ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
@@ -83,11 +83,9 @@ function createWindow() {
 }
 
 function prepareRunningMode(modulePath, options) {
-    if (onlineMode) {
-       return  prepareDesktopModuleInOnlineMode(modulePath, options);
-    }
+    if (offlineMode) { return; }
 
-    prepareHeadsetOnOfflineMode(options.moduleName);
+    prepareDesktopModuleInOnlineMode(modulePath, options);
 }
 
 function prepareDesktopModuleInOnlineMode(modulePath, options) {
@@ -100,33 +98,6 @@ function prepareDesktopModuleInOnlineMode(modulePath, options) {
             ready: false, moduleName: options.moduleName,
             err: 'Something went wrong while starting the Desktop module, Make sure you have the VR module on your Desktop device'
         });
-    }
-}
-
-async function prepareHeadsetOnOfflineMode(moduleName) {
-    try {
-
-        if (!headsetDevice) {
-           return win.webContents.send(
-               MAIN_EVENTS.offline_headset_ready,
-                { ready: false, headsetDevice, moduleName, err: 'No Authorized Headset connected!' }
-            );
-        }
-
-        const ipInfo = { ip: internalIp.v4.sync() };
-        const data = JSON.stringify(ipInfo, null, 4);
-        const ipFilePath = path.join(__dirname, 'ip.json');
-        fs.writeFileSync(ipFilePath, data);
-        const transfer = await client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json');
-        transfer.once('end', () => {
-            win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice, moduleName });
-        });
-
-    } catch (err) {
-        win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice,
-            err: 'ADB Faliure: Something went wrong while pushing file to connected headset',
-            moduleName});
-        win.webContents.send(MAIN_EVENTS.error, err);
     }
 }
 
@@ -161,4 +132,36 @@ function authorizeHeadsetDevice(device) {
 
     headsetDevice = device;
     win.webContents.send(MAIN_EVENTS.device_connected, device);
+    setTimeout(() => {
+        prepareHeadsetOnOfflineMode();
+    }, 5000);
+
+}
+
+async function prepareHeadsetOnOfflineMode() {
+    try {
+
+        if (!headsetDevice) {
+            return win.webContents.send(
+                MAIN_EVENTS.offline_headset_ready,
+                { ready: false, headsetDevice, err: 'No Authorized Headset connected!' }
+            );
+        }
+
+        const ipInfo = { ip: internalIp.v4.sync() };
+        const data = JSON.stringify(ipInfo, null, 4);
+        const ipFilePath = path.join(__dirname, 'ip.json');
+        fs.writeFileSync(ipFilePath, data);
+        const transfer = await client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json');
+        transfer.once('end', () => {
+            win.webContents.send(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice });
+        });
+
+    } catch (err) {
+        win.webContents.send(MAIN_EVENTS.offline_headset_ready, {
+            ready: false, headsetDevice,
+            err: err.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
+        });
+        win.webContents.send(MAIN_EVENTS.error, err);
+    }
 }
