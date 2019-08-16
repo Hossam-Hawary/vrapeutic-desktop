@@ -3,8 +3,12 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end" (click)="editPatient()">
+    <ion-buttons slot="end">
       <ion-button>
+        Offline Mode
+        <ion-toggle [(ngModel)]="offlineMode" (ionChange)="switchMode()" color="light"></ion-toggle>
+      </ion-button>
+      <ion-button  (click)="editPatient()">
         <ion-icon name="create"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -13,6 +17,62 @@
 </ion-header>
 
 <ion-content padding>
+  <div *ngIf="offlineMode" class='running-mode'>
+    <ion-icon color="medium" name="airplane"></ion-icon>
+    <ion-text color="primary">
+      Offline Mode
+    </ion-text>
+  </div>
+  <div *ngIf="!offlineMode" class='running-mode'>
+    <ion-icon color="success" name="wifi"></ion-icon>
+    <ion-text color="primary">
+      Online Mode
+    </ion-text>
+  </div>
+
+  <div *ngIf="offlineMode" class="headset-status">
+    <div *ngIf="headsetConnectedState == headsetStates.ready" >
+      <ion-icon color= "primary" name="checkmark-circle-outline"></ion-icon>
+      <ion-text color="primary">
+        The connected headset is ready.
+      </ion-text>
+    </div>
+    
+    <div *ngIf="headsetConnectedState == headsetStates.preparing" >
+      <ion-spinner></ion-spinner>
+      <ion-text color="primary">
+        We are preparing the connected headset now, please wait...
+      </ion-text>
+    </div>
+    
+    <div *ngIf="headsetConnectedState == headsetStates.unauthorized" >
+      <ion-icon color= "warning" name="alert"></ion-icon>
+      <ion-text color="warning">
+        The connected headset is not authorized!
+      </ion-text>
+    </div>
+    <div *ngIf="headsetConnectedState == headsetStates.not_ready" >
+      <ion-icon color= "warning" name="alert"></ion-icon>
+      <ion-text color="warning">
+        The connected headset is not ready, you can try to re-plug it.
+      </ion-text>
+    </div>
+
+    <div *ngIf="headsetsPrepared.length">
+      <ion-icon color="success" name="checkmark-circle-outline"></ion-icon>
+      <ion-text color="success">
+        You have some ready headsets, you are save to run a module now.
+      </ion-text>
+    </div>
+
+    <div *ngIf="!headsetsPrepared.length && !(headsetConnectedState == headsetStates.preparing)">
+      <ion-icon color= "danger" name="close-circle-outline"></ion-icon>
+      <ion-text color="danger">
+        You have no any headsets ready yet, Plug one through the USB first.
+      </ion-text>
+    </div>
+  </div>
+
   <ion-card>
     <ion-card-header>
       <ion-card-title color="primary">{{patient?.name}}</ion-card-title>
@@ -49,7 +109,8 @@
             <ion-grid>
               <ion-row>
                 <ion-col>
-                  <ion-button  expand="block" size="small"  color="primary" (click)="selectHeadset(module)">
+                  <ion-button  expand="block" size="small"  color="primary" (click)="runModule(module)"
+                  [disabled] = "offlineMode && !headsetsPrepared.length">
                     {{'PATIENT.START_MODULE' | translate}}
                   </ion-button>
                 </ion-col>
@@ -65,7 +126,7 @@
         </ion-col>
         <div class="empty-content" *ngIf="!modules?.length">
           <div class="illustration-wrapper">
-            <ion-icon name="videocam"></ion-icon>
+            <ion-icon name="folder-open"></ion-icon>
           </div>
           <div class="empty-text">Patient Has No Modules!</div>
         </div>

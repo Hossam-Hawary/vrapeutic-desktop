@@ -6,6 +6,7 @@ import { HelperService } from './services/helper/helper.service';
 import { UserService } from './services/user/user.service';
 import { ConfigService } from './services/config/config.service';
 import { Router } from '@angular/router';
+import { MainEventsService } from './services/main-events/main-events.service';
 
 @Component({
   selector: 'app-root',
@@ -19,12 +20,14 @@ export class AppComponent {
     private translate: TranslateService,
     private helperService: HelperService,
     private userService: UserService,
+    private mainEventsService: MainEventsService,
     private router: Router,
     private events: Events,
     configService: ConfigService
   ) {
     this.initializeApp();
     this.trackcurrentUser();
+    this.mainEventsService.listenOnMainEvents();
     configService.getConfig().then((config: any) => {
       this.translate.use(config.lang);
       this.dir = config.dir;
