@@ -38,6 +38,7 @@
     "internal-ip": "^4.3.0",
     "ng2-charts": "^2.2.3",
     "ngx-electron": "^2.1.1",
+    "nice-try": "^2.0.0",
     "pusher-js": "^4.4.0",
     "rxjs": "~6.3.3",
     "shortid": "^2.2.14",
