@@ -134,8 +134,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         for (const [key, value] of this.zip(keys, values)) {
           if (key == chart.fieldNameY && value >= 0.0) {
             foundY = true;
-            console.log((value * 100.0).toFixed(2));
-            chart.dataY.push((value * 100.0).toFixed(2));
+            chart.dataY.push((value).toFixed(2));
           }
         }
 
@@ -214,7 +213,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
               mode: 'single',
               callbacks: {
                 label: function(tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) {
-                  let tooltipDataArr = ["score: " + tooltipItems.yLabel];
+                  let tooltipDataArr = ["score: " + tooltipItems.yLabel + "%"];
                   chartConfigs.tooltipFields.forEach((tooltipField: string, index: number) => {
                     let tooltip = chartConfigs.tooltipData[index][tooltipItems.index];
                     if (tooltip.length) {
