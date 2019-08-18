@@ -16,7 +16,7 @@ import {ChartsConfig} from './chartsConfig';
 export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() allData: any[];
-  @ViewChild('canvas') canvas: ElementRef;
+  @ViewChild('canvas', { static: true}) canvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
   fieldsNames: any[];
