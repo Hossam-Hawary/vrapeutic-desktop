@@ -116,6 +116,7 @@ export class PatientPage implements OnInit {
 
     this.events.subscribe('device-disconnected', () => {
       this.headsetConnectedState = this.headsetStates.none;
+      this.helperService.showToast('The device is disconnected.');
     });
 
     this.events.subscribe('unauthorized-device-connected', (device) => {

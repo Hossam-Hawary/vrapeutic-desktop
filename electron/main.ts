@@ -60,7 +60,8 @@ function createWindow() {
     // fullscreen: true
     win = new BrowserWindow(
         {
-            width: 800, height: 600,
+            width: 800, height: 700,
+            center: true,
             icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/png/64x64.png'),
             webPreferences: {
                 nodeIntegration: true

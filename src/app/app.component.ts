@@ -32,6 +32,7 @@ export class AppComponent {
       this.translate.use(config.lang);
       this.dir = config.dir;
     });
+    this.trackMainEventsErrors();
   }
 
   initializeApp() {
@@ -52,5 +53,11 @@ export class AppComponent {
       return this.router.navigate(['home']);
     }
     this.router.navigate(['']);
+  }
+
+  trackMainEventsErrors() {
+    this.events.subscribe('main-error', (err) => {
+      this.helperService.showError(JSON.stringify(err));
+    });
   }
 }
