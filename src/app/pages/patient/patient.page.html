@@ -65,14 +65,14 @@
         <div *ngIf="headsetsPrepared.length">
           <ion-icon color="success" name="checkmark-circle-outline"></ion-icon>
           <ion-text color="success">
-            You have some ready headsets, you are save to run a module now.
+            You have some ready headsets, you are safe to run any module now.
           </ion-text>
         </div>
         
         <div *ngIf="!headsetsPrepared.length && !(headsetConnectedState == headsetStates.preparing)">
           <ion-icon color="danger" name="close-circle-outline"></ion-icon>
           <ion-text color="danger">
-            You have no headsets ready yet, Plug the headset through the USB first.
+            You have no headsets ready yet, Plug your headset through the USB.
           </ion-text>
         </div>
       </div>
