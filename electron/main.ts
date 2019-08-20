@@ -40,11 +40,11 @@ ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
 });
 
 ipcMain.on(MAIN_EVENTS.run_module, (event, arg) => {
-        // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
-        // const roomFilePath = path.join(modulePath, 'room.txt');
-        const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
-        prepareRunningMode(modulePath, arg);
-        startDesktopModule(arg.moduleName, modulePath);
+    // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
+    // const roomFilePath = path.join(modulePath, 'room.txt');
+    const modulePath = path.join(__dirname, '/../../../modules', arg.moduleId.toString());
+    prepareRunningMode(modulePath, arg);
+    startDesktopModule(arg.moduleName, modulePath);
 });
 
 app.on('ready', createWindow);
@@ -84,12 +84,7 @@ function createWindow() {
 }
 
 function prepareRunningMode(modulePath, options) {
-    if (offlineMode) { return; }
-
-    prepareDesktopModuleInOnlineMode(modulePath, options);
-}
-
-function prepareDesktopModuleInOnlineMode(modulePath, options) {
+    // if (offlineMode) { return; }
     try {
         const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
         fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });

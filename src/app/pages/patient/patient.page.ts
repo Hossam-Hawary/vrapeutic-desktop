@@ -12,10 +12,10 @@ import { EditPatientComponent } from '../edit-patient/edit-patient.component';
   styleUrls: ['./patient.page.scss'],
 })
 export class PatientPage implements OnInit {
+  headsetStates = { none: 0, ready: 1, unauthorized: 2, not_ready: 3, preparing: 5 };
   patient: any;
   modules: any[];
   headsets;
-  headsetStates = { none: 0, ready: 1, unauthorized: 2, not_ready: 3, preparing: 5 };
   headsetConnectedState = this.headsetStates.none;
   headsetsPrepared = [];
   offlineMode = true;
@@ -74,12 +74,7 @@ export class PatientPage implements OnInit {
   }
 
   async runModuleOffline(module) {
-    await this.helperService.showLoading();
-    this.mainEventsService.sendEventAsync('run-module',
-      {
-        moduleId: module.id,
-        moduleName: module.name,
-      });
+    this.getNewSessionId(module, this.headsets.find((h) => h.serial === this.headsetsPrepared[0].id).id);
   }
 
   async selectHeadset(module) {
