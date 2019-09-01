@@ -125,7 +125,7 @@ io.on('connection', (socket) => {
             const moduleName = client.moduleName;
             let roomReady = true;
             for (const [_, value] of Object.entries(clients)) {
-                roomReady &= (value.moduleName === moduleName);
+                roomReady = roomReady && (value.moduleName === moduleName);
             }
 
             /* -----logging region----- */
