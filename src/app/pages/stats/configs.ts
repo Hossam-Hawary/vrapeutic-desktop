@@ -1,6 +1,6 @@
 
-export let configs = [
-    {
+export let configs = {
+    4: {
         moduleName: 'Maze Arabic',
         chartsConfigs: [
             {
@@ -65,5 +65,54 @@ export let configs = [
                               'string',
                               'string']
         }
+    },
+    7: {
+        moduleName: 'Archeeko',
+        chartsConfigs: [
+            {
+                id: '1',
+                chartType: 'bar',
+                fieldNameX: 'attempt_end_time',
+                fieldNameY: 'score',
+                tooltipFields: ['level', 'distance', 'attempt_type', 'total_arches_count', 'success_arches_count'],
+                dataX: [],
+                dataY: [],
+                tooltipData: [],
+                color: 'blue',
+                backgroundColor: 'white',
+                chartObject: null,
+                show: true,
+                legend: 'Archeeko - Score %'
+            }
+          ],
+        fieldsConfig: {
+            fieldsNames: [
+                'session_start_time',
+                'attempt_start_time',
+                'attempt_end_time',
+                'attempt_expected_time',
+                'expected_duration_in_seconds',
+                'actual_duration_in_seconds',
+                'level',
+                'attempt_type',
+                'total_arches_count',
+                'success_arches_count',
+                'score',
+                'distance',
+             ],
+            fieldsDataTypes: ['string',
+                'string',
+                'string',
+                'string',
+                'string',
+                'number',
+                'number',
+                'string',
+                'string',
+                'number',
+                'number',
+                'number',
+                'number']
+        }
     }
-];
+};

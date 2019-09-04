@@ -24,6 +24,6 @@
       <div class="empty-text">No Sessions Available</div>
     </div>
   <div>
-    <app-stats *ngIf="showStats" [allData]="sessionStatistics"></app-stats>
+    <app-stats *ngIf="showStats" [moduleId]= "moduleId" [allData]="sessionStatistics"></app-stats>
   </div>
 </ion-content>

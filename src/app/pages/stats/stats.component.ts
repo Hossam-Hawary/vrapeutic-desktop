@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output, OnDestroy} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output, OnDestroy } from '@angular/core';
 import { Chart } from 'chart.js';
 
-import {configs} from './configs';
-import {ChartsConfig} from './chartsConfig';
+import { configs } from './configs';
+import { ChartsConfig } from './chartsConfig';
 
 // Important link
 // https://codepen.io/jordanwillis/pen/xqrjGp
@@ -16,7 +16,8 @@ import {ChartsConfig} from './chartsConfig';
 export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() allData: any[];
-  @ViewChild('canvas', { static: true}) canvas: ElementRef;
+  @Input() moduleId: number;
+  @ViewChild('canvas', { static: true }) canvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
   fieldsNames: any[];
@@ -26,7 +27,6 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   chartsSettings: ChartsConfig[];
   charts: Chart[];
   curModuleName: string;
-  index = 0;
   tooltipMap: Map<string, Map<string, any[]>>;
 
   constructor() {
@@ -34,10 +34,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.zip = (a: any, b: any) => a.map((x: any, i: any) => [x, b[i]]);
-    this.initModule(this.index);
-
-    console.log('stats');
-    console.log(this.allData);
+    this.initModule(this.moduleId);
   }
 
   ngOnDestroy() {
@@ -56,10 +53,10 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.tooltipMap = new Map<string, Map<string, any[]>>();
     this.chartsSettings.forEach((chart: ChartsConfig) => {
-      let map: Map<string, any[]> = new Map<string, any[]>();
+      const map: Map<string, any[]> = new Map<string, any[]>();
       chart.tooltipFields.forEach((toolTipField: string) => {
         map.set(toolTipField, []);
-      })
+      });
       this.tooltipMap.set(chart.id, map);
     });
 
@@ -106,7 +103,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     data.forEach((datum: any) => {
       const actualDatatypes = Object.values(datum)
-                                    .map(val => typeof(val));
+        .map(val => typeof (val));
       const expectedDatatypes = Object.values(validationData);
 
       let valid = true;
@@ -124,29 +121,29 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   collectStatsData(chartsData: ChartsConfig[], data: any[]) {
     chartsData.forEach((chart: ChartsConfig) => {
-      let i: number = 1;
+      let i = 1;
       data.forEach((datum: any) => {
         const keys = Object.keys(datum);
         const values = Object.values(datum);
 
-        let foundY: boolean = false;
+        let foundY = false;
 
         for (const [key, value] of this.zip(keys, values)) {
-          if (key == chart.fieldNameY && value >= 0.0) {
+          if (key === chart.fieldNameY && value >= 0.0) {
             foundY = true;
             chart.dataY.push((value).toFixed(2));
           }
         }
 
         if (foundY) {
-          let tempTooltipData: any[] = []
+          const tempTooltipData: any[] = [];
           for (const [key, value] of this.zip(keys, values)) {
             if (key === chart.fieldNameX) {
-              chart.dataX.push("Game #" + (i++).toString());
-            } 
-            
+              chart.dataX.push('Game #' + (i++).toString());
+            }
+
             chart.tooltipFields.forEach((tooltipField: string) => {
-              if(key == tooltipField) {
+              if (key === tooltipField) {
                 this.tooltipMap.get(chart.id).get(tooltipField).push(value);
               }
             });
@@ -159,7 +156,6 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
       chart.tooltipFields.forEach((tooltipField: string) => {
         chart.tooltipData.push(this.tooltipMap.get(chart.id).get(tooltipField));
       });
-      console.log(chart.tooltipData);
     });
   }
 
@@ -168,72 +164,72 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     chartsData.forEach((chartConfigs: ChartsConfig) => {
       const chart = new Chart(chartConfigs.id, {
-          type: chartConfigs.chartType,
-          data: {
-            labels: chartConfigs.dataX,
-            datasets: [
-              {
-                label: chartConfigs.legend,
-                data: chartConfigs.dataY,
-                borderColor: chartConfigs.color,
-                backgroundColor: chartConfigs.color,
-                fill: false,
-                borderWidth: 0
-              }
-            ]
+        type: chartConfigs.chartType,
+        data: {
+          labels: chartConfigs.dataX,
+          datasets: [
+            {
+              label: chartConfigs.legend,
+              data: chartConfigs.dataY,
+              borderColor: chartConfigs.color,
+              backgroundColor: chartConfigs.color,
+              fill: false,
+              borderWidth: 0
+            }
+          ]
+        },
+        options: {
+          legend: {
+            display: true,
+            labels: {
+              fontColor: chartConfigs.color
+            }
           },
-          options: {
-            legend: {
+          scales: {
+            xAxes: [{
               display: true,
-              labels: {
-                fontColor: chartConfigs.color
+              barPercentage: 0.5,
+              barThickness: 40,
+              maxBarThickness: 50,
+              gridLines: {
+                offsetGridLines: true
+              }
+            }],
+            yAxes: [{
+              display: true,
+              ticks: {
+                suggestedMax: 100,
+                suggestedMin: 0,
+                beginAtZero: true
+              }
+            }],
+          },
+          tooltips: {
+            enabled: true,
+            mode: 'single',
+            callbacks: {
+              label(tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) {
+                const tooltipDataArr = ['score: ' + tooltipItems.yLabel + '%'];
+                chartConfigs.tooltipFields.forEach((tooltipField: string, index: number) => {
+                  const tooltip = chartConfigs.tooltipData[index][tooltipItems.index];
+                  if (tooltip.length) {
+                    tooltipDataArr.push(tooltipField + ': ' + tooltip);
+                  }
+                });
+                return tooltipDataArr;
               }
             },
-            scales: {
-              xAxes: [{
-                display: true,
-                barPercentage: 0.5,
-                barThickness: 40,
-                maxBarThickness: 50,
-                gridLines: {
-                  offsetGridLines: true
-                }
-              }],
-              yAxes: [{
-                display: true,
-                ticks: {
-                  suggestedMax: 100,
-                  suggestedMin: 0,
-                  beginAtZero: true
-                }
-              }],
-            },
-            tooltips: {
-              enabled: true,
-              mode: 'single',
-              callbacks: {
-                label: function(tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) {
-                  let tooltipDataArr = ["score: " + tooltipItems.yLabel + "%"];
-                  chartConfigs.tooltipFields.forEach((tooltipField: string, index: number) => {
-                    let tooltip = chartConfigs.tooltipData[index][tooltipItems.index];
-                    if (tooltip.length) {
-                      tooltipDataArr.push(tooltipField + ": " + tooltip);
-                    }
-                  });
-                  return tooltipDataArr;
-                }
-              },
-              titleFontSize: 15,
-              bodyFontSize: 15,
-              intersect: true
-            },
-            hover: {
-              mode: 'index',
-              intersect: true
-            },
-            responsive: true
-          }
-        });
+            titleFontSize: 15,
+            bodyFontSize: 15,
+            intersect: true
+          },
+          hover: {
+            mode: 'index',
+            intersect: true
+          },
+          responsive: true
+        }
+      });
 
       chartConfigs.chartObject = chart;
     });
