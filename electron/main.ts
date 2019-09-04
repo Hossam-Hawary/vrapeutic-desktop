@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
+import * as capcon from 'capture-console';
 const server = require('./server');
 const client = adb.createClient();
 
@@ -20,7 +21,15 @@ const MAIN_EVENTS = {
     unauthorized_device_connected: 'unauthorized-device-connected',
     authorized_devices: 'authorized-devices',
     authorized_devices_changed: 'authorized-devices-changed',
+    console_log: 'console-log'
 };
+
+// the first parameter here is the stream to capture, and the
+// second argument is the function receiving the output
+capcon.startCapture(process.stdout, (stdout) => {
+    win.webContents.send(MAIN_EVENTS.console_log, stdout);
+});
+// whatever is done here has stdout captured
 
 let headsetDevice;
 let authorizedHeadsets = [];
@@ -89,6 +98,7 @@ function prepareRunningMode(modulePath, options) {
         const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
         fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });
     } catch (err) {
+        console.log('Error...', 'prepareRunningMode', err);
         win.webContents.send(MAIN_EVENTS.error, err);
         win.webContents.send(MAIN_EVENTS.desktop_module_deady, {
             ready: false, moduleName: options.moduleName,
@@ -116,6 +126,7 @@ async function trackDevices() {
             console.log('Tracking stopped');
         });
     } catch (err) {
+        console.log('Error...', 'trackDevices', err);
         win.webContents.send(MAIN_EVENTS.error, err);
     }
 }
@@ -158,6 +169,7 @@ async function prepareHeadsetOnOfflineMode() {
             ready: false, headsetDevice,
             err: err.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
         });
+        console.log('Error...', 'prepareHeadsetOnOfflineMode', err);
         win.webContents.send(MAIN_EVENTS.error, err);
     }
 }
