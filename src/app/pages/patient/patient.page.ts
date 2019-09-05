@@ -16,6 +16,7 @@ export class PatientPage implements OnInit {
   modules: any[];
   headsets;
   offlineMode = true;
+  showConsole = false;
   id: any;
   constructor(
     private route: ActivatedRoute,
@@ -103,6 +104,11 @@ export class PatientPage implements OnInit {
 
   switchMode() {
     this.mainEventsService.sendEventAsync('switch-mode', this.offlineMode);
+  }
+
+  toggleConsole() {
+    this.showConsole = !this.showConsole;
+    this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
   }
 
   async editPatient() {

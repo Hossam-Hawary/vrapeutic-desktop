@@ -21,13 +21,14 @@ const MAIN_EVENTS = {
     unauthorized_device_connected: 'unauthorized-device-connected',
     authorized_devices: 'authorized-devices',
     authorized_devices_changed: 'authorized-devices-changed',
-    console_log: 'console-log'
+    console_log: 'console-log',
+    show_console_log: 'show-console-log'
 };
 
 // the first parameter here is the stream to capture, and the
 // second argument is the function receiving the output
 capcon.startCapture(process.stdout, (stdout) => {
-    win.webContents.send(MAIN_EVENTS.console_log, stdout);
+    consoleWin.webContents.send(MAIN_EVENTS.console_log, stdout);
 });
 // whatever is done here has stdout captured
 
@@ -36,6 +37,7 @@ let authorizedHeadsets = [];
 let offlineMode = true;
 
 let win: BrowserWindow;
+let consoleWin: BrowserWindow;
 
 ipcMain.on(MAIN_EVENTS.switch_mode, (event, newMode) => {
     offlineMode = newMode;
@@ -46,6 +48,10 @@ ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
     authorizedHeadsets = newAuthorizedHeadsets;
     headsetDevice = null;
     win.webContents.send(MAIN_EVENTS.authorized_devices_changed, authorizedHeadsets);
+});
+
+ipcMain.on(MAIN_EVENTS.show_console_log, (event, show) => {
+    show ? consoleWin.show() : consoleWin.hide();
 });
 
 ipcMain.on(MAIN_EVENTS.run_module, (event, arg) => {
@@ -88,7 +94,18 @@ function createWindow() {
     win.on('closed', () => {
         win = null;
     });
-
+    consoleWin = new BrowserWindow({
+        parent: win, width: 800, height: 600, show: false, closable: false,
+          webPreferences: {
+            nodeIntegration: true
+        } });
+    consoleWin.loadURL(
+        url.format({
+            pathname: path.join(__dirname, `/../../dist/vrapeutic-desktop/assets/views/console.html`),
+            protocol: 'file:',
+            slashes: true,
+        })
+    );
     trackDevices();
 }
 
@@ -149,6 +166,7 @@ async function prepareHeadsetOnOfflineMode() {
     try {
 
         if (!headsetDevice) {
+            console.log('Error: No Authorized Headset connected!');
             return win.webContents.send(
                 MAIN_EVENTS.offline_headset_ready,
                 { ready: false, headsetDevice, err: 'No Authorized Headset connected!' }
