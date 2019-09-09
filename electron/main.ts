@@ -6,7 +6,6 @@ import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
-const server = require('./server');
 const client = adb.createClient();
 
 const MAIN_EVENTS = {
@@ -31,6 +30,7 @@ capcon.startCapture(process.stdout, (stdout) => {
     consoleWin.webContents.send(MAIN_EVENTS.console_log, stdout);
 });
 // whatever is done here has stdout captured
+const server = require('./server');
 
 let headsetDevice;
 let authorizedHeadsets = [];

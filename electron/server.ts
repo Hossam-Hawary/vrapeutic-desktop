@@ -53,10 +53,10 @@ io.on('connection', (socket) => {
         if (client.clientType === ClientType.Desktop) {
             if (maxDesktopConnections > 0) {
                 maxDesktopConnections--;
-                console.log('client accepted!');
+                console.log('Desktop client accepted!');
             } else {
                 socket.emit('connectionRejected');
-                console.log('rejecting connection...');
+                console.log('Desktop rejecting connection...');
                 client.rejected = true;
             }
         }
@@ -64,10 +64,10 @@ io.on('connection', (socket) => {
         if (client.clientType === ClientType.Headset) {
             if (maxHeadsetConnections > 0) {
                 maxHeadsetConnections--;
-                console.log('client accepted!');
+                console.log('Headset client accepted!');
             } else {
                 socket.emit('connectionRejected');
-                console.log('rejecting connection...');
+                console.log('Headset rejecting connection...');
                 client.rejected = true;
             }
         }
@@ -76,17 +76,19 @@ io.on('connection', (socket) => {
 
         if (maxDesktopConnections === 0 && maxHeadsetConnections === 0) {
             io.sockets.emit('roomReady');
-            console.log('setting up room');
+            console.log('roomReady setting up room');
         }
 
         console.log('-----------------------');
     });
 
     socket.on('changeControllerRotation', (data) => {
+        console.log('Event:: changeControllerRotation');
         socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
     });
 
     socket.on('changeControllerPosition', (data) => {
+        console.log('Event:: changeControllerPosition');
         socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
     });
 
@@ -114,9 +116,9 @@ io.on('connection', (socket) => {
         console.log('maxHeadsetConnections', maxHeadsetConnections);
         console.log('-----------------------');
 
+        console.log(`${client.clientType} clients left:`);
         delete clients[clientId];
 
-        console.log('clients left:');
         console.log(clients);
         console.log('-----------------------');
     });
