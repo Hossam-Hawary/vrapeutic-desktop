@@ -120,5 +120,53 @@ export let configs = {
         'number'
       ]
     }
+  },
+  8: {
+    moduleName: 'GardenDo',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'bar',
+        fieldNameX: 'attempt_end_time',
+        fieldNameY: 'score',
+        tooltipFields: ['level', 'attempt_type', 'focused_time', 'estmation_time'],
+        dataX: [],
+        dataY: [],
+        tooltipData: [],
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'GardenDo - Score %'
+      }
+    ],
+    fieldsConfig: {
+      fieldsNames: [
+        'session_start_time',
+        'attempt_start_time',
+        'attempt_end_time',
+        'attempt_expected_time',
+        'expected_duration_in_seconds',
+        'actual_duration_in_seconds',
+        'level',
+        'attempt_type',
+        'focused_time',
+        'estmation_time',
+        'score'
+      ],
+      fieldsDataTypes: [
+        'string',
+        'string',
+        'string',
+        'string',
+        'number',
+        'number',
+        'string',
+        'string',
+        'number',
+        'number',
+        'number'
+      ]
+    }
   }
 };
