@@ -30,7 +30,6 @@ capcon.startCapture(process.stdout, (stdout) => {
     consoleWin.webContents.send(MAIN_EVENTS.console_log, stdout);
 });
 // whatever is done here has stdout captured
-const server = require('./server');
 
 let headsetDevice;
 let authorizedHeadsets = [];
@@ -106,6 +105,7 @@ function createWindow() {
             slashes: true,
         })
     );
+    const server = require('./server');
     trackDevices();
 }
 
