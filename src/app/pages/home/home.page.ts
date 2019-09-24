@@ -28,14 +28,14 @@ currentUser: any;
       private mainEventsService: MainEventsService,
 
     ) {
+      this.events.subscribe('userUpdate', (user) => {
+        this.currentUser = user;
+        if (user) { this.loadPatients(); } else { this.patients = []; }
+      });
   }
 
   ngOnInit() {
     this.currentUser = this.userService.getCurrentUser();
-    this.events.subscribe('userUpdate', (user) => {
-      this.currentUser = user;
-      if (user) { this.loadPatients(); } else {this.patients = []; }
-    });
     this.loadPatients();
   }
 
@@ -46,9 +46,7 @@ currentUser: any;
       const result: any = await this.userService.getPatients();
       this.patients = result;
       this.loading = false;
-      setTimeout(() => {
-        this.helperService.removeLoading();
-      }, 500);
+      await this.helperService.removeLoading();
       const headsets: any[] = await this.userService.getCenterHeadsets() as any[];
       this.mainEventsService.sendEventAsync('authorized-devices', headsets.map((h) => h.serial));
     } catch (err) {
@@ -70,5 +68,4 @@ currentUser: any;
     const { data } = await modal.onDidDismiss();
     if (data.patient) { this.patients.push(data.patient); }
   }
-
 }

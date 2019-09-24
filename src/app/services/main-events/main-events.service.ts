@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Events } from '@ionic/angular';
 import { HelperService } from '../helper/helper.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -24,10 +25,14 @@ export class MainEventsService {
   }
 
   sendEventAsync(eventName, options) {
+    if (!environment.production) { return; }
+
     return this.electronService.ipcRenderer.send(eventName, options);
   }
 
   sendEventSync(eventName, options) {
+    if (!environment.production) { return; }
+
     return this.electronService.ipcRenderer.sendSync(eventName, options);
   }
 

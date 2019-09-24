@@ -14,18 +14,18 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         TOKEN = '';
         return;
       }
-      TOKEN = user['token'] || '';
+      TOKEN = user.token || '';
     });
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const headers = new HttpHeaders({
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ' + TOKEN,
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + TOKEN,
     });
 
     const dupReq = req.clone({
-      headers: headers
+      headers
     });
 
     return next.handle(dupReq).pipe(

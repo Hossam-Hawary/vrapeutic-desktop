@@ -11,8 +11,10 @@ export class UserService {
   constructor(private api: ApiService,
               private events: Events) {
     const user = localStorage.getItem('user');
-    if (!user || environment.production) { return; }
+    // if (!user || environment.production) { return; }
+    if (!user) { return; }
 
+    // this.refreshUserData();
     this.updateAndSaveCarrentUser(JSON.parse(user));
   }
 
@@ -74,7 +76,7 @@ export class UserService {
   async updateAndSaveCarrentUser(user) {
     if (JSON.stringify(this.currentUser) === JSON.stringify(user)) { return; }
     this.updateCarrentUser(user);
-    if (environment.production) { return; }
+    // if (environment.production) { return; }
 
     localStorage.setItem('user', JSON.stringify(user));
   }
