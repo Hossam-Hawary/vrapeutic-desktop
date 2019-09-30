@@ -35,39 +35,20 @@ export let configs = {
       }
     ],
     fieldsConfig: {
-      fieldsNames: [
-        'character',
-        'collectibles',
-        'distractor',
-        'maze_path',
-        'environment',
-        'session_start_time',
-        'attempt_start_time',
-        'attempt_end_time',
-        'expected_duration_in_seconds',
-        'actual_duration_in_seconds',
-        'open_time_score',
-        'close_time_score',
-        'level',
-        'attempt_type'
-      ],
-      fieldsDataTypes: [
-        'string',
-        'string',
-        'string',
-        'string',
-        'string',
-        'string',
-        'string',
-        'string',
-        'string',
-        'number',
-        'number',
-        'number',
-        'number',
-        'string',
-        'string'
-      ]
+      character: 'string',
+      collectibles: 'string',
+      distractor: 'string',
+      maze_path: 'string',
+      environment: 'string',
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      open_time_score: 'number',
+      close_time_score: 'number',
+      level: 'string',
+      attempt_type: 'string'
     }
   },
   7: {
@@ -78,7 +59,8 @@ export let configs = {
         chartType: 'bar',
         fieldNameX: 'attempt_end_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'distance', 'attempt_type', 'total_arches_count', 'success_arches_count'],
+        tooltipFields: ['level', 'distance', 'attempt_type', 'total_arches_count',
+          'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
         dataX: [],
         dataY: [],
         tooltipData: [],
@@ -90,40 +72,21 @@ export let configs = {
       }
     ],
     fieldsConfig: {
-      fieldsNames: [
-        'session_start_time',
-        'attempt_start_time',
-        'attempt_end_time',
-        'expected_duration_in_seconds',
-        'actual_duration_in_seconds',
-        'level',
-        'attempt_type',
-        'total_arches_count',
-        'consumed_arches',
-        'remaining_count',
-        'success_arches_count',
-        'distance',
-        'total_prizes',
-        'remaining_prizes',
-        'score'
-      ],
-      fieldsDataTypes: [
-        'string',
-        'string',
-        'string',
-        'number',
-        'number',
-        'string',
-        'string',
-        'number',
-        'number',
-        'number',
-        'number',
-        'number',
-        'number',
-        'number',
-        'number'
-      ]
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      total_arches_count: 'number',
+      consumed_arches: 'number',
+      remaining_arches: 'number',
+      success_arches_count: 'number',
+      distance: 'number',
+      total_prizes: 'number',
+      remaining_prizes: 'number',
+      score: 'number'
     }
   },
   8: {
@@ -134,7 +97,8 @@ export let configs = {
         chartType: 'bar',
         fieldNameX: 'attempt_end_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'attempt_type', 'focused_time', 'estmation_time'],
+        tooltipFields: ['level', 'attempt_type', 'flower_sustained',
+          'well_sustained', 'total_sustained', 'non_sustained'],
         dataX: [],
         dataY: [],
         tooltipData: [],
@@ -146,34 +110,18 @@ export let configs = {
       }
     ],
     fieldsConfig: {
-      fieldsNames: [
-        'session_start_time',
-        'attempt_start_time',
-        'attempt_end_time',
-        'expected_duration_in_seconds',
-        'actual_duration_in_seconds',
-        'level',
-        'attempt_type',
-        'score',
-        'flower_sustained',
-        'well_sustained',
-        'total_sustained',
-        'non_sustained',
-      ],
-      fieldsDataTypes: [
-        'string',
-        'string',
-        'string',
-        'number',
-        'number',
-        'string',
-        'string',
-        'number',
-        'number',
-        'number',
-        'number',
-        'number'
-      ]
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      score: 'number',
+      flower_sustained: 'number',
+      well_sustained: 'number',
+      total_sustained: 'number',
+      non_sustained: 'number'
     }
   }
 };

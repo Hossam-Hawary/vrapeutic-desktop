@@ -24,12 +24,6 @@ const MAIN_EVENTS = {
   show_console_log: 'show-console-log'
 };
 
-// the first parameter here is the stream to capture, and the
-// second argument is the function receiving the output
-capcon.startCapture(process.stdout, (stdout) => {
-  consoleWin.webContents.send(MAIN_EVENTS.console_log, stdout);
-});
-// whatever is done here has stdout captured
 
 let headsetDevice;
 let authorizedHeadsets = [];
@@ -107,6 +101,12 @@ function createWindow() {
       slashes: true,
     })
   );
+  // the first parameter here is the stream to capture, and the
+  // second argument is the function receiving the output
+  capcon.startCapture(process.stdout, (stdout) => {
+    consoleWin.webContents.send(MAIN_EVENTS.console_log, stdout);
+  });
+// whatever is done here has stdout captured
   const server = require('./server');
   trackDevices();
 }
@@ -168,7 +168,6 @@ async function authorizeConnectedHeadsets() {
   const devices = await client.listDevices();
   devices.forEach(async device => {
     const fet = await client.getFeatures(device.id);
-    console.log(device, fet);
     authorizeHeadsetDevice(device);
   });
 

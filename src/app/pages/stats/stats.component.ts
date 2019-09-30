@@ -20,10 +20,10 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
-  fieldsNames: any[];
   validData: any[];
-  fieldsDataTypes: any[];
+  fieldsConfig: any;
   zip: any;
+  validateObject: any;
   chartsSettings: ChartsConfig[];
   charts: Chart[];
   curModuleName: string;
@@ -34,6 +34,13 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.zip = (a: any, b: any) => a.map((x: any, i: any) => [x, b[i]]);
+    this.validateObject = (standardObj: any, dataObj: any) => {
+      let valid = true;
+      Object.keys(standardObj).forEach(key => {
+        valid = valid && (standardObj[key] === typeof (dataObj[key]));
+      });
+      return valid;
+    };
     this.initModule(this.moduleId);
   }
 
@@ -45,11 +52,10 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  initModule(index: number) {
-    this.fieldsNames = configs[index].fieldsConfig.fieldsNames;
-    this.fieldsDataTypes = configs[index].fieldsConfig.fieldsDataTypes;
-    this.chartsSettings = configs[index].chartsConfigs;
-    this.curModuleName = configs[index].moduleName;
+  initModule(moduleId: number) {
+    this.fieldsConfig = configs[moduleId].fieldsConfig;
+    this.chartsSettings = configs[moduleId].chartsConfigs;
+    this.curModuleName = configs[moduleId].moduleName;
 
     this.tooltipMap = new Map<string, Map<string, any[]>>();
     this.chartsSettings.forEach((chart: ChartsConfig) => {
@@ -62,7 +68,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.charts = [];
 
-    this.validData = this.validateData(this.allData);
+    this.validData = this.validateAndFilterData(this.allData);
     this.collectStatsData(this.chartsSettings, this.validData);
   }
 
@@ -72,50 +78,13 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  validateData(data: any): any[] {
-    data = this.validateFieldName(data, this.fieldsNames);
-    data = this.validateDataType(data, this.fieldsDataTypes);
-    return data;
-  }
-
-  validateFieldName(data: any, validationData: any[]): any[] {
+  validateAndFilterData(allData) {
     const filteredData: any[] = [];
-
-    data.forEach((datum: any) => {
-      const actualKeys = Object.keys(datum);
-      const expectedKeys = Object.values(validationData);
-
-      let valid = true;
-      for (const [actual, expected] of this.zip(actualKeys, expectedKeys)) {
-        valid = valid && (actual === expected);
-      }
-
-      if (valid === true) {
-        filteredData.push(datum);
+    allData.forEach((dataObj: any) => {
+      if (this.validateObject(this.fieldsConfig, dataObj)) {
+        filteredData.push(dataObj);
       }
     });
-
-    return filteredData;
-  }
-
-  validateDataType(data: any[], validationData: any[]): any[] {
-    const filteredData: any[] = [];
-
-    data.forEach((datum: any) => {
-      const actualDatatypes = Object.values(datum)
-        .map(val => typeof (val));
-      const expectedDatatypes = Object.values(validationData);
-
-      let valid = true;
-      for (const [actual, expected] of this.zip(actualDatatypes, expectedDatatypes)) {
-        valid = valid && (actual === expected);
-      }
-
-      if (valid === true) {
-        filteredData.push(datum);
-      }
-    });
-
     return filteredData;
   }
 
@@ -154,7 +123,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         chart.dataX.pop();
       }
       chart.tooltipFields.forEach((tooltipField: string) => {
-        chart.tooltipData.push(this.tooltipMap.get(chart.id).get(tooltipField));
+        chart.tooltipData.push(this.tooltipMap.get(chart.id).get(tooltipField).toString());
       });
     });
   }
