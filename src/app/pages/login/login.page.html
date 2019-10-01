@@ -2,7 +2,7 @@
 <ion-content padding>
    <ion-img src="assets/imgs/logo.png"></ion-img>
    <h2><b>Virtual Worlds, Real Powers</b></h2>
-  <form [formGroup]="loginForm">
+  <form [formGroup]="loginForm" (keyup.enter)="save()">
     <ion-list>
       <ion-item>
         <ion-label position="stacked">{{'LOGIN.EMAIL' | translate }}</ion-label>
@@ -10,7 +10,7 @@
       </ion-item>
       <app-control-error-message [control]="loginForm['controls']['email']"></app-control-error-message>
 
-      <ion-item (keyup.enter)="save()">
+      <ion-item>
         <ion-label position="stacked">{{'LOGIN.PASSWORD' | translate }}</ion-label>
         <ion-input formControlName="password"  type="password"  ></ion-input>
       </ion-item>
