@@ -16,7 +16,7 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Open Time Task - Score %'
+        legend: 'Open Time Task - Score'
       },
       {
         id: '2',
@@ -31,7 +31,7 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Close Time Task - Score %'
+        legend: 'Close Time Task - Score'
       }
     ],
     fieldsConfig: {
@@ -59,7 +59,7 @@ export let configs = {
         chartType: 'bar',
         fieldNameX: 'attempt_end_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'distance', 'attempt_type', 'total_arches_count',
+        tooltipFields: ['level', 'distance', 'total_arches_count',
           'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
         dataX: [],
         dataY: [],
@@ -68,7 +68,7 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score %'
+        legend: 'Archeeko - Score'
       }
     ],
     fieldsConfig: {
@@ -97,7 +97,7 @@ export let configs = {
         chartType: 'bar',
         fieldNameX: 'attempt_end_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'attempt_type', 'flower_sustained',
+        tooltipFields: ['level', 'flower_sustained',
           'well_sustained', 'total_sustained', 'non_sustained'],
         dataX: [],
         dataY: [],
@@ -106,7 +106,7 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score %'
+        legend: 'GardenDo - Score'
       }
     ],
     fieldsConfig: {

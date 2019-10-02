@@ -108,12 +108,12 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
           const tempTooltipData: any[] = [];
           for (const [key, value] of this.zip(keys, values)) {
             if (key === chart.fieldNameX) {
-              chart.dataX.push('Game #' + (i++).toString());
+              chart.dataX.push('Attempt #' + (i++).toString());
             }
 
             chart.tooltipFields.forEach((tooltipField: string) => {
               if (key === tooltipField) {
-                this.tooltipMap.get(chart.id).get(tooltipField).push(value);
+                this.tooltipMap.get(chart.id).get(tooltipField).push(value.toString());
               }
             });
           }
@@ -123,7 +123,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         chart.dataX.pop();
       }
       chart.tooltipFields.forEach((tooltipField: string) => {
-        chart.tooltipData.push(this.tooltipMap.get(chart.id).get(tooltipField).toString());
+        chart.tooltipData.push(this.tooltipMap.get(chart.id).get(tooltipField));
       });
     });
   }
