@@ -123,5 +123,151 @@ export let configs = {
       total_sustained: 'number',
       non_sustained: 'number'
     }
+  },
+  9: {
+    moduleName: 'ArcheekoENG',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'bar',
+        fieldNameX: 'attempt_end_time',
+        fieldNameY: 'score',
+        tooltipFields: ['level', 'distance', 'total_arches_count',
+          'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
+        dataX: [],
+        dataY: [],
+        tooltipData: [],
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'Archeeko - Score'
+      }
+    ],
+    fieldsConfig: {
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      total_arches_count: 'number',
+      consumed_arches: 'number',
+      remaining_arches: 'number',
+      success_arches_count: 'number',
+      distance: 'number',
+      total_prizes: 'number',
+      remaining_prizes: 'number',
+      score: 'number'
+    }
+  },
+  10: {
+    moduleName: 'ArcheekoSU',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'bar',
+        fieldNameX: 'attempt_end_time',
+        fieldNameY: 'score',
+        tooltipFields: ['level', 'distance', 'total_arches_count',
+          'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
+        dataX: [],
+        dataY: [],
+        tooltipData: [],
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'Archeeko - Score'
+      }
+    ],
+    fieldsConfig: {
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      total_arches_count: 'number',
+      consumed_arches: 'number',
+      remaining_arches: 'number',
+      success_arches_count: 'number',
+      distance: 'number',
+      total_prizes: 'number',
+      remaining_prizes: 'number',
+      score: 'number'
+    }
+  },
+  11: {
+    moduleName: 'GardenDoENG',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'bar',
+        fieldNameX: 'attempt_end_time',
+        fieldNameY: 'score',
+        tooltipFields: ['level', 'flower_sustained',
+          'well_sustained', 'total_sustained', 'non_sustained'],
+        dataX: [],
+        dataY: [],
+        tooltipData: [],
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'GardenDo - Score'
+      }
+    ],
+    fieldsConfig: {
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      score: 'number',
+      flower_sustained: 'number',
+      well_sustained: 'number',
+      total_sustained: 'number',
+      non_sustained: 'number'
+    }
+  },
+  12: {
+    moduleName: 'GardenDoSU',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'bar',
+        fieldNameX: 'attempt_end_time',
+        fieldNameY: 'score',
+        tooltipFields: ['level', 'flower_sustained',
+          'well_sustained', 'total_sustained', 'non_sustained'],
+        dataX: [],
+        dataY: [],
+        tooltipData: [],
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'GardenDo - Score'
+      }
+    ],
+    fieldsConfig: {
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      score: 'number',
+      flower_sustained: 'number',
+      well_sustained: 'number',
+      total_sustained: 'number',
+      non_sustained: 'number'
+    }
   }
 };
