@@ -5,33 +5,37 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'open_time_score',
         tooltipFields: ['level', 'character', 'distractor', 'environment', 'maze_path'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY:  {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Open Time Task - Score'
+        legend: 'Open Time Task - Score',
+        canGroupBy: ['', 'level', 'character', 'distractor', 'environment', 'maze_path'],
+        groupBy: ''
       },
       {
         id: '2',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'close_time_score',
         tooltipFields: ['level', 'character', 'distractor', 'environment', 'maze_path'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'red',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Close Time Task - Score'
+        legend: 'Close Time Task - Score',
+        canGroupBy: ['', 'level', 'character', 'distractor', 'environment', 'maze_path'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {
@@ -56,19 +60,20 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'distance', 'total_arches_count',
-          'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
+        tooltipFields: ['level', 'distance'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score'
+        legend: 'Archeeko - Score',
+        canGroupBy: ['', 'level', 'distance'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {
@@ -94,19 +99,20 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'flower_sustained',
-          'well_sustained', 'total_sustained', 'non_sustained'],
+        tooltipFields: ['level'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score'
+        legend: 'GardenDo - Score',
+        canGroupBy: ['', 'level'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {
@@ -129,19 +135,20 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'distance', 'total_arches_count',
-          'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
+        tooltipFields: ['level', 'distance'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score'
+        legend: 'Archeeko - Score',
+        canGroupBy: ['', 'level', 'distance'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {
@@ -167,19 +174,20 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'distance', 'total_arches_count',
-          'success_arches_count', 'consumed_arches', 'remaining_arches', 'total_prizes', 'remaining_prizes'],
+        tooltipFields: ['level', 'distance'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score'
+        legend: 'Archeeko - Score',
+        canGroupBy: ['', 'level', 'distance'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {
@@ -205,19 +213,20 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'flower_sustained',
-          'well_sustained', 'total_sustained', 'non_sustained'],
+        tooltipFields: ['level'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score'
+        legend: 'GardenDo - Score',
+        canGroupBy: ['', 'level'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {
@@ -240,19 +249,20 @@ export let configs = {
     chartsConfigs: [
       {
         id: '1',
-        chartType: 'bar',
-        fieldNameX: 'attempt_end_time',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
         fieldNameY: 'score',
-        tooltipFields: ['level', 'flower_sustained',
-          'well_sustained', 'total_sustained', 'non_sustained'],
+        tooltipFields: ['level'],
         dataX: [],
-        dataY: [],
-        tooltipData: [],
+        dataY: {},
+        tooltipData: {},
         color: 'blue',
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score'
+        legend: 'GardenDo - Score',
+        canGroupBy: ['', 'level'],
+        groupBy: ''
       }
     ],
     fieldsConfig: {

@@ -1,7 +1,9 @@
 .sessions-list {
-    max-height: 40%;
     overflow: scroll;
     cursor: pointer;
+    width: 30%;
+    float: right;
+    max-height: 90%;
 }
 .selected {
     color: var(--ion-color-primary);

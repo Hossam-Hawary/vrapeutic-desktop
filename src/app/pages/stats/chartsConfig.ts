@@ -7,11 +7,13 @@ export class ChartsConfig {
     fieldNameY: string;
     tooltipFields: string[];
     dataX: any[];
-    dataY: any[];
-    tooltipData: any[];
+    dataY: any;
+    tooltipData: any;
     color: string;
     backgroundColor: string;
     chartObject: Chart;
     show: boolean;
     legend: string;
+    groupBy?: string;
+    canGroupBy?: string[];
 }
