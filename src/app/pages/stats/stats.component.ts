@@ -3,6 +3,7 @@ import { Chart, InteractionMode, ChartDataSets } from 'chart.js';
 
 import { configs } from './configs';
 import { ChartsConfig } from './chartsConfig';
+import { MatTableDataSource } from '@angular/material/table';
 
 // Important link
 // https://codepen.io/jordanwillis/pen/xqrjGp
@@ -21,6 +22,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   public context: CanvasRenderingContext2D;
 
   validData: any[];
+  sortedData: any[];
   fieldsConfig: any;
   validateObject: any;
   chartsSettings: ChartsConfig[];
@@ -62,6 +64,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.curModuleName = configs[moduleId].moduleName;
     this.charts = [];
     this.validData = this.validateAndFilterData(this.allData);
+    this.sortedData = this.validData.slice();
     this.displayedColumns = Object.keys(this.fieldsConfig);
     this.chartsSettings = configs[moduleId].chartsConfigs;
     this.selectedChart = this.chartsSettings[0].id;
@@ -223,4 +226,21 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 400);
   }
 
+  reSort(sort) {
+    const data = this.validData.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedData = data;
+      return;
+    }
+
+    const isAsc = sort.direction === 'asc';
+    this.sortedData = data.sort((a, b) => {
+      return this.compare(a[sort.active], b[sort.active], isAsc);
+    });
+  }
+
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
 }

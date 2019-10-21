@@ -27,10 +27,15 @@ ion-item {
 }
 
 .mat-table{
-    overflow: scroll;
+    /* overflow: scroll; */
     display: block;
 }
-
+.mat-header-cell {
+    padding: 3px 7px;
+}
+th {
+    background-color: var(--ion-color-secondary);
+}
 @media only screen and (max-width: 900px) {
     /* div.chart { 
         width: 700px;

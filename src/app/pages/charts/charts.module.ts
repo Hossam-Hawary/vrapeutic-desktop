@@ -9,7 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ChartsComponent } from './charts.component';
 import { ChartsModule } from 'ng2-charts';
 import { StatsComponent } from '../stats/stats.component';
-import { MatTableModule, MatSortModule } from '@angular/material';
+import { MatTableModule, MatSortModule, MatFormFieldModule } from '@angular/material';
 
 const routes: Routes = [
 
@@ -28,7 +28,8 @@ const routes: Routes = [
     TranslateModule.forChild(),
     ChartsModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    MatFormFieldModule
   ],
   declarations: [ChartsComponent, StatsComponent],
 })
