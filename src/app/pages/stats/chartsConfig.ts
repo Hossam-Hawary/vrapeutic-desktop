@@ -14,6 +14,7 @@ export class ChartsConfig {
     chartObject: Chart;
     show: boolean;
     legend: string;
-    groupBy?: string;
-    canGroupBy?: string[];
+    groupBy: string;
+    canGroupBy: string[];
+    canBeFieldY: string[];
 }

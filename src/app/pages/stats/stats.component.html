@@ -9,12 +9,23 @@
         </ion-select-option>
     </ion-select>
 </ion-item>
-<ion-item *ngIf="selectedChartConfigs" color='medium' size="small" slot="end">
+
+<ion-item *ngIf="selectedChartConfigs" color='secondary' size="small" slot="end">
+    <ion-label position="stacked"> Draw </ion-label>
+    <ion-select (ionChange)="rebuildChart()"
+     [(ngModel)]="selectedChartConfigs.fieldNameY" interface="popover">
+        <ion-select-option *ngFor="let fieldY of selectedChartConfigs?.canBeFieldY" [value]="fieldY">
+            {{ fieldY.split('_').join(' ') }}
+        </ion-select-option>
+    </ion-select>
+</ion-item>
+
+<ion-item *ngIf="selectedChartConfigs" color='secondary' size="small" slot="end">
     <ion-label position="stacked"> Divide By</ion-label>
     <ion-select (ionChange)="rebuildChart()"
      [(ngModel)]="selectedChartConfigs.groupBy" interface="popover">
         <ion-select-option *ngFor="let group of selectedChartConfigs?.canGroupBy" [value]="group">
-            {{group || 'None' }}
+            {{group.split('_').join(' ') || 'None' }}
         </ion-select-option>
     </ion-select>
 </ion-item>

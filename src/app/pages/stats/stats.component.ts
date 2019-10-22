@@ -21,62 +21,44 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
+  curModuleName: string;
+  fieldsConfig: any;
   validData: any[];
   sortedData: any[];
-  fieldsConfig: any;
-  validateObject: any;
   chartsSettings: ChartsConfig[];
-  charts: Chart[];
-  curModuleName: string;
-  colorsPool = ['gray', 'black', 'green', 'red', 'blue'];
-  selectedChart = '0';
+  selectedChart;
   selectedChartConfigs: ChartsConfig;
   displayedColumns: string[];
+  acceptableYFields: string[];
   emptyChart = false;
+  colorsPool = ['gray', 'black', 'green', 'red', 'blue'];
   constructor() {
   }
 
   ngOnInit() {
-    this.validateObject = (dataObj: any) => {
-      let valid = true;
-      Object.keys(this.fieldsConfig).forEach(key => {
-        valid = valid && (this.fieldsConfig[key] === typeof (dataObj[key]));
-      });
-      return valid;
-    };
     this.initModule(this.moduleId);
-    // setTimeout(() => {
-    //   this.colorsPool = ['gray', 'black', 'green', 'red', 'blue'];
-    //   this.buildCharts();
-    // }, 500);
   }
 
   ngOnDestroy() {
     this.chartsSettings.forEach((chart: ChartsConfig) => {
       chart.dataX = [];
-      chart.dataY = [];
-      chart.tooltipData = [];
+      chart.dataY = {};
+      chart.tooltipData = {};
     });
   }
 
   initModule(moduleId: number) {
     this.fieldsConfig = configs[moduleId].fieldsConfig;
     this.curModuleName = configs[moduleId].moduleName;
-    this.charts = [];
     this.validData = this.validateAndFilterData(this.allData);
     this.sortedData = this.validData.slice();
     this.displayedColumns = Object.keys(this.fieldsConfig);
     this.chartsSettings = configs[moduleId].chartsConfigs;
     this.selectedChart = this.chartsSettings[0].id;
     this.rebuildChart();
-    // this.collectStatsData();
   }
 
-  ngAfterViewInit(): void {
-    // if (this.validData.length) {
-    //   this.buildCharts();
-    // }
-  }
+  ngAfterViewInit(): void {}
 
   validateAndFilterData(allData) {
     const filteredData: any[] = [];
@@ -86,6 +68,14 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     return filteredData;
+  }
+
+  validateObject = (dataObj: any) => {
+    let valid = true;
+    Object.keys(this.fieldsConfig).forEach(key => {
+      valid = valid && (this.fieldsConfig[key] === typeof (dataObj[key]));
+    });
+    return valid;
   }
 
   collectStatsData() {
@@ -106,11 +96,6 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
 
-      // while (chart.dataX.length > chart.dataY.length) {
-      //   chart.dataX.pop();
-      // }
-
-      // send the tooltip values to the chart
       chart.tooltipFields.forEach((tooltipField: string) => {
         chart.tooltipData = tooltipData;
       });
@@ -126,7 +111,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
       indexedTooltipData.push(this.selectedChartConfigs.tooltipData[entry[0]]);
       const color = this.colorsPool.pop();
       return {
-        label: `${this.selectedChartConfigs.groupBy || ''} ${entry[0]}`,
+        label: `${this.selectedChartConfigs.groupBy.split('_').join(' ') || ''} ${entry[0].split('_').join(' ')}`,
         data: entry[1],
         fill: false,
         backgroundColor: color,
@@ -149,7 +134,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         title: {
           display: true,
-          text: `${this.curModuleName} (${this.selectedChartConfigs.fieldNameY})`,
+          text: `${this.selectedChartConfigs.legend} (${this.selectedChartConfigs.fieldNameY.split('_').join(' ') })`,
           fontSize: 18,
           fontColor: this.selectedChartConfigs.color
         },
@@ -166,11 +151,11 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
           displayColors: false,
           callbacks: {
             label: (tooltipItems: Chart.ChartTooltipItem, data: Chart.ChartData) => {
-              const tooltipDataArr = ['score: ' + tooltipItems.yLabel + '%'];
+              const tooltipDataArr = [`${this.selectedChartConfigs.fieldNameY.split('_').join(' ') }: ${tooltipItems.yLabel }`];
               this.selectedChartConfigs.tooltipFields.forEach((tooltipField: string, index: number) => {
                 const tooltip = this.selectedChartConfigs.tooltipData[tooltipItems.datasetIndex][tooltipField][tooltipItems.index];
                 if (tooltip.length) {
-                  tooltipDataArr.push(tooltipField + ': ' + tooltip);
+                  tooltipDataArr.push(tooltipField.split('_').join(' ')  + ': ' + tooltip);
                 }
               });
               return tooltipDataArr;
@@ -212,11 +197,12 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   rebuildChart() {
     if (!this.validData.length) { return this.emptyChart = true; }
+    this.emptyChart = false;
 
     this.chartsSettings.forEach((chart: ChartsConfig) => {
       chart.dataX = [];
       chart.dataY = {};
-      chart.tooltipData = [];
+      chart.tooltipData = {};
       if (chart.chartObject) { chart.chartObject.destroy(); }
     });
 

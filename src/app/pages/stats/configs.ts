@@ -16,8 +16,9 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Open Time Task - Score',
+        legend: 'Open Time Task',
         canGroupBy: ['', 'level', 'character', 'distractor', 'environment', 'maze_path'],
+        canBeFieldY: ['open_time_score', 'close_time_score', 'actual_duration_in_seconds'],
         groupBy: ''
       },
       {
@@ -33,8 +34,9 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Close Time Task - Score',
+        legend: 'Close Time Task',
         canGroupBy: ['', 'level', 'character', 'distractor', 'environment', 'maze_path'],
+        canBeFieldY: ['open_time_score', 'close_time_score', 'actual_duration_in_seconds'],
         groupBy: ''
       }
     ],
@@ -71,8 +73,10 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score',
+        legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
+        canBeFieldY: ['score', 'success_arches_count', 'consumed_arches', 'remaining_arches',
+          'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
         groupBy: ''
       }
     ],
@@ -110,8 +114,10 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score',
+        legend: 'GardenDo',
         canGroupBy: ['', 'level'],
+        canBeFieldY: ['score', 'flower_sustained', 'well_sustained', 'total_sustained',
+         'non_sustained', 'actual_duration_in_seconds'],
         groupBy: ''
       }
     ],
@@ -146,8 +152,10 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score',
+        legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
+        canBeFieldY: ['score', 'success_arches_count', 'consumed_arches', 'remaining_arches',
+          'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
         groupBy: ''
       }
     ],
@@ -185,8 +193,10 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'Archeeko - Score',
+        legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
+        canBeFieldY: ['score', 'success_arches_count', 'consumed_arches', 'remaining_arches',
+          'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
         groupBy: ''
       }
     ],
@@ -224,8 +234,10 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score',
+        legend: 'GardenDo',
         canGroupBy: ['', 'level'],
+        canBeFieldY: ['score', 'flower_sustained', 'well_sustained', 'total_sustained',
+          'non_sustained', 'actual_duration_in_seconds'],
         groupBy: ''
       }
     ],
@@ -260,8 +272,10 @@ export let configs = {
         backgroundColor: 'white',
         chartObject: null,
         show: true,
-        legend: 'GardenDo - Score',
+        legend: 'GardenDo',
         canGroupBy: ['', 'level'],
+        canBeFieldY: ['score', 'flower_sustained', 'well_sustained', 'total_sustained',
+          'non_sustained', 'actual_duration_in_seconds'],
         groupBy: ''
       }
     ],

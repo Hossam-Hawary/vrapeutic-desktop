@@ -18,10 +18,13 @@ div.chart {
 ion-segment {
     margin-bottom: 10px;
 }
+
 ion-item {
     display: inline-block;
     width: fit-content;
+    margin-right: 5px;
 }
+
 .mat-column-select {
   overflow: initial;
 }
@@ -30,12 +33,15 @@ ion-item {
     /* overflow: scroll; */
     display: block;
 }
+
 .mat-header-cell {
     padding: 3px 7px;
 }
+
 th {
     background-color: var(--ion-color-secondary);
 }
+
 @media only screen and (max-width: 900px) {
     /* div.chart { 
         width: 700px;
