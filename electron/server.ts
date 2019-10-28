@@ -125,7 +125,9 @@ io.on('connection', (socket) => {
 
             const moduleName = client.moduleName;
             let roomReady = true;
-            for (const [_, value] of Object.entries(clients.filter((c) => !c.rejected))) {
+            for (const [_, value] of Object.entries(clients)) {
+                if (value.rejected) { continue; }
+
                 roomReady = roomReady && (value.moduleName === moduleName);
             }
 
