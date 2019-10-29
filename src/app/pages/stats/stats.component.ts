@@ -4,6 +4,7 @@ import { Chart, InteractionMode, ChartDataSets } from 'chart.js';
 import { configs } from './configs';
 import { ChartsConfig } from './chartsConfig';
 import { MatTableDataSource } from '@angular/material/table';
+import * as XLSX from 'xlsx';
 
 // Important link
 // https://codepen.io/jordanwillis/pen/xqrjGp
@@ -18,6 +19,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() allData: any[];
   @Input() moduleId: number;
+  @Input() sessionName: string;
   @ViewChild('canvas', { static: true }) canvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
@@ -225,8 +227,27 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  export() {
+    const rowData = this.sortedData.map((data) => {
+      const row = [];
+      this.displayedColumns.forEach((field) => {
+        row.push(data[field]);
+      });
+      return row;
+    }
+    );
+    rowData.unshift(this.displayedColumns.map((f) => f.split('_').join(' ')));
+    console.log(rowData);
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rowData);
+    /* generate workbook and add the worksheet */
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    /* save to file */
+    XLSX.writeFile(wb, `${this.curModuleName}(${this.sessionName}).xlsx`);
   }
 }

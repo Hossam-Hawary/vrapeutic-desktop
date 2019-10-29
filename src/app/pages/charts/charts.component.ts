@@ -14,6 +14,7 @@ export class ChartsComponent implements OnInit {
   patientId;
   moduleId;
   selectedSessionId;
+  selectedSessionDate;
   sessions: any[] = [];
   sessionStatistics: any[] = [];
   allSessionsStatistics: any[] = [];
@@ -45,6 +46,7 @@ export class ChartsComponent implements OnInit {
 
   async getStatistics(sessionId) {
     this.selectedSessionId = sessionId;
+    this.selectedSessionDate = this.sessions.find((s) => s.id === sessionId).session_date;
     try {
       await this.helperService.showLoading();
       this.showStats = false;

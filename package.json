@@ -47,6 +47,7 @@
     "shortid": "^2.2.14",
     "socket.io": "^2.2.0",
     "tslib": "^1.9.0",
+    "xlsx": "^0.15.1",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
