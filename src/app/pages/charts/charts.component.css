@@ -1,10 +1,10 @@
 .sessions-list {
-    overflow: scroll;
-    cursor: pointer;
-    width: 30%;
-    float: right;
-    max-height: 90%;
+    float: left;
+    width: fit-content;
 }
-.selected {
-    color: var(--ion-color-primary);
+
+ion-item {
+    display: inline-block;
+    width: fit-content;
+    margin-right: 5px;
 }

@@ -13,8 +13,7 @@ import { StatsComponent } from '../stats/stats.component';
 export class ChartsComponent implements OnInit {
   patientId;
   moduleId;
-  selectedSessionId;
-  selectedSessionDate;
+  selectedSession: any;
   sessions: any[] = [];
   sessionStatistics: any[] = [];
   allSessionsStatistics: any[] = [];
@@ -38,19 +37,21 @@ export class ChartsComponent implements OnInit {
     try {
       await this.helperService.showLoading();
       this.sessions = await this.userService.getPatientModuleSessions(this.patientId, this.moduleId) as any[];
+      this.selectedSession = this.sessions[0];
+      await this.getStatistics();
       this.helperService.removeLoading();
     } catch (err) {
       this.helperService.showError(err);
     }
   }
 
-  async getStatistics(sessionId) {
-    this.selectedSessionId = sessionId;
-    this.selectedSessionDate = this.sessions.find((s) => s.id === sessionId).session_date;
+  async getStatistics() {
+    if (!this.selectedSession ) { return; }
+
     try {
       await this.helperService.showLoading();
       this.showStats = false;
-      this.sessionStatistics = await this.chartsService.loadSessionStatistics(sessionId) as any[];
+      this.sessionStatistics = await this.chartsService.loadSessionStatistics(this.selectedSession.id) as any[];
       this.helperService.removeLoading();
       this.showStats = true;
       // TODO: You can use session's statistics as you like

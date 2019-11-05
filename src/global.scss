@@ -14,10 +14,12 @@
     color: red;
 }
 .empty-content {
+  clear: both;
+
   .illustration-wrapper {
-    margin: 0px 10%;
+    margin-top: 10%;
     text-align: center;
-    font-size: 50px;
+    font-size: 150px;
   }
   
   .empty-title {
@@ -31,6 +33,7 @@
     font-size: 22px;
     margin-bottom: 20px;
     font-weight: 500;
+    color: var(--ion-color-medium)
   }
 
   .go-home-btn {
@@ -43,4 +46,7 @@
 }
 .sc-ion-alert-md-h {
   --min-width: 400px;
+}
+ion-item.item-radio-checked{
+    color: var(--ion-color-primary);
 }

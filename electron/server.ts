@@ -41,21 +41,21 @@ io.on('connection', (socket) => {
 
     /* -----logging region----- */
     console.log('registering client...');
+    socket.emit('register', { id: clientId });
     /* -----logging region----- */
 
-    socket.emit('register', { id: clientId });
 
     /* -----logging region----- */
     console.log('requesting module name...');
+    socket.emit('requestModuleName');
     /* -----logging region----- */
 
-    socket.emit('requestModuleName');
 
     /* -----logging region----- */
     console.log('requesting client type...');
+    socket.emit('requestClientType');
     /* -----logging region----- */
 
-    socket.emit('requestClientType');
 
     socket.on('updateClientType', (clientData) => {
 
@@ -156,19 +156,6 @@ io.on('connection', (socket) => {
         client.moduleName = clientData.moduleName;
     });
 
-    socket.on('changeControllerRotation', (data) => {
-        socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
-    });
-
-    socket.on('changeControllerPosition', (data) => {
-        socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
-    });
-
-    socket.on('fireFunction', (data) => {
-        io.sockets.emit(data.functionName, data);
-        console.log(data.functionName + ' fired!');
-    });
-
     socket.on('disconnect', () => {
         socket.broadcast.emit('clientDisconnected');
         console.log('disconnecting client...', clientId);
@@ -194,4 +181,18 @@ io.on('connection', (socket) => {
         console.log(clients);
         console.log('-----------------------');
     });
+
+    socket.on('fireFunction', (data) => {
+        io.sockets.emit(data.functionName, data);
+        console.log(data.functionName + ' fired!');
+    });
+
+    socket.on('changeControllerRotation', (data) => {
+        socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
+    });
+
+    socket.on('changeControllerPosition', (data) => {
+        socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
+    });
+    // broadcast: https://github.com/socketio/socket.io/blob/master/docs/API.md#flag-broadcast
 });
