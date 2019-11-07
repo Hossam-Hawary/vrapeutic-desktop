@@ -9,12 +9,16 @@ const { ipcRenderer } = require('electron');
 //     ipcRenderer.send('asynchronous-message', 'ping')
 // })
 
-ipcRenderer.on('console-log', (event, arg) => {
-    console.log(event, arg);
-    const message = `~> ${(new Date()).toLocaleTimeString()}:: ${arg}`
-    var node = document.createElement("h5");
-    var textnode = document.createTextNode(message); 
+ipcRenderer.on('console-log', (event, options) => {
+    var node = document.createElement("p");
+    node.style.color = options.color;
+    var spanNode = document.createElement("span");
+    var textNode = document.createTextNode(options.msg); 
+    var timeNode = document.createTextNode(`~> [${(new Date()).toLocaleTimeString()}] `); 
     var elmnt = document.getElementById('console-body');
-    node.appendChild(textnode);
+    spanNode.appendChild(timeNode);
+    node.appendChild(spanNode);
+    node.appendChild(textNode);
     elmnt.appendChild(node);
-    window.scrollTo(0, document.body.scrollHeight);});
+    window.scrollTo(0, document.body.scrollHeight);
+});

@@ -18,6 +18,8 @@ export class PatientPage implements OnInit {
   offlineMode = true;
   showConsole = false;
   id: any;
+  production: boolean;
+
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -25,7 +27,8 @@ export class PatientPage implements OnInit {
     public mainEventsService: MainEventsService,
     public modalController: ModalController,
     private events: Events
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');

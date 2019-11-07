@@ -26,12 +26,15 @@ export class MainEventsService {
 
   sendEventAsync(eventName, options) {
     if (!environment.production) { return; }
-
+    const log = `sendEventAsync: ${ eventName }, ${JSON.stringify(options)}`;
+    this.electronService.ipcRenderer.send('send-console-log', log);
     return this.electronService.ipcRenderer.send(eventName, options);
   }
 
   sendEventSync(eventName, options) {
     if (!environment.production) { return; }
+    const log = `sendEventAsync: ${eventName}, ${JSON.stringify(options)}`;
+    this.electronService.ipcRenderer.send('send-console-log', log);
 
     return this.electronService.ipcRenderer.sendSync(eventName, options);
   }
@@ -51,8 +54,10 @@ export class MainEventsService {
 
     mainEvents.forEach((evName) => {
       this.electronService.ipcRenderer.on(evName, (ev, options) => {
-        console.log(evName, options);
         this.events.publish(evName, options);
+
+        const log = `Received: ${evName}, ${ JSON.stringify(options)}`;
+        this.electronService.ipcRenderer.send('send-console-log', log);
       });
     });
   }

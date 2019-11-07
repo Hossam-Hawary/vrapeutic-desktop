@@ -6,6 +6,8 @@ import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
+const server = require('./server');
+
 const client = adb.createClient();
 
 const MAIN_EVENTS = {
@@ -21,9 +23,19 @@ const MAIN_EVENTS = {
   authorized_devices: 'authorized-devices',
   authorized_devices_changed: 'authorized-devices-changed',
   console_log: 'console-log',
-  show_console_log: 'show-console-log'
+  show_console_log: 'show-console-log',
+  send_console_log: 'send-console-log'
 };
 
+const colors = {
+  error: 'red',
+  info: 'turquoise',
+  debug: 'gold'
+};
+
+const logMsg = (msg, type = 'debug') => {
+  consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg, color: colors[type] });
+};
 
 let headsetDevice;
 let authorizedHeadsets = [];
@@ -48,6 +60,10 @@ ipcMain.on(MAIN_EVENTS.show_console_log, (event, show) => {
   show ? consoleWin.show() : consoleWin.hide();
 });
 
+ipcMain.on(MAIN_EVENTS.send_console_log, (event, msg) => {
+  logMsg(msg, 'info');
+});
+
 ipcMain.on(MAIN_EVENTS.run_module, (event, arg) => {
   // const modulePath = path.join(__dirname, '/../../dist/vrapeutic-desktop/assets');
   // const roomFilePath = path.join(modulePath, 'room.txt');
@@ -69,14 +85,15 @@ function createWindow() {
   // fullscreen: true
   win = new BrowserWindow(
     {
-      width: 800, height: 700,
+      width: 800, height: 700, show: false,
       center: true,
       icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/png/64x64.png'),
       webPreferences: {
         nodeIntegration: true
       }
     });
-
+  win.maximize();
+  win.show();
   win.loadURL(
     url.format({
       pathname: path.join(__dirname, `/../../dist/vrapeutic-desktop/index.html`),
@@ -103,11 +120,19 @@ function createWindow() {
   );
   // the first parameter here is the stream to capture, and the
   // second argument is the function receiving the output
-  capcon.startCapture(process.stdout, (stdout) => {
-    consoleWin.webContents.send(MAIN_EVENTS.console_log, stdout);
+  capcon.startCapture(process.stdout, (msg) => {
+    logMsg(msg, 'debug');
   });
-// whatever is done here has stdout captured
-  const server = require('./server');
+  capcon.startCapture(process.stdout, (msg) => {
+    logMsg(msg, 'debug');
+  });
+
+  capcon.startCapture(process.stderr, (msg) => {
+    logMsg(msg, 'error');
+  });
+  // whatever is done here has stdout captured
+
+  server.runLocalServer(logMsg);
   trackDevices();
 }
 
@@ -117,7 +142,8 @@ function prepareRunningMode(modulePath, options) {
     const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
     fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });
   } catch (err) {
-    console.log('Error...', 'prepareRunningMode', err);
+    const msg = 'Error...' + 'prepareRunningMode' +  JSON.stringify(err);
+    logMsg(msg, 'error');
     win.webContents.send(MAIN_EVENTS.error, err);
     win.webContents.send(MAIN_EVENTS.desktop_module_deady, {
       ready: false, moduleName: options.moduleName,
@@ -145,7 +171,9 @@ async function trackDevices() {
       console.log('Tracking stopped');
     });
   } catch (err) {
-    console.log('Error...', 'trackDevices', err);
+    const msg = 'Error...' + 'trackDevices' +  JSON.stringify(err);
+    logMsg(msg, 'error');
+
     win.webContents.send(MAIN_EVENTS.error, err);
   }
 }
@@ -177,7 +205,9 @@ async function prepareHeadsetOnOfflineMode() {
   try {
 
     if (!headsetDevice) {
-      console.log('Error: No Authorized Headset connected!');
+      const msg = 'Error: No Authorized Headset connected!';
+      logMsg(msg, 'error');
+
       return win.webContents.send(
         MAIN_EVENTS.offline_headset_ready,
         { ready: false, headsetDevice, err: 'No Authorized Headset connected!' }
@@ -198,7 +228,10 @@ async function prepareHeadsetOnOfflineMode() {
       ready: false, headsetDevice,
       err: err.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
     });
-    console.log('Error...', 'prepareHeadsetOnOfflineMode', err);
+
+    const msg = 'Error...' + 'prepareHeadsetOnOfflineMode' +  JSON.stringify(err);
+    logMsg(msg, 'error');
     win.webContents.send(MAIN_EVENTS.error, err);
   }
+
 }

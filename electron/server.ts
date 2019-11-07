@@ -12,11 +12,12 @@ const io = require('socket.io').listen(server, {
 });
 const PORT = 3000;
 
-server.listen(PORT, '0.0.0.0');
 
-console.log('Server started on port ' + PORT);
-
-let clients = [];
+// function logMsg(msg) {
+//     console.log(msg);
+// }
+// logMsg('Server started on port ' + PORT);
+let clients: object = {};
 let maxDesktopConnections = 1;
 let maxHeadsetConnections = 1;
 let ClientType = {
@@ -24,175 +25,182 @@ let ClientType = {
     Headset: 'Headset'
 };
 
-io.on('connection', (socket) => {
-    const clientId = shortid.generate();
-    const client = {
-        clientType: null,
-        rejected: true,
-        moduleName: null
-    };
-
-    /* -----logging region----- */
-    console.log('client connected');
-    console.log('-----------------------');
-    /* -----logging region----- */
-
-    clients[clientId] = client;
-
-    /* -----logging region----- */
-    console.log('registering client...');
-    socket.emit('register', { id: clientId });
-    /* -----logging region----- */
-
-
-    /* -----logging region----- */
-    console.log('requesting module name...');
-    socket.emit('requestModuleName');
-    /* -----logging region----- */
-
-
-    /* -----logging region----- */
-    console.log('requesting client type...');
-    socket.emit('requestClientType');
-    /* -----logging region----- */
-
-
-    socket.on('updateClientType', (clientData) => {
+exports.runLocalServer = (logMsg) => {
+    // this.logMsg = logFunction;
+    server.listen(PORT, '0.0.0.0');
+    io.on('connection', (socket) => {
+        const clientId = shortid.generate();
+        const client = {
+            clientType: null,
+            rejected: true,
+            moduleName: null
+        };
 
         /* -----logging region----- */
-        console.log('updating client type...');
-        console.log(`remaining desktop connections is: ${maxDesktopConnections}`);
-        console.log(`remaining headset connections is: ${maxHeadsetConnections}`);
+        logMsg('+++++++++++++++++++++');
+        logMsg('| client connected  |');
+        logMsg('+++++++++++++++++++++');
         /* -----logging region----- */
 
-        client.clientType = clientData.clientType;
+        clients[clientId] = client;
 
-        if (client.clientType !== ClientType.Desktop && client.clientType !== ClientType.Headset) {
+        /* -----logging region----- */
+        logMsg('registering client...');
+        socket.emit('register', { id: clientId });
+        /* -----logging region----- */
+
+
+        /* -----logging region----- */
+        logMsg('requesting module name...');
+        socket.emit('requestModuleName');
+        /* -----logging region----- */
+
+
+        /* -----logging region----- */
+        logMsg('requesting client type...');
+        socket.emit('requestClientType');
+        /* -----logging region----- */
+
+
+        socket.on('updateClientType', (clientData) => {
             /* -----logging region----- */
-            console.log('client is being rejected!...', client.clientType);
+            logMsg('------------------------------------------------->>');
+            logMsg('updating client type...');
+            logMsg(`remaining desktop connections is: ${maxDesktopConnections}`);
+            logMsg(`remaining headset connections is: ${maxHeadsetConnections}`);
             /* -----logging region----- */
 
-            client.rejected = true;
-            socket.disconnect();
-            return;
-        }
+            client.clientType = clientData.clientType;
 
-        if (client.clientType === ClientType.Desktop) {
-            if (maxDesktopConnections > 0) {
+            if (client.clientType !== ClientType.Desktop && client.clientType !== ClientType.Headset) {
                 /* -----logging region----- */
-                console.log('client Desktop accepted!');
-                /* -----logging region----- */
-                client.rejected = false;
-                maxDesktopConnections--;
-            } else {
-                /* -----logging region----- */
-                console.log('rejecting Desktop connection...', maxDesktopConnections);
+                logMsg(`>>>>> client is being rejected!... <<<< ${client.clientType}`);
                 /* -----logging region----- */
 
-                socket.emit('connectionRejected');
                 client.rejected = true;
-                // socket.disconnect();
-                // return;
+                socket.disconnect();
+                return;
             }
-        }
 
-        if (client.clientType === ClientType.Headset) {
-            if (maxHeadsetConnections > 0) {
-                /* -----logging region----- */
-                console.log('client Headset accepted!');
-                /* -----logging region----- */
-                client.rejected = false;
-
-                maxHeadsetConnections--;
-            } else {
-                /* -----logging region----- */
-                console.log(`rejecting Headset connection...${maxHeadsetConnections}`);
-                /* -----logging region----- */
-
-                socket.emit('connectionRejected');
-                client.rejected = true;
-                // socket.disconnect();
-                // return;
+            if (client.clientType === ClientType.Desktop) {
+                if (maxDesktopConnections > 0) {
+                    /* -----logging region----- */
+                    logMsg('>>>> client Desktop accepted! <<<< ');
+                    /* -----logging region----- */
+                    client.rejected = false;
+                    maxDesktopConnections--;
+                } else {
+                    /* -----logging region----- */
+                    logMsg(`>>>> rejecting Desktop connection... ${maxDesktopConnections}`);
+                    socket.emit('connectionRejected');
+                    client.rejected = true;
+                    // socket.disconnect();
+                    // return;
+                }
             }
-        }
 
-        /* -----logging region----- */
-        console.log(`remaining desktop connections is: ${maxDesktopConnections}`);
-        console.log(`remaining headset connections is: ${maxHeadsetConnections}`);
-        /* -----logging region----- */
+            if (client.clientType === ClientType.Headset) {
+                if (maxHeadsetConnections > 0) {
+                    /* -----logging region----- */
+                    logMsg('>>>> client Headset accepted! <<<<');
+                    /* -----logging region----- */
+                    client.rejected = false;
 
-        if (maxDesktopConnections === 0 && maxHeadsetConnections === 0) {
+                    maxHeadsetConnections--;
+                } else {
+                    /* -----logging region----- */
+                    logMsg(`>>>> rejecting Headset connection...${maxHeadsetConnections}`);
+                    /* -----logging region----- */
 
-            const moduleName = client.moduleName;
-            let roomReady = true;
-            for (const [_, value] of Object.entries(clients)) {
-                if (value.rejected) { continue; }
-
-                roomReady = roomReady && (value.moduleName === moduleName);
+                    socket.emit('connectionRejected');
+                    client.rejected = true;
+                    // socket.disconnect();
+                    // return;
+                }
             }
 
             /* -----logging region----- */
-            console.log('setting up room');
+            logMsg(`remaining desktop connections is: ${maxDesktopConnections}`);
+            logMsg(`remaining headset connections is: ${maxHeadsetConnections}`);
             /* -----logging region----- */
 
-            if (roomReady) {
-                console.log('devices are on same module');
-                io.sockets.emit('roomReady');
-            } else {
-                console.log('devices are on different modules');
+            if (maxDesktopConnections === 0 && maxHeadsetConnections === 0) {
+
+                const moduleName = client.moduleName;
+                let roomReady = true;
+                for (const [_, value] of Object.entries(clients)) {
+                    if (value.rejected) { continue; }
+
+                    roomReady = roomReady && (value.moduleName === moduleName);
+                }
+
+                /* -----logging region----- */
+                logMsg('setting up room');
+                /* -----logging region----- */
+
+                if (roomReady) {
+                    logMsg('devices are on same module');
+                    io.sockets.emit('roomReady');
+                } else {
+                    logMsg('devices are on different modules');
+                }
             }
-        }
 
-        /* -----logging region----- */
-        console.log(clients);
-        console.log('-----------------------');
-        /* -----logging region----- */
-    });
+            /* -----logging region----- */
+            logMsg(`Clients: ${JSON.stringify(clients)}`);
+            logMsg('<<--------------------------------');
+            /* -----logging region----- */
+        });
 
-    socket.on('updateModuleName', (clientData) => {
-        /* -----logging region----- */
-        console.log('updating module name...', clientData.moduleName);
-        /* -----logging region----- */
-        client.moduleName = clientData.moduleName;
-    });
+        socket.on('updateModuleName', (clientData) => {
+            logMsg('---------------------------------->>');
+            /* -----logging region----- */
+            logMsg(`updating module name...${clientData.moduleName}`);
+            /* -----logging region----- */
+            client.moduleName = clientData.moduleName;
+            logMsg('<<----------------------------------');
+        });
 
-    socket.on('disconnect', () => {
-        socket.broadcast.emit('clientDisconnected');
-        console.log('disconnecting client...', clientId);
-        console.log('-----------------------');
+        socket.on('disconnect', () => {
+            logMsg('--------------------------------------------->>');
+            logMsg(`| disconnecting client.....${clientId}`);
+            socket.broadcast.emit('clientDisconnected');
 
-        if (client.clientType === ClientType.Desktop) {
-            if (client.rejected === false) {
-                maxDesktopConnections++;
+            if (client.clientType === ClientType.Desktop) {
+                if (client.rejected === false) {
+                    maxDesktopConnections++;
+                }
+            } else if (client.clientType === ClientType.Headset) {
+                if (client.rejected === false) {
+                    maxHeadsetConnections++;
+                }
             }
-        } else if (client.clientType === ClientType.Headset) {
-            if (client.rejected === false) {
-                maxHeadsetConnections++;
-            }
-        }
 
-        console.log(`remaining desktop connections is: ${maxDesktopConnections}`);
-        console.log(`remaining headset connections is: ${maxHeadsetConnections}`);
-        console.log('-----------------------');
+            delete clients[clientId];
 
-        delete clients[clientId];
+            logMsg('------------------------------');
+            logMsg(`| clients left: ${clientId}`);
+            logMsg('------------------------------');
+            logMsg(`remaining desktop connections is: ${maxDesktopConnections}`);
+            logMsg(`remaining headset connections is: ${maxHeadsetConnections}`);
+            logMsg(`Clients: ${JSON.stringify(clients)}`);
+            logMsg('<<----------------------------------------');
+        });
 
-        console.log('clients left:', clientId);
-        console.log(clients);
-        console.log('-----------------------');
+        socket.on('fireFunction', (data) => {
+            io.sockets.emit(data.functionName, data);
+            logMsg(data.functionName + ' fired!');
+        });
+
+        socket.on('changeControllerRotation', (data) => {
+            socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
+        });
+
+        socket.on('changeControllerPosition', (data) => {
+            socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
+        });
+        // broadcast: https://github.com/socketio/socket.io/blob/master/docs/API.md#flag-broadcast
     });
+};
 
-    socket.on('fireFunction', (data) => {
-        io.sockets.emit(data.functionName, data);
-        console.log(data.functionName + ' fired!');
-    });
 
-    socket.on('changeControllerRotation', (data) => {
-        socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
-    });
-
-    socket.on('changeControllerPosition', (data) => {
-        socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
-    });
-    // broadcast: https://github.com/socketio/socket.io/blob/master/docs/API.md#flag-broadcast
-});

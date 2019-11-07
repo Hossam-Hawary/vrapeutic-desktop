@@ -241,7 +241,6 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     );
     rowData.unshift(this.displayedColumns.map((f) => f.split('_').join(' ')));
-    console.log(rowData);
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rowData);
     /* generate workbook and add the worksheet */
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
