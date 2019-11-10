@@ -293,5 +293,33 @@ export let configs = {
       total_sustained: 'number',
       non_sustained: 'number'
     }
+  },
+  13: {
+    moduleName: 'IllyTale',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'line',
+        fieldNameX: 'start_time',
+        fieldNameY: 'score',
+        tooltipFields: ['start_time'],
+        dataX: [],
+        dataY: {},
+        tooltipData: {},
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'IllyTale',
+        canGroupBy: [''],
+        canBeFieldY: [],
+        groupBy: ''
+      }
+    ],
+    fieldsConfig: {
+      start_time: 'string',
+      end_time: 'string',
+      score: 'number',
+    }
   }
 };
