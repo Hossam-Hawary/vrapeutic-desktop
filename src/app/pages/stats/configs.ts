@@ -319,7 +319,7 @@ export let configs = {
     fieldsConfig: {
       start_time: 'string',
       end_time: 'string',
-      score: 'number',
+      score: 'number'
     }
   }
 };

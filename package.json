@@ -1,8 +1,9 @@
 {
   "name": "vrapeutic-desktop",
-  "productName": "Vrapeutic",
-  "description": "Vrapeutic desktop app for managing modules",
+  "productName": "VRapeutic Desktop",
+  "description": "VRapeutic desktop app for managing modules",
   "version": "0.0.1",
+  "author": "Hossam Eldeen Hawary",
   "main": "electron/dist/main.js",
   "scripts": {
     "ng": "ng",
@@ -11,9 +12,36 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "release": "electron-builder",
     "electron": "ng build --prod --base-href ./ && tsc --p electron  && electron .",
     "package-linux": "electron-packager . Vrapeutic --overwrite --asar=true --platform=linux --arch=x64 --icon=1024x1024.png --prune=true --out=release-builds --extraResource=dist/vrapeutic-desktop/assets/modules/ --ignore=release-builds/",
-    "package-win": "electron-packager . Vrapeutic --overwrite --asar=false --platform=win32 --arch=ia32 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" "
+    "package-win": "electron-packager . Vrapeutic --overwrite --asar=false --platform=win32 --arch=x64 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" "
+  },
+  "repository": "https://github.com/Hossam-Hawary/vrapeutic-desktop",
+  "build": {
+    "appId": "com.myvrapeutic.vrapeutic-desktop",
+    "publish": "github",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "appImage": {
+      "license": "LICENSE"
+    },
+    "nsis": {
+      "createDesktopShortcut": "always",
+      "license": "LICENSE"
+    }
   },
   "private": true,
   "dependencies": {
@@ -62,6 +90,7 @@
     "@types/node": "^12.7.2",
     "codelyzer": "~4.5.0",
     "electron": "^6.0.2",
+    "electron-builder": "^22.1.0",
     "electron-packager": "^14.0.4",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
