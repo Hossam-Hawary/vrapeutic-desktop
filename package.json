@@ -4,6 +4,7 @@
   "description": "VRapeutic desktop app for managing modules",
   "version": "0.0.3",
   "author": "Hossam Eldeen Hawary",
+  "copyright": "All rights reserved © VRapeutic",
   "main": "electron/dist/main.js",
   "scripts": {
     "ng": "ng",
@@ -21,7 +22,12 @@
   "repository": "https://github.com/Hossam-Hawary/vrapeutic-desktop",
   "build": {
     "appId": "com.myvrapeutic.vrapeutic-desktop",
+    "productName": "VRapeutic Desktop",
+    "copyright": "All rights reserved © VRapeutic",
     "publish": "github",
+    "directories": {
+      "buildResources": "build"
+    },
     "dmg": {
       "contents": [
         {
