@@ -11,7 +11,7 @@
 node_modules
 /src/assets/modules
 /release-builds
-/electron/dist
+
 # profiling files
 chrome-profiler-events.json
 speed-measure-plugin.json
