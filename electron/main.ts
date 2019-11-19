@@ -6,8 +6,7 @@ import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
-import { autoUpdater } from 'electron-updater';
-
+const { autoUpdater } = require('electron-updater');
 const server = require('./server');
 
 const client = adb.createClient();

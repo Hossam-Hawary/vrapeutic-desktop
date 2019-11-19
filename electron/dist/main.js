@@ -43,7 +43,7 @@ var electron_2 = require("electron");
 var internalIp = require("internal-ip");
 var adb = require("adbkit");
 var capcon = require("capture-console");
-var electron_updater_1 = require("electron-updater");
+var autoUpdater = require('electron-updater').autoUpdater;
 var server = require('./server');
 var client = adb.createClient();
 var MAIN_EVENTS = {
@@ -105,7 +105,7 @@ electron_1.app.on('activate', function () {
         createWindow();
     }
 });
-electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
+autoUpdater.checkForUpdatesAndNotify();
 function createWindow() {
     // fullscreen: true
     win = new electron_1.BrowserWindow({
