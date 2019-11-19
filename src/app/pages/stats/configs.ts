@@ -116,8 +116,10 @@ export let configs = {
         show: true,
         legend: 'GardenDo',
         canGroupBy: ['', 'level'],
-        canBeFieldY: ['score', 'flower_sustained', 'well_sustained', 'total_sustained',
-         'non_sustained', 'actual_duration_in_seconds'],
+        canBeFieldY: ['score', 'impulsivity_score', 'response_time',
+          'omission_score', 'distractibility_score',
+          'well_sustained', 'total_sustained', 'flower_sustained',
+          'non_sustained', 'actual_duration_in_seconds'],
         groupBy: ''
       }
     ],
@@ -133,7 +135,11 @@ export let configs = {
       flower_sustained: 'number',
       well_sustained: 'number',
       total_sustained: 'number',
-      non_sustained: 'number'
+      non_sustained: 'number',
+      impulsivity_score: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   },
   9: {
@@ -236,7 +242,9 @@ export let configs = {
         show: true,
         legend: 'GardenDo',
         canGroupBy: ['', 'level'],
-        canBeFieldY: ['score', 'flower_sustained', 'well_sustained', 'total_sustained',
+        canBeFieldY: ['score', 'impulsivity_score', 'response_time',
+          'omission_score', 'distractibility_score',
+          'well_sustained', 'total_sustained', 'flower_sustained',
           'non_sustained', 'actual_duration_in_seconds'],
         groupBy: ''
       }
@@ -253,7 +261,11 @@ export let configs = {
       flower_sustained: 'number',
       well_sustained: 'number',
       total_sustained: 'number',
-      non_sustained: 'number'
+      non_sustained: 'number',
+      impulsivity_score: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   },
   12: {
@@ -274,7 +286,9 @@ export let configs = {
         show: true,
         legend: 'GardenDo',
         canGroupBy: ['', 'level'],
-        canBeFieldY: ['score', 'flower_sustained', 'well_sustained', 'total_sustained',
+        canBeFieldY: ['score', 'impulsivity_score', 'response_time',
+          'omission_score', 'distractibility_score',
+          'well_sustained', 'total_sustained', 'flower_sustained',
           'non_sustained', 'actual_duration_in_seconds'],
         groupBy: ''
       }
@@ -291,7 +305,11 @@ export let configs = {
       flower_sustained: 'number',
       well_sustained: 'number',
       total_sustained: 'number',
-      non_sustained: 'number'
+      non_sustained: 'number',
+      impulsivity_score: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   },
   13: {
