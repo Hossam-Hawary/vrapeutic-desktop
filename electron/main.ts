@@ -6,6 +6,8 @@ import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
+import { autoUpdater } from 'electron-updater';
+
 const server = require('./server');
 
 const client = adb.createClient();
@@ -79,7 +81,7 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
+autoUpdater.checkForUpdatesAndNotify();
 
 function createWindow() {
   // fullscreen: true
@@ -87,7 +89,7 @@ function createWindow() {
     {
       width: 800, height: 700, show: false,
       center: true,
-      icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/png/64x64.png'),
+      icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/win/icon.png.png'),
       webPreferences: {
         nodeIntegration: true
       }

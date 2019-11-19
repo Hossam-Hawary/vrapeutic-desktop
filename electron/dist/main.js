@@ -43,6 +43,7 @@ var electron_2 = require("electron");
 var internalIp = require("internal-ip");
 var adb = require("adbkit");
 var capcon = require("capture-console");
+var electron_updater_1 = require("electron-updater");
 var server = require('./server');
 var client = adb.createClient();
 var MAIN_EVENTS = {
@@ -104,12 +105,13 @@ electron_1.app.on('activate', function () {
         createWindow();
     }
 });
+electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
 function createWindow() {
     // fullscreen: true
     win = new electron_1.BrowserWindow({
         width: 800, height: 700, show: false,
         center: true,
-        icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/png/64x64.png'),
+        icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/win/icon.png.png'),
         webPreferences: {
             nodeIntegration: true
         }
