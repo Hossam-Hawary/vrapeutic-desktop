@@ -75,7 +75,9 @@ export let configs = {
         show: true,
         legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
-        canBeFieldY: ['score', 'success_arches_count', 'consumed_arches', 'remaining_arches',
+        canBeFieldY: ['score', 'impulsivity_score', 'impulsivity_score_with_aiming',
+          'response_time', 'omission_score', 'distractibility_score',
+          'success_arches_count', 'consumed_arches', 'remaining_arches',
           'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
         groupBy: ''
       }
@@ -95,7 +97,12 @@ export let configs = {
       distance: 'number',
       total_prizes: 'number',
       remaining_prizes: 'number',
-      score: 'number'
+      score: 'number',
+      impulsivity_score: 'number',
+      impulsivity_score_with_aiming: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   },
   8: {
@@ -160,7 +167,9 @@ export let configs = {
         show: true,
         legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
-        canBeFieldY: ['score', 'success_arches_count', 'consumed_arches', 'remaining_arches',
+        canBeFieldY: ['score', 'impulsivity_score', 'impulsivity_score_with_aiming',
+          'response_time', 'omission_score', 'distractibility_score',
+          'success_arches_count', 'consumed_arches', 'remaining_arches',
           'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
         groupBy: ''
       }
@@ -180,7 +189,12 @@ export let configs = {
       distance: 'number',
       total_prizes: 'number',
       remaining_prizes: 'number',
-      score: 'number'
+      score: 'number',
+      impulsivity_score: 'number',
+      impulsivity_score_with_aiming: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   },
   10: {
@@ -201,7 +215,9 @@ export let configs = {
         show: true,
         legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
-        canBeFieldY: ['score', 'success_arches_count', 'consumed_arches', 'remaining_arches',
+        canBeFieldY: ['score', 'impulsivity_score', 'impulsivity_score_with_aiming',
+          'response_time', 'omission_score', 'distractibility_score',
+          'success_arches_count', 'consumed_arches', 'remaining_arches',
           'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
         groupBy: ''
       }
@@ -221,7 +237,12 @@ export let configs = {
       distance: 'number',
       total_prizes: 'number',
       remaining_prizes: 'number',
-      score: 'number'
+      score: 'number',
+      impulsivity_score: 'number',
+      impulsivity_score_with_aiming: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   },
   11: {
