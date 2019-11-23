@@ -178,7 +178,6 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
           yAxes: [{
             display: true,
             ticks: {
-              suggestedMax: 100,
               suggestedMin: 0,
               beginAtZero: true
             }

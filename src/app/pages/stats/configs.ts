@@ -76,9 +76,7 @@ export let configs = {
         legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
         canBeFieldY: ['impulsivity_score', 'impulsivity_score_with_aiming',
-          'response_time', 'omission_score', 'distractibility_score',
-          'success_arches_count', 'consumed_arches', 'remaining_arches',
-          'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
+          'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
@@ -123,9 +121,7 @@ export let configs = {
         legend: 'GardenDo',
         canGroupBy: ['', 'level'],
         canBeFieldY: ['impulsivity_score', 'response_time',
-          'omission_score', 'distractibility_score',
-          'well_sustained', 'total_sustained', 'flower_sustained',
-          'non_sustained', 'actual_duration_in_seconds'],
+          'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
@@ -166,9 +162,7 @@ export let configs = {
         legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
         canBeFieldY: ['impulsivity_score', 'impulsivity_score_with_aiming',
-          'response_time', 'omission_score', 'distractibility_score',
-          'success_arches_count', 'consumed_arches', 'remaining_arches',
-          'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
+          'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
@@ -213,9 +207,7 @@ export let configs = {
         legend: 'Archeeko',
         canGroupBy: ['', 'level', 'distance'],
         canBeFieldY: ['impulsivity_score', 'impulsivity_score_with_aiming',
-          'response_time', 'omission_score', 'distractibility_score',
-          'success_arches_count', 'consumed_arches', 'remaining_arches',
-          'total_prizes', 'remaining_prizes', 'actual_duration_in_seconds', 'distance'],
+          'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
@@ -260,9 +252,7 @@ export let configs = {
         legend: 'GardenDo',
         canGroupBy: ['', 'level'],
         canBeFieldY: ['impulsivity_score', 'response_time',
-          'omission_score', 'distractibility_score',
-          'well_sustained', 'total_sustained', 'flower_sustained',
-          'non_sustained', 'actual_duration_in_seconds'],
+          'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
@@ -303,9 +293,7 @@ export let configs = {
         legend: 'GardenDo',
         canGroupBy: ['', 'level'],
         canBeFieldY: ['impulsivity_score', 'response_time',
-          'omission_score', 'distractibility_score',
-          'well_sustained', 'total_sustained', 'flower_sustained',
-          'non_sustained', 'actual_duration_in_seconds'],
+          'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
