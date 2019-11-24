@@ -14,23 +14,8 @@
 
 <ion-content padding>
   <ion-card>
-    <ion-card-header>
-      <div *ngIf="offlineMode" class='running-mode'>
-        <ion-icon color="medium" name="airplane"></ion-icon>
-        <ion-text color="primary">
-          Offline Mode
-        </ion-text>
-      </div>
-      <div *ngIf="!offlineMode" class='running-mode'>
-        <ion-icon color="success" name="wifi"></ion-icon>
-        <ion-text color="primary">
-          Online Mode
-        </ion-text>
-      </div>
-    </ion-card-header>
-  
     <ion-card-content>
-      <div *ngIf="offlineMode" class="headset-status">
+      <div class="headset-status">
         <div *ngIf="mainEventsService.headsetIsReady()">
           <ion-icon color="primary" name="checkmark-circle-outline"></ion-icon>
           <ion-text color="primary">
@@ -112,7 +97,7 @@
               <ion-row>
                 <ion-col>
                   <ion-button  expand="block" size="small"  color="primary" (click)="runModule(module)"
-                  [disabled] = "offlineMode && mainEventsService.noHeadsetsReady()">
+                  [disabled] = "mainEventsService.noHeadsetsReady()">
                     {{'PATIENT.START_MODULE' | translate}}
                   </ion-button>
                 </ion-col>
