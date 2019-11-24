@@ -4,10 +4,6 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button>
-        Offline Mode
-        <ion-toggle [(ngModel)]="offlineMode" (ionChange)="switchMode()" color="light"></ion-toggle>
-      </ion-button>
       <ion-button  (click)="editPatient()">
         <ion-icon name="create"></ion-icon>
       </ion-button>

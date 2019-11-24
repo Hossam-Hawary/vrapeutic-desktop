@@ -15,7 +15,6 @@ export class PatientPage implements OnInit {
   patient: any;
   modules: any[];
   headsets;
-  offlineMode = true;
   showConsole = false;
   id: any;
   production: boolean;
@@ -65,11 +64,8 @@ export class PatientPage implements OnInit {
   }
 
   runModule(module) {
-    if (this.offlineMode) {
-      return  this.runModuleOffline(module);
-    }
-    this.selectHeadset(module);
-
+    return  this.runModuleOffline(module);
+    // this.selectHeadset(module);
   }
 
   async runModuleOffline(module) {
@@ -79,35 +75,31 @@ export class PatientPage implements OnInit {
     );
   }
 
-  async selectHeadset(module) {
-    const inputs = [];
-    this.headsets.forEach(headset => {
-      inputs.push({
-        type: 'radio',
-        label: headset.name,
-        value: headset.id,
-        checked: this.headsets[0].id === headset.id
-      });
-    });
+  // async selectHeadset(module) {
+  //   const inputs = [];
+  //   this.headsets.forEach(headset => {
+  //     inputs.push({
+  //       type: 'radio',
+  //       label: headset.name,
+  //       value: headset.id,
+  //       checked: this.headsets[0].id === headset.id
+  //     });
+  //   });
 
-    this.helperService.showAlert('', 'Select Headset',
-      [
-        {
-          text: 'Cancel',
-        }, {
-          text: 'Start',
-          handler: (headset) => {
-            this.getNewSessionId(module, headset);
-          }
-        }
-      ],
-      true, inputs
-    );
-  }
-
-  switchMode() {
-    this.mainEventsService.sendEventAsync('switch-mode', this.offlineMode);
-  }
+  //   this.helperService.showAlert('', 'Select Headset',
+  //     [
+  //       {
+  //         text: 'Cancel',
+  //       }, {
+  //         text: 'Start',
+  //         handler: (headset) => {
+  //           this.getNewSessionId(module, headset);
+  //         }
+  //       }
+  //     ],
+  //     true, inputs
+  //   );
+  // }
 
   toggleConsole() {
     this.showConsole = !this.showConsole;

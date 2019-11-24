@@ -14,8 +14,6 @@ const client = adb.createClient();
 const MAIN_EVENTS = {
   error: 'main-error',
   run_module: 'run-module',
-  switch_mode: 'switch-mode',
-  mode_switched: 'mode-switched',
   offline_headset_ready: 'offline-headset-ready',
   desktop_module_deady: 'desktop-module-ready',
   device_connected: 'device-connected',
@@ -40,15 +38,10 @@ const logMsg = (msg, type = 'debug') => {
 
 let headsetDevice;
 let authorizedHeadsets = [];
-let offlineMode = true;
 
 let win: BrowserWindow;
 let consoleWin: BrowserWindow;
 
-ipcMain.on(MAIN_EVENTS.switch_mode, (event, newMode) => {
-  offlineMode = newMode;
-  win.webContents.send(MAIN_EVENTS.mode_switched, { offlineMode, headsetDevice });
-});
 
 ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
   authorizedHeadsets = newAuthorizedHeadsets;
@@ -80,7 +73,6 @@ app.on('activate', () => {
     createWindow();
   }
 });
-autoUpdater.checkForUpdatesAndNotify();
 
 function createWindow() {
   // fullscreen: true
@@ -135,10 +127,10 @@ function createWindow() {
 
   server.runLocalServer(logMsg);
   trackDevices();
+  autoUpdater.checkForUpdatesAndNotify();
 }
 
 function prepareRunningMode(modulePath, options) {
-  // if (offlineMode) { return; }
   try {
     const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
     fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });
