@@ -321,9 +321,9 @@ export let configs = {
       {
         id: '1',
         chartType: 'line',
-        fieldNameX: 'start_time',
-        fieldNameY: 'score',
-        tooltipFields: ['start_time'],
+        fieldNameX: 'attempt_start_time',
+        fieldNameY: 'impulsivity_score',
+        tooltipFields: ['level'],
         dataX: [],
         dataY: {},
         tooltipData: {},
@@ -333,14 +333,25 @@ export let configs = {
         show: true,
         legend: 'IllyTale',
         canGroupBy: [''],
-        canBeFieldY: [],
+        canBeFieldY: ['impulsivity_score', 'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
     ],
     fieldsConfig: {
-      start_time: 'string',
-      end_time: 'string',
-      score: 'number'
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      fairy_sustained: 'number',
+      total_sustained: 'number',
+      non_sustained: 'number',
+      impulsivity_score: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
     }
   }
 };
