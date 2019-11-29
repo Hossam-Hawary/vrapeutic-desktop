@@ -43,9 +43,9 @@ var electron_2 = require("electron");
 var internalIp = require("internal-ip");
 var adb = require("adbkit");
 var capcon = require("capture-console");
-var autoUpdater = require('electron-updater').autoUpdater;
 var server = require('./server');
 var client = adb.createClient();
+var serverURL = 'hazel-xi-seven.now.sh';
 var MAIN_EVENTS = {
     error: 'main-error',
     run_module: 'run-module',
@@ -144,7 +144,7 @@ function createWindow() {
     // whatever is done here has stdout captured
     server.runLocalServer(logMsg);
     trackDevices();
-    autoUpdater.checkForUpdatesAndNotify();
+    checkAutoUpdate();
 }
 function prepareRunningMode(modulePath, options) {
     try {
@@ -270,5 +270,16 @@ function prepareHeadsetOnOfflineMode() {
             }
         });
     });
+}
+function checkAutoUpdate() {
+    setTimeout(function () {
+        logMsg(serverURL, 'info');
+        logMsg(process.platform, 'info');
+        logMsg(electron_1.app.getVersion(), 'info');
+        var feed = serverURL + "/update/" + process.platform + "/" + electron_1.app.getVersion();
+        logMsg(feed, 'info');
+        electron_1.autoUpdater.setFeedURL(feed);
+        logMsg(electron_1.autoUpdater.setFeedURL(feed), 'info');
+    }, 10000);
 }
 //# sourceMappingURL=main.js.map

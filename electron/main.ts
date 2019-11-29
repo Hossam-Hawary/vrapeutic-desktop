@@ -229,7 +229,13 @@ async function prepareHeadsetOnOfflineMode() {
 }
 
 function checkAutoUpdate() {
-  const feed: any = `${serverURL}/update/${process.platform}/${app.getVersion()}`;
-  logMsg(feed, 'info');
-  autoUpdater.setFeedURL(feed);
+  setTimeout(() => {
+    logMsg(serverURL, 'info');
+    logMsg(process.platform, 'info');
+    logMsg(app.getVersion(), 'info');
+    const feed: any = `${serverURL}/update/${process.platform}/${app.getVersion()}`;
+    logMsg(feed, 'info');
+    autoUpdater.setFeedURL(feed);
+    logMsg(autoUpdater.setFeedURL(feed), 'info');
+  }, 10000);
 }
