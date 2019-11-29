@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, FeedURLOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
@@ -6,10 +6,11 @@ import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
-const { autoUpdater } = require('electron-updater');
+const { app, autoUpdater } = require('electron');
 const server = require('./server');
 
 const client = adb.createClient();
+const serverURL = 'hazel-xi-seven.now.sh';
 
 const MAIN_EVENTS = {
   error: 'main-error',
@@ -127,7 +128,7 @@ function createWindow() {
 
   server.runLocalServer(logMsg);
   trackDevices();
-  autoUpdater.checkForUpdatesAndNotify();
+  checkAutoUpdate();
 }
 
 function prepareRunningMode(modulePath, options) {
@@ -135,7 +136,7 @@ function prepareRunningMode(modulePath, options) {
     const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
     fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });
   } catch (err) {
-    const msg = 'Error...' + 'prepareRunningMode' +  JSON.stringify(err);
+    const msg = 'Error...' + 'prepareRunningMode' + JSON.stringify(err);
     logMsg(msg, 'error');
     win.webContents.send(MAIN_EVENTS.error, err);
     win.webContents.send(MAIN_EVENTS.desktop_module_deady, {
@@ -164,7 +165,7 @@ async function trackDevices() {
       console.log('Tracking stopped');
     });
   } catch (err) {
-    const msg = 'Error...' + 'trackDevices' +  JSON.stringify(err);
+    const msg = 'Error...' + 'trackDevices' + JSON.stringify(err);
     logMsg(msg, 'error');
 
     win.webContents.send(MAIN_EVENTS.error, err);
@@ -222,9 +223,13 @@ async function prepareHeadsetOnOfflineMode() {
       err: err.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
     });
 
-    const msg = 'Error...' + 'prepareHeadsetOnOfflineMode' +  JSON.stringify(err);
+    const msg = 'Error...' + 'prepareHeadsetOnOfflineMode' + JSON.stringify(err);
     logMsg(msg, 'error');
     win.webContents.send(MAIN_EVENTS.error, err);
   }
+}
 
+function checkAutoUpdate() {
+  const feed: any = `${serverURL}/update/${process.platform}/${app.getVersion()}`;
+  autoUpdater.setFeedURL(feed);
 }

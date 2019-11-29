@@ -49,8 +49,6 @@ var client = adb.createClient();
 var MAIN_EVENTS = {
     error: 'main-error',
     run_module: 'run-module',
-    switch_mode: 'switch-mode',
-    mode_switched: 'mode-switched',
     offline_headset_ready: 'offline-headset-ready',
     desktop_module_deady: 'desktop-module-ready',
     device_connected: 'device-connected',
@@ -73,13 +71,8 @@ var logMsg = function (msg, type) {
 };
 var headsetDevice;
 var authorizedHeadsets = [];
-var offlineMode = true;
 var win;
 var consoleWin;
-electron_1.ipcMain.on(MAIN_EVENTS.switch_mode, function (event, newMode) {
-    offlineMode = newMode;
-    win.webContents.send(MAIN_EVENTS.mode_switched, { offlineMode: offlineMode, headsetDevice: headsetDevice });
-});
 electron_1.ipcMain.on(MAIN_EVENTS.authorized_devices, function (event, newAuthorizedHeadsets) {
     authorizedHeadsets = newAuthorizedHeadsets;
     headsetDevice = null;
@@ -105,7 +98,6 @@ electron_1.app.on('activate', function () {
         createWindow();
     }
 });
-autoUpdater.checkForUpdatesAndNotify();
 function createWindow() {
     // fullscreen: true
     win = new electron_1.BrowserWindow({
@@ -152,9 +144,9 @@ function createWindow() {
     // whatever is done here has stdout captured
     server.runLocalServer(logMsg);
     trackDevices();
+    autoUpdater.checkForUpdatesAndNotify();
 }
 function prepareRunningMode(modulePath, options) {
-    // if (offlineMode) { return; }
     try {
         var roomFilePath = path.join(modulePath, options.moduleName + "_Data", 'room.txt');
         fs.writeFileSync(roomFilePath, "" + options.roomId, { flag: 'w+' });
