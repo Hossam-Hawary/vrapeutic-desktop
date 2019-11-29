@@ -9,7 +9,7 @@ import * as capcon from 'capture-console';
 const server = require('./server');
 
 const client = adb.createClient();
-const serverURL = 'hazel-xi-seven.now.sh';
+const serverURL = 'https://hazel-xi-seven.now.sh';
 
 const MAIN_EVENTS = {
   error: 'main-error',
