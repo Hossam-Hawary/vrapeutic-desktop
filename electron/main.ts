@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, autoUpdater } from 'electron';
+import { app, BrowserWindow, ipcMain, autoUpdater, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
@@ -127,7 +127,7 @@ function createWindow() {
 
   server.runLocalServer(logMsg);
   trackDevices();
-  checkAutoUpdate();
+  SetupAutoUpdate();
 }
 
 function prepareRunningMode(modulePath, options) {
@@ -228,7 +228,7 @@ async function prepareHeadsetOnOfflineMode() {
   }
 }
 
-function checkAutoUpdate() {
+function SetupAutoUpdate() {
   setTimeout(() => {
     logMsg(serverURL, 'info');
     logMsg(process.platform, 'info');
@@ -236,6 +236,45 @@ function checkAutoUpdate() {
     const feed: any = `${serverURL}/update/${process.platform}/${app.getVersion()}`;
     logMsg(feed, 'info');
     autoUpdater.setFeedURL(feed);
-    logMsg(autoUpdater.setFeedURL(feed), 'info');
-  }, 10000);
+    setInterval(() => {
+      autoUpdater.checkForUpdates();
+    }, 60000);
+    autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+      const dialogOpts = {
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+      };
+
+      dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 0) { autoUpdater.quitAndInstall(); }
+      });
+    });
+
+    autoUpdater.on('error', message => {
+      logMsg('There was a problem updating the application', 'error');
+      logMsg(message, 'error');
+    });
+
+    autoUpdater.on('checking-for-update', message => {
+      logMsg('checking for update has been started', 'info');
+      logMsg(message, 'info');
+    });
+
+    autoUpdater.on('update-available', message => {
+      logMsg('There is an available update. The update is downloaded automatically.', 'info');
+      logMsg(message, 'info');
+    });
+
+    autoUpdater.on('update-not-available', message => {
+      logMsg('There is no available update.', 'info');
+      logMsg(message, 'info');
+    });
+    autoUpdater.on('before-quit-for-update', message => {
+      logMsg('quit And Install', 'info');
+      logMsg(message, 'info');
+    });
+  }, 5000);
 }
