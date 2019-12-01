@@ -255,26 +255,26 @@ function SetupAutoUpdate() {
 
     autoUpdater.on('error', message => {
       logMsg('There was a problem updating the application', 'error');
-      logMsg(message, 'error');
+      logMsg(JSON.stringify(message), 'error');
     });
 
     autoUpdater.on('checking-for-update', message => {
       logMsg('checking for update has been started', 'info');
-      logMsg(message, 'info');
+      logMsg(JSON.stringify(message), 'info');
     });
 
     autoUpdater.on('update-available', message => {
       logMsg('There is an available update. The update is downloaded automatically.', 'info');
-      logMsg(message, 'info');
+      logMsg(JSON.stringify(message), 'info');
     });
 
     autoUpdater.on('update-not-available', message => {
       logMsg('There is no available update.', 'info');
-      logMsg(message, 'info');
+      logMsg(JSON.stringify(message), 'info');
     });
     autoUpdater.on('before-quit-for-update', message => {
       logMsg('quit And Install', 'info');
-      logMsg(message, 'info');
+      logMsg(JSON.stringify(message), 'info');
     });
   }, 5000);
 }
