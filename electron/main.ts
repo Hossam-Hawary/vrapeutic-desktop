@@ -233,7 +233,7 @@ function SetupAutoUpdate() {
     logMsg(serverURL, 'info');
     logMsg(process.platform, 'info');
     logMsg(app.getVersion(), 'info');
-    const feed: any = `${serverURL}/update/${process.platform}/${app.getVersion()}`;
+    const feed: any = `${serverURL}/update/${process.platform}/v${app.getVersion()}`;
     logMsg(feed, 'info');
     autoUpdater.setFeedURL(feed);
     setInterval(() => {
@@ -255,26 +255,31 @@ function SetupAutoUpdate() {
 
     autoUpdater.on('error', message => {
       logMsg('There was a problem updating the application', 'error');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'error');
     });
 
     autoUpdater.on('checking-for-update', message => {
       logMsg('checking for update has been started', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
 
     autoUpdater.on('update-available', message => {
       logMsg('There is an available update. The update is downloaded automatically.', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
 
     autoUpdater.on('update-not-available', message => {
       logMsg('There is no available update.', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
     autoUpdater.on('before-quit-for-update', message => {
       logMsg('quit And Install', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
-  }, 5000);
+  }, 10000);
 }
