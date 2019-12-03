@@ -2,9 +2,22 @@
   "name": "vrapeutic-desktop",
   "productName": "VRapeutic Desktop",
   "description": "VRapeutic desktop app for managing modules",
-  "version": "0.0.19",
-  "author": "Hossam Eldeen Hawary",
+  "version": "0.0.20",
+  "author": {
+    "name": "Hossam Eldeen Hawary",
+    "email": "hossameldeen.hawary@gmail.com",
+    "url": "https://github.com/Hossam-Hawary"
+  },
   "copyright": "All rights reserved © VRapeutic",
+  "license": "APACHE2",
+  "bugs": {
+    "url": "https://github.com/Hossam-Hawary/vrapeutic-desktop/issues"
+  },
+  "keywords": [
+    "appium"
+  ],
+  "assetsPath": "assets",
+  "homepage": "https://github.com/Hossam-Hawary/vrapeutic-desktop",
   "main": "electron/dist/main.js",
   "scripts": {
     "ng": "ng",
@@ -14,7 +27,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "release": "electron-builder",
-    "electron": "NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron  && electron .",
+    "electron": "cross-env NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron  && electron .",
     "build-electron": "NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron",
     "package-linux": "electron-packager . Vrapeutic --overwrite --asar=true --platform=linux --arch=x64 --icon=1024x1024.png --prune=true --out=release-builds --extraResource=dist/vrapeutic-desktop/assets/modules/ --ignore=release-builds/",
     "package-win": "electron-packager . Vrapeutic --overwrite --asar=false --platform=win32 --arch=x64 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" "
@@ -33,7 +46,7 @@
         "vPrefixedTagName": true
       }
     ],
-    "asar": false,
+    "asar": true,
     "directories": {
       "buildResources": "build",
       "output": "release-builds"
@@ -76,7 +89,6 @@
       "category": "Development"
     }
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^8.2.2",
     "@angular/cdk": "~8.2.3",
@@ -136,6 +148,9 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "~3.4.5"
+    "typescript": "~3.4.5",
+    "cross-env": "^6.0.0",
+    "electron-builder-lib": "^20.15.3",
+    "electron-devtools-installer": "^2.2.3"
   }
 }
