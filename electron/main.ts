@@ -1,5 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import { app, BrowserWindow, ipcMain, autoUpdater, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
@@ -10,7 +9,7 @@ import * as capcon from 'capture-console';
 const server = require('./server');
 
 const client = adb.createClient();
-const serverURL = 'https://hazel-xi-seven.now.sh';
+const baseFeedUrl = 'https://hazel-xi-seven.now.sh';
 
 const MAIN_EVENTS = {
   error: 'main-error',
@@ -231,12 +230,13 @@ async function prepareHeadsetOnOfflineMode() {
 
 function SetupAutoUpdate() {
   setTimeout(() => {
-    const feed: any = `${serverURL}/update/${process.platform}/${app.getVersion()}`;
+    let platform: string = process.platform;
+    if (platform.toLowerCase() === 'linux') {
+      platform = 'AppImage';
+    }
+    const feed: any = `${baseFeedUrl}/update/${platform}/${app.getVersion()}`;
     logMsg(feed, 'info');
     autoUpdater.setFeedURL(feed);
-    setInterval(() => {
-      autoUpdater.checkForUpdates();
-    }, 60000);
     autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
       const dialogOpts = {
         type: 'info',
@@ -253,26 +253,34 @@ function SetupAutoUpdate() {
 
     autoUpdater.on('error', message => {
       logMsg('There was a problem updating the application', 'error');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'error');
     });
 
     autoUpdater.on('checking-for-update', message => {
       logMsg('checking for update has been started', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
 
     autoUpdater.on('update-available', message => {
       logMsg('There is an available update. The update is downloaded automatically.', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
 
     autoUpdater.on('update-not-available', message => {
       logMsg('There is no available update.', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
     autoUpdater.on('before-quit-for-update', message => {
       logMsg('quit And Install', 'info');
+      win.webContents.send(MAIN_EVENTS.error, message);
       logMsg(JSON.stringify(message), 'info');
     });
+    setInterval(() => {
+      autoUpdater.checkForUpdates();
+    }, 60000);
   }, 10000);
 }

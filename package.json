@@ -14,8 +14,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "release": "electron-builder",
-    "electron": "ng build --prod --base-href ./ && tsc --p electron  && electron .",
-    "build-electron": "ng build --prod --base-href ./ && tsc --p electron",
+    "electron": "NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron  && electron .",
+    "build-electron": "NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron",
     "package-linux": "electron-packager . Vrapeutic --overwrite --asar=true --platform=linux --arch=x64 --icon=1024x1024.png --prune=true --out=release-builds --extraResource=dist/vrapeutic-desktop/assets/modules/ --ignore=release-builds/",
     "package-win": "electron-packager . Vrapeutic --overwrite --asar=false --platform=win32 --arch=x64 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" "
   },
@@ -25,38 +25,55 @@
     "appId": "com.myvrapeutic.vrapeutic-desktop",
     "productName": "VRapeutic Desktop",
     "copyright": "All rights reserved © VRapeutic",
-      "publish": [
-        {
-          "provider": "github",
-          "owner": "Hossam-Hawary",
-          "repo": "vrapeutic-desktop"
-        }
-      ],
-    "asar": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Hossam-Hawary",
+        "repo": "vrapeutic-desktop",
+        "vPrefixedTagName": true
+      }
+    ],
+    "asar": false,
     "directories": {
       "buildResources": "build",
       "output": "release-builds"
     },
     "dmg": {
+      "artifactName": "${productName}-mac-${version}.${ext}",
       "contents": [
         {
-          "x": 110,
-          "y": 150
-        },
-        {
-          "x": 240,
+          "x": 410,
           "y": 150,
           "type": "link",
           "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
         }
       ]
     },
     "appImage": {
       "license": "LICENSE"
     },
+    "win": {
+      "artifactName": "${productName}-windows-${version}.${ext}",
+      "target": "nsis",
+      "icon": "build/icon.png.png"
+    },
+    "nsisWeb": {
+      "oneClick": false
+    },
     "nsis": {
-      "createDesktopShortcut": "always",
-      "license": "LICENSE"
+      "oneClick": false
+    },
+    "linux": {
+      "artifactName": "${productName}-linux-${version}.${ext}",
+      "target": [
+        "AppImage"
+      ],
+      "category": "Development"
     }
   },
   "private": true,

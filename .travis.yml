@@ -71,5 +71,4 @@ before_cache:
 # the 'master' and 'prod' branches
 branches:
   only:
-  - master
   - prod
