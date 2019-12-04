@@ -229,14 +229,14 @@ async function prepareHeadsetOnOfflineMode() {
 }
 
 function SetupAutoUpdate() {
-  setTimeout(() => {
-    let platform: string = process.platform;
-    if (platform.toLowerCase() === 'linux') {
-      platform = 'AppImage';
-    }
-    const feed: any = `${baseFeedUrl}/update/${platform}/${app.getVersion()}`;
-    logMsg(feed, 'info');
-    autoUpdater.setFeedURL(feed);
+  let platform: string = process.platform;
+  if (platform.toLowerCase() === 'linux') {
+    platform = 'AppImage';
+  }
+  const feed: any = `${baseFeedUrl}/update/${platform}/${app.getVersion()}`;
+  logMsg(feed, 'info');
+  autoUpdater.setFeedURL(feed);
+  setTimeout(async () => {
     autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
       const dialogOpts = {
         type: 'info',
@@ -254,6 +254,7 @@ function SetupAutoUpdate() {
     autoUpdater.on('error', message => {
       logMsg('There was a problem updating the application', 'error');
       logMsg(JSON.stringify(message), 'error');
+      logMsg(autoUpdater.getFeedURL(), 'error');
     });
 
     autoUpdater.on('checking-for-update', message => {
@@ -269,13 +270,16 @@ function SetupAutoUpdate() {
     autoUpdater.on('update-not-available', message => {
       logMsg('There is no available update.', 'info');
       logMsg(JSON.stringify(message), 'info');
+      logMsg(autoUpdater.getFeedURL(), 'error');
     });
     autoUpdater.on('before-quit-for-update', message => {
       logMsg('quit And Install', 'info');
       logMsg(JSON.stringify(message), 'info');
     });
-    setInterval(() => {
-      autoUpdater.checkForUpdates();
+    logMsg(autoUpdater.getFeedURL(), 'error');
+    logMsg(await autoUpdater.checkForUpdates(), 'info');
+    setInterval(async () => {
+    logMsg(await autoUpdater.checkForUpdates(), 'info');
     }, 60000 * 30);
   }, 60000);
 }
