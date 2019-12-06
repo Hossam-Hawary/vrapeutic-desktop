@@ -45,7 +45,7 @@ var adb = require("adbkit");
 var capcon = require("capture-console");
 var server = require('./server');
 var client = adb.createClient();
-var serverURL = 'hazel-xi-seven.now.sh';
+var baseFeedUrl = 'https://hazel-xi-seven.now.sh';
 var MAIN_EVENTS = {
     error: 'main-error',
     run_module: 'run-module',
@@ -144,7 +144,7 @@ function createWindow() {
     // whatever is done here has stdout captured
     server.runLocalServer(logMsg);
     trackDevices();
-    checkAutoUpdate();
+    SetupAutoUpdate();
 }
 function prepareRunningMode(modulePath, options) {
     try {
@@ -271,15 +271,78 @@ function prepareHeadsetOnOfflineMode() {
         });
     });
 }
-function checkAutoUpdate() {
-    setTimeout(function () {
-        logMsg(serverURL, 'info');
-        logMsg(process.platform, 'info');
-        logMsg(electron_1.app.getVersion(), 'info');
-        var feed = serverURL + "/update/" + process.platform + "/" + electron_1.app.getVersion();
-        logMsg(feed, 'info');
-        electron_1.autoUpdater.setFeedURL(feed);
-        logMsg(electron_1.autoUpdater.setFeedURL(feed), 'info');
-    }, 10000);
+function SetupAutoUpdate() {
+    var _this = this;
+    var platform = process.platform;
+    if (platform.toLowerCase() === 'linux') {
+        platform = 'AppImage';
+    }
+    var feed = baseFeedUrl + "/update/" + platform + "/" + electron_1.app.getVersion();
+    logMsg(feed, 'info');
+    electron_1.autoUpdater.setFeedURL(feed);
+    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
+        var _a;
+        var _this = this;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    electron_1.autoUpdater.on('update-available', function (message) {
+                        logMsg('There is an available update. The update is downloaded automatically.', 'info');
+                        logMsg(JSON.stringify(message), 'info');
+                    });
+                    electron_1.autoUpdater.on('update-not-available', function (message) {
+                        logMsg('There is no available update.', 'info');
+                        logMsg(JSON.stringify(message), 'info');
+                        logMsg(electron_1.autoUpdater.getFeedURL(), 'error');
+                    });
+                    electron_1.autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
+                        var dialogOpts = {
+                            type: 'info',
+                            buttons: ['Restart', 'Later'],
+                            title: 'Application Update',
+                            message: process.platform === 'win32' ? releaseNotes : releaseName,
+                            detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+                        };
+                        electron_1.dialog.showMessageBox(dialogOpts).then(function (returnValue) {
+                            if (returnValue.response === 0) {
+                                electron_1.autoUpdater.quitAndInstall();
+                            }
+                        });
+                    });
+                    electron_1.autoUpdater.on('error', function (message) {
+                        logMsg('There was a problem updating the application', 'error');
+                        logMsg(JSON.stringify(message), 'error');
+                        logMsg(electron_1.autoUpdater.getFeedURL(), 'error');
+                    });
+                    // autoUpdater.on('checking-for-update', message => {
+                    //   logMsg('checking for update has been started', 'info');
+                    //   logMsg(JSON.stringify(message), 'info');
+                    // });
+                    // autoUpdater.on('before-quit-for-update', message => {
+                    //   logMsg('quit And Install', 'info');
+                    //   logMsg(JSON.stringify(message), 'info');
+                    // });
+                    logMsg(electron_1.autoUpdater.getFeedURL(), 'error');
+                    _a = logMsg;
+                    return [4 /*yield*/, electron_1.autoUpdater.checkForUpdates()];
+                case 1:
+                    _a.apply(void 0, [_b.sent(), 'info']);
+                    setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
+                        var _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    _a = logMsg;
+                                    return [4 /*yield*/, electron_1.autoUpdater.checkForUpdates()];
+                                case 1:
+                                    _a.apply(void 0, [_b.sent(), 'info']);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); }, 60000 * 30);
+                    return [2 /*return*/];
+            }
+        });
+    }); }, 60000);
 }
 //# sourceMappingURL=main.js.map

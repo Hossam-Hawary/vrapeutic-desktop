@@ -237,6 +237,15 @@ function SetupAutoUpdate() {
   logMsg(feed, 'info');
   autoUpdater.setFeedURL(feed);
   setTimeout(async () => {
+    autoUpdater.on('update-available', message => {
+      logMsg('There is an available update. The update is downloaded automatically.', 'info');
+      logMsg(JSON.stringify(message), 'info');
+    });
+    autoUpdater.on('update-not-available', message => {
+      logMsg('There is no available update.', 'info');
+      logMsg(JSON.stringify(message), 'info');
+      logMsg(autoUpdater.getFeedURL(), 'error');
+    });
     autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
       const dialogOpts = {
         type: 'info',
@@ -257,25 +266,15 @@ function SetupAutoUpdate() {
       logMsg(autoUpdater.getFeedURL(), 'error');
     });
 
-    autoUpdater.on('checking-for-update', message => {
-      logMsg('checking for update has been started', 'info');
-      logMsg(JSON.stringify(message), 'info');
-    });
+    // autoUpdater.on('checking-for-update', message => {
+    //   logMsg('checking for update has been started', 'info');
+    //   logMsg(JSON.stringify(message), 'info');
+    // });
 
-    autoUpdater.on('update-available', message => {
-      logMsg('There is an available update. The update is downloaded automatically.', 'info');
-      logMsg(JSON.stringify(message), 'info');
-    });
-
-    autoUpdater.on('update-not-available', message => {
-      logMsg('There is no available update.', 'info');
-      logMsg(JSON.stringify(message), 'info');
-      logMsg(autoUpdater.getFeedURL(), 'error');
-    });
-    autoUpdater.on('before-quit-for-update', message => {
-      logMsg('quit And Install', 'info');
-      logMsg(JSON.stringify(message), 'info');
-    });
+    // autoUpdater.on('before-quit-for-update', message => {
+    //   logMsg('quit And Install', 'info');
+    //   logMsg(JSON.stringify(message), 'info');
+    // });
     logMsg(autoUpdater.getFeedURL(), 'error');
     logMsg(await autoUpdater.checkForUpdates(), 'info');
     setInterval(async () => {
