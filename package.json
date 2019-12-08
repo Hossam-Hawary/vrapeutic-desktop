@@ -2,7 +2,7 @@
   "name": "vrapeutic-desktop",
   "productName": "VRapeutic Desktop",
   "description": "VRapeutic desktop app for managing modules",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "author": {
     "name": "Hossam Eldeen Hawary",
     "email": "hossameldeen.hawary@gmail.com",
@@ -29,7 +29,7 @@
     "e2e": "ng e2e",
     "release": "electron-builder",
     "electron": "cross-env NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron  && electron .",
-    "build-electron": "NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron",
+    "build-electron": "cross-env NODE_ENV=production ng build --prod --base-href ./ && tsc --p electron",
     "package-linux": "electron-packager . Vrapeutic --overwrite --asar=true --platform=linux --arch=x64 --icon=1024x1024.png --prune=true --out=release-builds --extraResource=dist/vrapeutic-desktop/assets/modules/ --ignore=release-builds/",
     "package-win": "electron-packager . Vrapeutic --overwrite --asar=false --platform=win32 --arch=x64 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" "
   },
@@ -77,7 +77,8 @@
       "icon": "build/icon.png.png"
     },
     "nsisWeb": {
-      "oneClick": false
+      "oneClick": false,
+      "deleteAppDataOnUninstall": true
     },
     "nsis": {
       "oneClick": false
@@ -143,7 +144,6 @@
     "electron": "^7.1.2",
     "electron-builder": "^22.1.0",
     "electron-builder-lib": "^20.15.3",
-    "electron-devtools-installer": "^2.2.3",
     "electron-packager": "^14.0.4",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",

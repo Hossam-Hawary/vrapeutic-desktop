@@ -9,9 +9,7 @@ import * as capcon from 'capture-console';
 const server = require('./server');
 
 const client = adb.createClient();
-// const baseFeedUrl = 'https://hazel-xi-seven.now.sh';
-const baseFeedUrl = 'https://hazel-server-pxufsrwofl.now.sh/';
-
+const baseFeedUrl = 'https://hazel-xi-seven.now.sh';
 const MAIN_EVENTS = {
   error: 'main-error',
   run_module: 'run-module',
@@ -34,6 +32,7 @@ const colors = {
 };
 
 const logMsg = (msg, type = 'debug') => {
+  msg = `[${process.env.NODE_ENV}] ${msg}`;
   consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg, color: colors[type] });
 };
 

@@ -67,6 +67,7 @@ var colors = {
 };
 var logMsg = function (msg, type) {
     if (type === void 0) { type = 'debug'; }
+    msg = "[" + process.env.NODE_ENV + "] " + msg;
     consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg: msg, color: colors[type] });
 };
 var headsetDevice;
