@@ -24,7 +24,7 @@ const MAIN_EVENTS = {
   show_console_log: 'show-console-log',
   send_console_log: 'send-console-log'
 };
-
+const appVersion = app.getVersion();
 const colors = {
   error: 'red',
   info: 'turquoise',
@@ -32,7 +32,7 @@ const colors = {
 };
 
 const logMsg = (msg, type = 'debug') => {
-  msg = `[${process.env.NODE_ENV}] ${msg}`;
+  msg = `[${appVersion}] ${msg}`;
   consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg, color: colors[type] });
 };
 
@@ -233,7 +233,7 @@ function SetupAutoUpdate() {
   if (platform.toLowerCase() === 'linux') {
     platform = 'AppImage';
   }
-  const feed: any = `${baseFeedUrl}/update/${platform}/${app.getVersion()}`;
+  const feed: any = `${baseFeedUrl}/update/${platform}/${appVersion}`;
   logMsg(feed, 'info');
   autoUpdater.setFeedURL(feed);
   setTimeout(async () => {
@@ -266,15 +266,15 @@ function SetupAutoUpdate() {
       logMsg(autoUpdater.getFeedURL(), 'error');
     });
 
-    // autoUpdater.on('checking-for-update', message => {
-    //   logMsg('checking for update has been started', 'info');
-    //   logMsg(JSON.stringify(message), 'info');
-    // });
+    autoUpdater.on('checking-for-update', message => {
+      logMsg('checking for update has been started', 'info');
+      logMsg(JSON.stringify(message), 'info');
+    });
 
-    // autoUpdater.on('before-quit-for-update', message => {
-    //   logMsg('quit And Install', 'info');
-    //   logMsg(JSON.stringify(message), 'info');
-    // });
+    autoUpdater.on('before-quit-for-update', message => {
+      logMsg('quit And Install', 'info');
+      logMsg(JSON.stringify(message), 'info');
+    });
     logMsg(autoUpdater.getFeedURL(), 'error');
     logMsg(await autoUpdater.checkForUpdates(), 'info');
     setInterval(async () => {

@@ -2,7 +2,7 @@
   "name": "vrapeutic-desktop",
   "productName": "VRapeutic Desktop",
   "description": "VRapeutic desktop app for managing modules",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "author": {
     "name": "Hossam Eldeen Hawary",
     "email": "hossameldeen.hawary@gmail.com",
@@ -73,7 +73,10 @@
     },
     "win": {
       "artifactName": "${productName}-windows-${version}.${ext}",
-      "target": "nsis",
+      "target":[
+        "nsis",
+        "msi"
+      ],
       "icon": "build/icon.png.png"
     },
     "nsisWeb": {
@@ -141,8 +144,8 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.7.2",
     "codelyzer": "~4.5.0",
-    "electron": "^7.1.2",
-    "electron-builder": "^22.1.0",
+    "electron": "6.0.5",
+    "electron-builder": "^21.2.0",
     "electron-builder-lib": "^20.15.3",
     "electron-packager": "^14.0.4",
     "jasmine-core": "~2.99.1",
