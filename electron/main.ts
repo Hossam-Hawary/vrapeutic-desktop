@@ -14,7 +14,7 @@ log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 // Set maximum log size in bytes. When it exceeds, old log will be saved
 // as log.old.log file
 log.transports.file.maxSize = 5 * 1024 * 1024;
-log.transports.file.file = __dirname + '/log.log';
+log.transports.file.file = path.join(__dirname, '/../../../../', 'log.log');
 // fs.createWriteStream options, must be set before first logging
 log.transports.file.streamConfig = { flags: 'w' };
 // set existed file stream
