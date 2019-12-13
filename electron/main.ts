@@ -9,8 +9,8 @@ import * as capcon from 'capture-console';
 const log = require('electron-log');
 const { netLog } = require('electron');
 let logger = require('logger-electron');
-logger.enableLogging();
 logger = new logger();
+logger.enableLogging();
 log.transports.console.format = '{h}:{i}:{s} {text}';
 log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 
