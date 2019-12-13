@@ -2,7 +2,7 @@
   "name": "vrapeutic-desktop",
   "productName": "VRapeutic Desktop",
   "description": "VRapeutic desktop app for managing modules",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "author": {
     "name": "Hossam Eldeen Hawary",
     "email": "hossameldeen.hawary@gmail.com",
@@ -34,7 +34,6 @@
     "package-win": "electron-packager . Vrapeutic --overwrite --asar=false --platform=win32 --arch=x64 --icon=icon.png.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Vrapeutic Desktop App \" "
   },
   "repository": "https://github.com/Hossam-Hawary/vrapeutic-desktop",
-  "publish": "github",
   "build": {
     "appId": "com.myvrapeutic.vrapeutic-desktop",
     "productName": "VRapeutic Desktop",

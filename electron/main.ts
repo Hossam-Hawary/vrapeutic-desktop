@@ -8,12 +8,20 @@ import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
 const log = require('electron-log');
 
-const server = require('./server');
 log.transports.console.format = '{h}:{i}:{s} {text}';
+log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 
+// Set maximum log size in bytes. When it exceeds, old log will be saved
+// as log.old.log file
+log.transports.file.maxSize = 5 * 1024 * 1024;
+log.transports.file.file = __dirname + '/log.log';
+// fs.createWriteStream options, must be set before first logging
+log.transports.file.streamConfig = { flags: 'w' };
+// set existed file stream
+log.transports.file.stream = fs.createWriteStream(log.transports.file.file);
 // Sometimes it's helpful to use electron-log instead of default console
 console.log = log.log;
-
+const server = require('./server');
 
 const client = adb.createClient();
 const baseFeedUrl = 'https://hazel-xi-seven.now.sh';
