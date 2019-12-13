@@ -6,7 +6,14 @@ import { shell } from 'electron';
 import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
+const log = require('electron-log');
+
 const server = require('./server');
+log.transports.console.format = '{h}:{i}:{s} {text}';
+
+// Sometimes it's helpful to use electron-log instead of default console
+console.log = log.log;
+
 
 const client = adb.createClient();
 const baseFeedUrl = 'https://hazel-xi-seven.now.sh';
