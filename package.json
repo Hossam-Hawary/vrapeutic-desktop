@@ -2,7 +2,7 @@
   "name": "vrapeutic-desktop",
   "productName": "VRapeutic Desktop",
   "description": "VRapeutic desktop app for managing modules",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "author": {
     "name": "Hossam Eldeen Hawary",
     "email": "hossameldeen.hawary@gmail.com",
@@ -72,7 +72,7 @@
     },
     "win": {
       "artifactName": "${productName}-windows-${version}.${ext}",
-      "target":[
+      "target": [
         "nsis",
         "msi"
       ],
@@ -117,11 +117,12 @@
     "electron-log": "^3.0.1",
     "electron-settings": "^2.2.4",
     "electron-updater": "^4.2.0",
-    "fix-path": "^2.1.0",
     "enum": "^2.5.0",
     "express": "^4.17.1",
+    "fix-path": "^2.1.0",
     "hammerjs": "^2.0.8",
     "internal-ip": "^4.3.0",
+    "logger-electron": "^1.2.8",
     "ng2-charts": "^2.2.3",
     "ngx-electron": "^2.1.1",
     "pusher-js": "^4.4.0",
@@ -143,6 +144,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.7.2",
     "codelyzer": "~4.5.0",
+    "cross-env": "^6.0.0",
     "electron": "6.0.12",
     "electron-builder": "^21.2.0",
     "electron-builder-lib": "^20.15.3",
@@ -157,8 +159,7 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "~3.4.5",
-    "cross-env": "^6.0.0"
+    "typescript": "~3.4.5"
   },
   "engines": {
     "node": ">=10.x",

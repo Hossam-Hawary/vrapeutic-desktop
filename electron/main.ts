@@ -7,7 +7,10 @@ import * as internalIp from 'internal-ip';
 import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
 const log = require('electron-log');
-
+const { netLog } = require('electron');
+let logger = require('logger-electron');
+logger.enableLogging();
+logger = new logger();
 log.transports.console.format = '{h}:{i}:{s} {text}';
 log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 
@@ -21,6 +24,9 @@ log.transports.file.streamConfig = { flags: 'w' };
 log.transports.file.stream = fs.createWriteStream(log.transports.file.file);
 // Sometimes it's helpful to use electron-log instead of default console
 console.log = log.log;
+log.transports.file.level = true;
+log.transports.file.level = 'silly';
+
 const server = require('./server');
 
 const client = adb.createClient();
@@ -89,7 +95,9 @@ app.on('activate', () => {
   }
 });
 
-function createWindow() {
+async function createWindow() {
+  await netLog.startLogging(log.transports.file.file);
+
   // fullscreen: true
   win = new BrowserWindow(
     {
