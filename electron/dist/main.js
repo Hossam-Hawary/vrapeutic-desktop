@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
-var electron_updater_1 = require("electron-updater");
+var autoUpdater = require('electron-updater').autoUpdater;
 var path = require("path");
 var url = require("url");
 var fs = require("fs");
@@ -46,9 +46,9 @@ var adb = require("adbkit");
 var capcon = require("capture-console");
 var log = require('electron-log');
 var netLog = require('electron').netLog;
-var logger = require('logger-electron');
-logger = new logger({ fileName: 'looger_log' });
-logger.enableLogging();
+// let logger = require('logger-electron');
+// logger = new logger({ fileName: 'looger_log'});
+// logger.enableLogging();
 log.transports.console.format = '{h}:{i}:{s} {text}';
 log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 // Set maximum log size in bytes. When it exceeds, old log will be saved
@@ -62,7 +62,7 @@ log.transports.file.stream = fs.createWriteStream(log.transports.file.file);
 // Sometimes it's helpful to use electron-log instead of default console
 console.log = log.log;
 log.transports.file.level = 'silly';
-electron_updater_1.autoUpdater.logger = log;
+autoUpdater.logger = log;
 var server = require('./server');
 var client = adb.createClient();
 var baseFeedUrl = 'https://hazel-xi-seven.now.sh';
@@ -318,16 +318,16 @@ function SetupAutoUpdate() {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    electron_updater_1.autoUpdater.on('update-available', function (message) {
+                    autoUpdater.on('update-available', function (message) {
                         logMsg('There is an available update. The update is downloaded automatically.', 'info');
                         logMsg(JSON.stringify(message), 'info');
                     });
-                    electron_updater_1.autoUpdater.on('update-not-available', function (message) {
+                    autoUpdater.on('update-not-available', function (message) {
                         logMsg('There is no available update.', 'info');
                         logMsg(JSON.stringify(message), 'info');
-                        logMsg(electron_updater_1.autoUpdater.getFeedURL(), 'error');
+                        logMsg(autoUpdater.getFeedURL(), 'error');
                     });
-                    electron_updater_1.autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
+                    autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
                         var dialogOpts = {
                             type: 'info',
                             buttons: ['Restart', 'Later'],
@@ -337,26 +337,26 @@ function SetupAutoUpdate() {
                         };
                         electron_1.dialog.showMessageBox(dialogOpts).then(function (returnValue) {
                             if (returnValue.response === 0) {
-                                electron_updater_1.autoUpdater.quitAndInstall();
+                                autoUpdater.quitAndInstall();
                             }
                         });
                     });
-                    electron_updater_1.autoUpdater.on('error', function (message) {
+                    autoUpdater.on('error', function (message) {
                         logMsg('There was a problem updating the application', 'error');
                         logMsg(JSON.stringify(message), 'error');
-                        logMsg(electron_updater_1.autoUpdater.getFeedURL(), 'error');
+                        logMsg(autoUpdater.getFeedURL(), 'error');
                     });
-                    electron_updater_1.autoUpdater.on('checking-for-update', function (message) {
+                    autoUpdater.on('checking-for-update', function (message) {
                         logMsg('checking for update has been started', 'info');
                         logMsg(JSON.stringify(message), 'info');
                     });
-                    electron_updater_1.autoUpdater.on('before-quit-for-update', function (message) {
+                    autoUpdater.on('before-quit-for-update', function (message) {
                         logMsg('quit And Install', 'info');
                         logMsg(JSON.stringify(message), 'info');
                     });
-                    logMsg(electron_updater_1.autoUpdater.getFeedURL(), 'error');
+                    logMsg(autoUpdater.getFeedURL(), 'error');
                     _a = logMsg;
-                    return [4 /*yield*/, electron_updater_1.autoUpdater.checkForUpdatesAndNotify()];
+                    return [4 /*yield*/, autoUpdater.checkForUpdatesAndNotify()];
                 case 1:
                     _a.apply(void 0, [_b.sent(), 'info']);
                     setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
@@ -365,7 +365,7 @@ function SetupAutoUpdate() {
                             switch (_b.label) {
                                 case 0:
                                     _a = logMsg;
-                                    return [4 /*yield*/, electron_updater_1.autoUpdater.checkForUpdatesAndNotify()];
+                                    return [4 /*yield*/, autoUpdater.checkForUpdatesAndNotify()];
                                 case 1:
                                     _a.apply(void 0, [_b.sent(), 'info']);
                                     return [2 /*return*/];

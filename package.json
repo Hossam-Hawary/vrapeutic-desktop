@@ -142,7 +142,7 @@
     "@types/electron": "^1.6.10",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "^12.7.2",
+    "@types/node": "^12",
     "codelyzer": "~4.5.0",
     "cross-env": "^6.0.0",
     "electron": "6.0.12",

@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
-import { autoUpdater } from 'electron-updater';
+const { autoUpdater } = require('electron-updater');
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
@@ -9,9 +9,9 @@ import * as adb from 'adbkit';
 import * as capcon from 'capture-console';
 const log = require('electron-log');
 const { netLog } = require('electron');
-let logger = require('logger-electron');
-logger = new logger({ fileName: 'looger_log'});
-logger.enableLogging();
+// let logger = require('logger-electron');
+// logger = new logger({ fileName: 'looger_log'});
+// logger.enableLogging();
 log.transports.console.format = '{h}:{i}:{s} {text}';
 log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 
