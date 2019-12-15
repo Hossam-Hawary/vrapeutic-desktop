@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain, autoUpdater, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
@@ -9,7 +10,7 @@ import * as capcon from 'capture-console';
 const log = require('electron-log');
 const { netLog } = require('electron');
 let logger = require('logger-electron');
-logger = new logger();
+logger = new logger({ fileName: 'looger_log'});
 logger.enableLogging();
 log.transports.console.format = '{h}:{i}:{s} {text}';
 log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
@@ -24,9 +25,8 @@ log.transports.file.streamConfig = { flags: 'w' };
 log.transports.file.stream = fs.createWriteStream(log.transports.file.file);
 // Sometimes it's helpful to use electron-log instead of default console
 console.log = log.log;
-log.transports.file.level = true;
 log.transports.file.level = 'silly';
-
+autoUpdater.logger = log;
 const server = require('./server');
 
 const client = adb.createClient();
@@ -52,16 +52,15 @@ const colors = {
   debug: 'gold'
 };
 
-const logMsg = (msg, type = 'debug') => {
-  msg = `[${appVersion}] ${msg}`;
-  consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg, color: colors[type] });
-};
-
 let headsetDevice;
 let authorizedHeadsets = [];
 
 let win: BrowserWindow;
 let consoleWin: BrowserWindow;
+const logMsg = (msg, type = 'debug') => {
+  msg = `[${appVersion}] ${msg}`;
+  consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg, color: colors[type] });
+};
 
 
 ipcMain.on(MAIN_EVENTS.authorized_devices, (event, newAuthorizedHeadsets) => {
@@ -256,9 +255,9 @@ function SetupAutoUpdate() {
   if (platform.toLowerCase() === 'linux') {
     platform = 'AppImage';
   }
-  const feed: any = `${baseFeedUrl}/update/${platform}/${appVersion}`;
-  logMsg(feed, 'info');
-  autoUpdater.setFeedURL(feed);
+  // const feed: any = `${baseFeedUrl}/update/${platform}/${appVersion}`;
+  // logMsg(feed, 'info');
+  // autoUpdater.setFeedURL(feed);
   setTimeout(async () => {
     autoUpdater.on('update-available', message => {
       logMsg('There is an available update. The update is downloaded automatically.', 'info');
@@ -299,9 +298,9 @@ function SetupAutoUpdate() {
       logMsg(JSON.stringify(message), 'info');
     });
     logMsg(autoUpdater.getFeedURL(), 'error');
-    logMsg(await autoUpdater.checkForUpdates(), 'info');
+    logMsg(await autoUpdater.checkForUpdatesAndNotify(), 'info');
     setInterval(async () => {
-    logMsg(await autoUpdater.checkForUpdates(), 'info');
+      logMsg(await autoUpdater.checkForUpdatesAndNotify(), 'info');
     }, 60000 * 30);
   }, 60000);
 }

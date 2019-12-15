@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+var electron_updater_1 = require("electron-updater");
 var path = require("path");
 var url = require("url");
 var fs = require("fs");
@@ -43,6 +44,25 @@ var electron_2 = require("electron");
 var internalIp = require("internal-ip");
 var adb = require("adbkit");
 var capcon = require("capture-console");
+var log = require('electron-log');
+var netLog = require('electron').netLog;
+var logger = require('logger-electron');
+logger = new logger({ fileName: 'looger_log' });
+logger.enableLogging();
+log.transports.console.format = '{h}:{i}:{s} {text}';
+log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
+// Set maximum log size in bytes. When it exceeds, old log will be saved
+// as log.old.log file
+log.transports.file.maxSize = 5 * 1024 * 1024;
+log.transports.file.file = path.join(__dirname, '/../../../../', 'log.log');
+// fs.createWriteStream options, must be set before first logging
+log.transports.file.streamConfig = { flags: 'w' };
+// set existed file stream
+log.transports.file.stream = fs.createWriteStream(log.transports.file.file);
+// Sometimes it's helpful to use electron-log instead of default console
+console.log = log.log;
+log.transports.file.level = 'silly';
+electron_updater_1.autoUpdater.logger = log;
 var server = require('./server');
 var client = adb.createClient();
 var baseFeedUrl = 'https://hazel-xi-seven.now.sh';
@@ -60,20 +80,21 @@ var MAIN_EVENTS = {
     show_console_log: 'show-console-log',
     send_console_log: 'send-console-log'
 };
+var appVersion = electron_1.app.getVersion();
 var colors = {
     error: 'red',
     info: 'turquoise',
     debug: 'gold'
 };
-var logMsg = function (msg, type) {
-    if (type === void 0) { type = 'debug'; }
-    msg = "[" + process.env.NODE_ENV + "] " + msg;
-    consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg: msg, color: colors[type] });
-};
 var headsetDevice;
 var authorizedHeadsets = [];
 var win;
 var consoleWin;
+var logMsg = function (msg, type) {
+    if (type === void 0) { type = 'debug'; }
+    msg = "[" + appVersion + "] " + msg;
+    consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg: msg, color: colors[type] });
+};
 electron_1.ipcMain.on(MAIN_EVENTS.authorized_devices, function (event, newAuthorizedHeadsets) {
     authorizedHeadsets = newAuthorizedHeadsets;
     headsetDevice = null;
@@ -100,52 +121,62 @@ electron_1.app.on('activate', function () {
     }
 });
 function createWindow() {
-    // fullscreen: true
-    win = new electron_1.BrowserWindow({
-        width: 800, height: 700, show: false,
-        center: true,
-        icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/win/icon.png.png'),
-        webPreferences: {
-            nodeIntegration: true
-        }
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, netLog.startLogging(log.transports.file.file)];
+                case 1:
+                    _a.sent();
+                    // fullscreen: true
+                    win = new electron_1.BrowserWindow({
+                        width: 800, height: 700, show: false,
+                        center: true,
+                        icon: path.join(__dirname, '/../../dist/vrapeutic-desktop/assets/icons/win/icon.png.png'),
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
+                    win.maximize();
+                    win.show();
+                    win.loadURL(url.format({
+                        pathname: path.join(__dirname, "/../../dist/vrapeutic-desktop/index.html"),
+                        protocol: 'file:',
+                        slashes: true,
+                    }));
+                    // win.webContents.openDevTools();
+                    win.on('closed', function () {
+                        win = null;
+                    });
+                    consoleWin = new electron_1.BrowserWindow({
+                        parent: win, width: 800, height: 600, show: false, closable: false,
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
+                    consoleWin.loadURL(url.format({
+                        pathname: path.join(__dirname, "/../../dist/vrapeutic-desktop/assets/views/console.html"),
+                        protocol: 'file:',
+                        slashes: true,
+                    }));
+                    // the first parameter here is the stream to capture, and the
+                    // second argument is the function receiving the output
+                    capcon.startCapture(process.stdout, function (msg) {
+                        logMsg(msg, 'debug');
+                    });
+                    capcon.startCapture(process.stdout, function (msg) {
+                        logMsg(msg, 'debug');
+                    });
+                    capcon.startCapture(process.stderr, function (msg) {
+                        logMsg(msg, 'error');
+                    });
+                    // whatever is done here has stdout captured
+                    server.runLocalServer(logMsg);
+                    trackDevices();
+                    SetupAutoUpdate();
+                    return [2 /*return*/];
+            }
+        });
     });
-    win.maximize();
-    win.show();
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, "/../../dist/vrapeutic-desktop/index.html"),
-        protocol: 'file:',
-        slashes: true,
-    }));
-    // win.webContents.openDevTools();
-    win.on('closed', function () {
-        win = null;
-    });
-    consoleWin = new electron_1.BrowserWindow({
-        parent: win, width: 800, height: 600, show: false, closable: false,
-        webPreferences: {
-            nodeIntegration: true
-        }
-    });
-    consoleWin.loadURL(url.format({
-        pathname: path.join(__dirname, "/../../dist/vrapeutic-desktop/assets/views/console.html"),
-        protocol: 'file:',
-        slashes: true,
-    }));
-    // the first parameter here is the stream to capture, and the
-    // second argument is the function receiving the output
-    capcon.startCapture(process.stdout, function (msg) {
-        logMsg(msg, 'debug');
-    });
-    capcon.startCapture(process.stdout, function (msg) {
-        logMsg(msg, 'debug');
-    });
-    capcon.startCapture(process.stderr, function (msg) {
-        logMsg(msg, 'error');
-    });
-    // whatever is done here has stdout captured
-    server.runLocalServer(logMsg);
-    trackDevices();
-    SetupAutoUpdate();
 }
 function prepareRunningMode(modulePath, options) {
     try {
@@ -278,25 +309,25 @@ function SetupAutoUpdate() {
     if (platform.toLowerCase() === 'linux') {
         platform = 'AppImage';
     }
-    var feed = baseFeedUrl + "/update/" + platform + "/" + electron_1.app.getVersion();
-    logMsg(feed, 'info');
-    electron_1.autoUpdater.setFeedURL(feed);
+    // const feed: any = `${baseFeedUrl}/update/${platform}/${appVersion}`;
+    // logMsg(feed, 'info');
+    // autoUpdater.setFeedURL(feed);
     setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
         var _a;
         var _this = this;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    electron_1.autoUpdater.on('update-available', function (message) {
+                    electron_updater_1.autoUpdater.on('update-available', function (message) {
                         logMsg('There is an available update. The update is downloaded automatically.', 'info');
                         logMsg(JSON.stringify(message), 'info');
                     });
-                    electron_1.autoUpdater.on('update-not-available', function (message) {
+                    electron_updater_1.autoUpdater.on('update-not-available', function (message) {
                         logMsg('There is no available update.', 'info');
                         logMsg(JSON.stringify(message), 'info');
-                        logMsg(electron_1.autoUpdater.getFeedURL(), 'error');
+                        logMsg(electron_updater_1.autoUpdater.getFeedURL(), 'error');
                     });
-                    electron_1.autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
+                    electron_updater_1.autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
                         var dialogOpts = {
                             type: 'info',
                             buttons: ['Restart', 'Later'],
@@ -306,26 +337,26 @@ function SetupAutoUpdate() {
                         };
                         electron_1.dialog.showMessageBox(dialogOpts).then(function (returnValue) {
                             if (returnValue.response === 0) {
-                                electron_1.autoUpdater.quitAndInstall();
+                                electron_updater_1.autoUpdater.quitAndInstall();
                             }
                         });
                     });
-                    electron_1.autoUpdater.on('error', function (message) {
+                    electron_updater_1.autoUpdater.on('error', function (message) {
                         logMsg('There was a problem updating the application', 'error');
                         logMsg(JSON.stringify(message), 'error');
-                        logMsg(electron_1.autoUpdater.getFeedURL(), 'error');
+                        logMsg(electron_updater_1.autoUpdater.getFeedURL(), 'error');
                     });
-                    // autoUpdater.on('checking-for-update', message => {
-                    //   logMsg('checking for update has been started', 'info');
-                    //   logMsg(JSON.stringify(message), 'info');
-                    // });
-                    // autoUpdater.on('before-quit-for-update', message => {
-                    //   logMsg('quit And Install', 'info');
-                    //   logMsg(JSON.stringify(message), 'info');
-                    // });
-                    logMsg(electron_1.autoUpdater.getFeedURL(), 'error');
+                    electron_updater_1.autoUpdater.on('checking-for-update', function (message) {
+                        logMsg('checking for update has been started', 'info');
+                        logMsg(JSON.stringify(message), 'info');
+                    });
+                    electron_updater_1.autoUpdater.on('before-quit-for-update', function (message) {
+                        logMsg('quit And Install', 'info');
+                        logMsg(JSON.stringify(message), 'info');
+                    });
+                    logMsg(electron_updater_1.autoUpdater.getFeedURL(), 'error');
                     _a = logMsg;
-                    return [4 /*yield*/, electron_1.autoUpdater.checkForUpdates()];
+                    return [4 /*yield*/, electron_updater_1.autoUpdater.checkForUpdatesAndNotify()];
                 case 1:
                     _a.apply(void 0, [_b.sent(), 'info']);
                     setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
@@ -334,7 +365,7 @@ function SetupAutoUpdate() {
                             switch (_b.label) {
                                 case 0:
                                     _a = logMsg;
-                                    return [4 /*yield*/, electron_1.autoUpdater.checkForUpdates()];
+                                    return [4 /*yield*/, electron_updater_1.autoUpdater.checkForUpdatesAndNotify()];
                                 case 1:
                                     _a.apply(void 0, [_b.sent(), 'info']);
                                     return [2 /*return*/];
