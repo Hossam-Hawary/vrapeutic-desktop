@@ -313,10 +313,10 @@ function SetupAutoUpdate() {
     // logMsg(feed, 'info');
     // autoUpdater.setFeedURL(feed);
     setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a;
+        var _a, _b, _c, _d;
         var _this = this;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0:
                     autoUpdater.on('update-available', function (message) {
                         logMsg('There is an available update. The update is downloaded automatically.', 'info');
@@ -325,7 +325,8 @@ function SetupAutoUpdate() {
                     autoUpdater.on('update-not-available', function (message) {
                         logMsg('There is no available update.', 'info');
                         logMsg(JSON.stringify(message), 'info');
-                        logMsg(autoUpdater.getFeedURL(), 'error');
+                        // logMsg(autoUpdater.getFeedURL(), 'info');
+                        logMsg('info...' + JSON.stringify(autoUpdater.getUpdateInfoAndProvider()), 'info');
                     });
                     autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
                         var dialogOpts = {
@@ -344,34 +345,44 @@ function SetupAutoUpdate() {
                     autoUpdater.on('error', function (message) {
                         logMsg('There was a problem updating the application', 'error');
                         logMsg(JSON.stringify(message), 'error');
-                        logMsg(autoUpdater.getFeedURL(), 'error');
+                        // logMsg(autoUpdater.getFeedURL(), 'info');
+                        logMsg('info...' + JSON.stringify(autoUpdater.getUpdateInfoAndProvider()), 'info');
                     });
                     autoUpdater.on('checking-for-update', function (message) {
                         logMsg('checking for update has been started', 'info');
                         logMsg(JSON.stringify(message), 'info');
                     });
-                    autoUpdater.on('before-quit-for-update', function (message) {
-                        logMsg('quit And Install', 'info');
+                    autoUpdater.on('download-progress', function (message) {
+                        logMsg('download-progress....', 'info');
                         logMsg(JSON.stringify(message), 'info');
                     });
-                    logMsg(autoUpdater.getFeedURL(), 'error');
+                    autoUpdater.on('before-quit-for-update', function (message) {
+                        logMsg('quit And Install...', 'info');
+                        logMsg(JSON.stringify(message), 'info');
+                    });
+                    // logMsg(autoUpdater.getFeedURL(), 'info');
+                    logMsg('info...' + JSON.stringify(autoUpdater.getUpdateInfoAndProvider()), 'info');
                     _a = logMsg;
+                    _b = 'Check Done...';
+                    _d = (_c = JSON).stringify;
                     return [4 /*yield*/, autoUpdater.checkForUpdatesAndNotify()];
                 case 1:
-                    _a.apply(void 0, [_b.sent(), 'info']);
+                    _a.apply(void 0, [_b + _d.apply(_c, [_e.sent()]), 'info']);
                     setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
-                        var _a;
-                        return __generator(this, function (_b) {
-                            switch (_b.label) {
+                        var _a, _b, _c, _d;
+                        return __generator(this, function (_e) {
+                            switch (_e.label) {
                                 case 0:
                                     _a = logMsg;
+                                    _b = 'Check Done...';
+                                    _d = (_c = JSON).stringify;
                                     return [4 /*yield*/, autoUpdater.checkForUpdatesAndNotify()];
                                 case 1:
-                                    _a.apply(void 0, [_b.sent(), 'info']);
+                                    _a.apply(void 0, [_b + _d.apply(_c, [_e.sent()]), 'info']);
                                     return [2 /*return*/];
                             }
                         });
-                    }); }, 60000 * 30);
+                    }); }, 60000 * 15);
                     return [2 /*return*/];
             }
         });

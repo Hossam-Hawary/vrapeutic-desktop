@@ -266,7 +266,8 @@ function SetupAutoUpdate() {
     autoUpdater.on('update-not-available', message => {
       logMsg('There is no available update.', 'info');
       logMsg(JSON.stringify(message), 'info');
-      logMsg(autoUpdater.getFeedURL(), 'error');
+      // logMsg(autoUpdater.getFeedURL(), 'info');
+      logMsg('info...' + JSON.stringify(autoUpdater.getUpdateInfoAndProvider()), 'info');
     });
     autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
       const dialogOpts = {
@@ -285,7 +286,8 @@ function SetupAutoUpdate() {
     autoUpdater.on('error', message => {
       logMsg('There was a problem updating the application', 'error');
       logMsg(JSON.stringify(message), 'error');
-      logMsg(autoUpdater.getFeedURL(), 'error');
+      // logMsg(autoUpdater.getFeedURL(), 'info');
+      logMsg('info...' + JSON.stringify(autoUpdater.getUpdateInfoAndProvider()), 'info');
     });
 
     autoUpdater.on('checking-for-update', message => {
@@ -293,14 +295,20 @@ function SetupAutoUpdate() {
       logMsg(JSON.stringify(message), 'info');
     });
 
-    autoUpdater.on('before-quit-for-update', message => {
-      logMsg('quit And Install', 'info');
+    autoUpdater.on('download-progress', message => {
+      logMsg('download-progress....', 'info');
       logMsg(JSON.stringify(message), 'info');
     });
-    logMsg(autoUpdater.getFeedURL(), 'error');
-    logMsg(await autoUpdater.checkForUpdatesAndNotify(), 'info');
+
+    autoUpdater.on('before-quit-for-update', message => {
+      logMsg('quit And Install...', 'info');
+      logMsg(JSON.stringify(message), 'info');
+    });
+    // logMsg(autoUpdater.getFeedURL(), 'info');
+    logMsg('info...' + JSON.stringify(autoUpdater.getUpdateInfoAndProvider()), 'info');
+    logMsg('Check Done...' +  JSON.stringify(await autoUpdater.checkForUpdatesAndNotify()), 'info');
     setInterval(async () => {
-      logMsg(await autoUpdater.checkForUpdatesAndNotify(), 'info');
-    }, 60000 * 30);
+      logMsg('Check Done...' + JSON.stringify(await autoUpdater.checkForUpdatesAndNotify()), 'info');
+    }, 60000 * 15);
   }, 60000);
 }
