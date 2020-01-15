@@ -68,4 +68,5 @@ currentUser: any;
     const { data } = await modal.onDidDismiss();
     if (data.patient) { this.patients.push(data.patient); }
   }
+
 }

@@ -2,12 +2,8 @@
   "name": "vrapeutic-desktop",
   "productName": "VRapeutic Desktop",
   "description": "VRapeutic desktop app for managing modules",
-  "version": "0.0.39",
-  "author": {
-    "name": "Hossam Eldeen Hawary",
-    "email": "hossameldeen.hawary@gmail.com",
-    "url": "https://github.com/Hossam-Hawary"
-  },
+  "version": "0.1.0",
+  "author": "Hossam Eldeen Hawary <hossameldeen.hawary@gmail.com> (https://github.com/Hossam-Hawary)",
   "copyright": "All rights reserved © VRapeutic",
   "license": "APACHE2",
   "bugs": {
@@ -73,8 +69,7 @@
     "win": {
       "artifactName": "${productName}-windows-${version}.${ext}",
       "target": [
-        "nsis",
-        "msi"
+        "nsis"
       ],
       "icon": "build/icon.png.png"
     },
@@ -130,12 +125,13 @@
     "shortid": "^2.2.14",
     "socket.io": "^2.2.0",
     "tslib": "^1.9.0",
+    "unzipper": "^0.10.5",
     "xlsx": "^0.15.1",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.802.2",
-    "@angular/cli": "^8.2.2",
+    "@angular/cli": "^8.3.21",
     "@angular/compiler-cli": "^8.2.2",
     "@angular/language-service": "^8.2.2",
     "@ionic/angular-toolkit": "^2.0.0",
@@ -160,9 +156,5 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
     "typescript": "~3.4.5"
-  },
-  "engines": {
-    "node": ">=10.x",
-    "npm": ">=5.x"
   }
 }

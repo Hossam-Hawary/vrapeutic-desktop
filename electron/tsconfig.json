@@ -20,6 +20,10 @@
   },
   "files": [
     "server",
-    "main"
+    "main",
+    "vr_module_runner",
+    "auto_update",
+    "modules_update",
+    "store"
   ],
 }

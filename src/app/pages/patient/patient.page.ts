@@ -40,6 +40,7 @@ export class PatientPage implements OnInit {
       this.patient = await this.userService.getPatient(this.id) as any[];
       this.modules = await this.userService.getPatientModules(this.id)as any[];
       this.headsets = await this.userService.getCenterHeadsets();
+      this.checkModulesUpdates();
       this.helperService.removeLoading();
     } catch (err) {
       this.helperService.showError(err);
@@ -101,9 +102,12 @@ export class PatientPage implements OnInit {
   //   );
   // }
 
-  toggleConsole() {
-    this.showConsole = !this.showConsole;
-    this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
+  async checkModulesUpdates() {
+    this.modules.forEach((m) => {
+      if (!m.latest_version) { return; }
+
+      this.mainEventsService.sendEventAsync('module-latest-version', m.latest_version);
+    });
   }
 
   async editPatient() {
@@ -118,5 +122,15 @@ export class PatientPage implements OnInit {
     await modal.present();
     const { data } = await modal.onDidDismiss();
     if (data.patient) { this.patient = data.patient; }
+  }
+
+  toggleConsole() {
+    this.showConsole = !this.showConsole;
+    this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
+  }
+
+  resetModules() {
+    this.mainEventsService.sendEventAsync('reset-all-installed-modules', this.showConsole);
+    this.checkModulesUpdates();
   }
 }
