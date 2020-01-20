@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
 import { MainEventsService } from '../../services/main-events/main-events.service';
@@ -18,6 +18,7 @@ export class PatientPage implements OnInit {
   showConsole = false;
   id: any;
   production: boolean;
+  modulesHash = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -25,20 +26,22 @@ export class PatientPage implements OnInit {
     private helperService: HelperService,
     public mainEventsService: MainEventsService,
     public modalController: ModalController,
-    private events: Events
+    private events: Events,
+    private app: ApplicationRef
   ) {
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
     this.loadPatient();
+    this.trackDownloadProgress();
   }
 
   async loadPatient() {
     try {
       await this.helperService.showLoading();
       this.patient = await this.userService.getPatient(this.id) as any[];
-      this.modules = await this.userService.getPatientModules(this.id)as any[];
+      this.modules = await this.userService.getPatientModules(this.id) as any[];
       this.headsets = await this.userService.getCenterHeadsets();
       this.checkModulesUpdates();
       this.helperService.removeLoading();
@@ -65,7 +68,7 @@ export class PatientPage implements OnInit {
   }
 
   runModule(module) {
-    return  this.runModuleOffline(module);
+    return this.runModuleOffline(module);
     // this.selectHeadset(module);
   }
 
@@ -105,7 +108,7 @@ export class PatientPage implements OnInit {
   async checkModulesUpdates() {
     this.modules.forEach((m) => {
       if (!m.latest_version) { return; }
-
+      this.modulesHash[m.id] = m;
       this.mainEventsService.sendEventAsync('module-latest-version', m.latest_version);
     });
   }
@@ -132,5 +135,33 @@ export class PatientPage implements OnInit {
   resetModules() {
     this.mainEventsService.sendEventAsync('reset-all-installed-modules', this.showConsole);
     this.checkModulesUpdates();
+  }
+
+  trackDownloadProgress() {
+    this.events.subscribe('module-version-size', (versionData) => {
+      const currentModule = this.modulesHash[versionData.vr_module_id];
+      currentModule.size = versionData.size;
+      currentModule.ratio = 0.01;
+      this.app.tick();
+    });
+
+    this.events.subscribe('module-version-downloaded', (versionData) => {
+      const currentModule = this.modulesHash[versionData.vr_module_id];
+      currentModule.ratio = 1;
+      this.app.tick();
+    });
+
+    this.events.subscribe('module-version-installed', (versionData) => {
+      const currentModule = this.modulesHash[versionData.vr_module_id];
+      currentModule.ratio = null;
+      console.log(this.modules);
+      this.app.tick();
+    });
+
+    this.events.subscribe('module-version-downloading-progress', (versionData) => {
+      const currentModule = this.modulesHash[versionData.vr_module_id];
+      currentModule.ratio = (versionData.data / currentModule.size);
+      this.app.tick();
+    });
   }
 }

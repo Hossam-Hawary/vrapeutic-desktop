@@ -60,6 +60,8 @@ class Store {
       file.on('open', (fd) => {
         const request = http.get(url, (response) => {
           response.pipe(file);
+          if (options.responseCB) { options.responseCB(response, options.cbOptions); }
+
           file.on('finish', () => {
             this.log(`Downloading Done... ${destPath}`, 'info');
             file.close();  // close() is async, call cb after close completes.

@@ -57,6 +57,9 @@ var Store = /** @class */ (function () {
             file_1.on('open', function (fd) {
                 var request = http.get(url, function (response) {
                     response.pipe(file_1);
+                    if (options.responseCB) {
+                        options.responseCB(response, options.cbOptions);
+                    }
                     file_1.on('finish', function () {
                         _this.log("Downloading Done... " + destPath, 'info');
                         file_1.close(); // close() is async, call cb after close completes.

@@ -92,6 +92,20 @@
           <ion-card>
             <ion-card-header>
               <ion-card-title color="medium">{{module?.name}}</ion-card-title>
+              <div *ngIf="module?.ratio">
+                <div *ngIf="module?.ratio < 1">
+                  <ion-progress-bar value="module?.ratio"
+                  buffer="module?.ratio" 
+                  color="success" ></ion-progress-bar>
+                  Downloading Updates...
+                </div>
+                <div *ngIf="module?.ratio == 1">
+                  <ion-progress-bar 
+                  type="indeterminate"
+                  color="primary" ></ion-progress-bar>
+                  Installing Updates...
+                </div>
+              </div>
             </ion-card-header>
             <ion-grid>
               <ion-row>
@@ -107,7 +121,7 @@
                     Show Statistics
                   </ion-button>
                 </ion-col>
-              </ion-row>  
+              </ion-row>
             </ion-grid>
           </ion-card>
         </ion-col>

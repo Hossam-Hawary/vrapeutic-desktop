@@ -40,10 +40,12 @@ var electron_1 = require("electron");
 var path = require("path");
 var Store = require('./store').Store;
 var UPDATES_EVENTS = {
-    update_available_modules: 'update-available-modules',
+    update_available_modules_list: 'update-available-modules',
     reset_all_installed_modules: 'reset-all-installed-modules',
     reset_installed_module: 'reset-installed-module',
     module_latest_version: 'module-latest-version',
+    module_version_size: 'module-version-size',
+    module_version_downloading_progress: 'module-version-downloading-progress',
     module_version_downloaded: 'module-version-downloaded',
     module_version_installed: 'module-version-installed'
 };
@@ -87,17 +89,28 @@ function compareModuleVersions(latestVesionData) {
         return installDownloadedVersion(currentVersionData);
     }
     logMsg("You don't have the latest version.... " + JSON.stringify(currentVersionData), 'updates');
+    downloadNewVersion(latestVesionData);
+}
+function downloadNewVersion(latestVesionData) {
     logMsg("Will download..... " + latestVesionData.name, 'updates');
     var downoadCB = {
-        cb: downloadNewVersionCallback, cbOptions: latestVesionData
+        cb: downloadNewVersionDoneCallback, cbOptions: latestVesionData,
+        responseCB: downloadResponseCallback
     };
     store.download(latestVesionData.build.url, path.join('modules', latestVesionData.vr_module_id.toString(), latestVesionData.name), downoadCB);
 }
-function downloadNewVersionCallback(downloadedFile, versionData) {
+function downloadResponseCallback(res, versionData) {
+    versionData.size = parseInt(res.headers['content-length'], 10);
+    sendEvToWin(UPDATES_EVENTS.module_version_size, versionData);
+    res.on('data', function (chunk) {
+        versionData.data = chunk.length;
+        sendEvToWin(UPDATES_EVENTS.module_version_downloading_progress, versionData);
+    });
+}
+function downloadNewVersionDoneCallback(downloadedFile, versionData) {
     if (!downloadedFile) {
         return logMsg('Version is not downloaded..', 'error');
     }
-    logMsg("New Version is downloaded... " + versionData.name, 'updates');
     versionData.downloaded = true;
     versionData.downloaded_file = downloadedFile;
     sendEvToWin(UPDATES_EVENTS.module_version_downloaded, versionData);
@@ -122,10 +135,9 @@ function versionInstallCallback(unzipedDir, versionData) {
     versionData.installation_dir = unzipedDir;
     store.set(versionData.vr_module_id, versionData);
     sendEvToWin(UPDATES_EVENTS.module_version_installed, versionData);
-    logMsg("New Version is installed... " + JSON.stringify(versionData), 'updates');
 }
 function SetupEventsListeners() {
-    electron_1.ipcMain.on(UPDATES_EVENTS.update_available_modules, function (event, availableModules) {
+    electron_1.ipcMain.on(UPDATES_EVENTS.update_available_modules_list, function (event, availableModules) {
         store.set('available_modules', availableModules);
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, function (event) {

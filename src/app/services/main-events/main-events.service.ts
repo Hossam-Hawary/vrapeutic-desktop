@@ -49,7 +49,8 @@ export class MainEventsService {
     const mainEvents = [
       'mode-switched', 'device-connected', 'device-disconnected', 'authorized-devices-changed',
       'offline-headset-ready', 'desktop-module-ready', 'main-error', 'unauthorized-device-connected',
-      'console-log'
+      'console-log', 'module-version-size', 'module-version-downloading-progress',
+      'module-version-downloaded', 'module-version-installed'
     ];
 
     mainEvents.forEach((evName) => {
