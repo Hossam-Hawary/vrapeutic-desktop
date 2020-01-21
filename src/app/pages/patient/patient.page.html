@@ -94,7 +94,7 @@
               <ion-card-title color="medium">{{module?.name}}</ion-card-title>
               <div *ngIf="module?.ratio">
                 <div *ngIf="module?.ratio < 1">
-                  <ion-progress-bar value="module?.ratio"
+                  <ion-progress-bar [value]="module?.ratio"
                   buffer="module?.ratio" 
                   color="success" ></ion-progress-bar>
                   Downloading Updates...

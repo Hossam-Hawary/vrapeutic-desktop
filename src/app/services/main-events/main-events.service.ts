@@ -26,7 +26,7 @@ export class MainEventsService {
 
   sendEventAsync(eventName, options) {
     if (!environment.production) { return; }
-    const log = `sendEventAsync: ${ eventName }, ${JSON.stringify(options)}`;
+    const log = `sendEventAsync: ${eventName}, ${JSON.stringify(options)}`;
     this.electronService.ipcRenderer.send('send-console-log', log);
     return this.electronService.ipcRenderer.send(eventName, options);
   }
@@ -56,9 +56,10 @@ export class MainEventsService {
     mainEvents.forEach((evName) => {
       this.electronService.ipcRenderer.on(evName, (ev, options) => {
         this.events.publish(evName, options);
-
-        const log = `Received: ${evName}, ${ JSON.stringify(options)}`;
-        this.electronService.ipcRenderer.send('send-console-log', log);
+        if (evName !== 'module-version-downloading-progress') {
+          const log = `Received: ${evName}, ${JSON.stringify(options)}`;
+          this.electronService.ipcRenderer.send('send-console-log', log);
+        }
       });
     });
   }

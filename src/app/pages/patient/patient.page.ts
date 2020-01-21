@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
 import { MainEventsService } from '../../services/main-events/main-events.service';
@@ -27,7 +27,7 @@ export class PatientPage implements OnInit {
     public mainEventsService: MainEventsService,
     public modalController: ModalController,
     private events: Events,
-    private app: ApplicationRef
+    private zone: NgZone
   ) {
   }
 
@@ -139,29 +139,34 @@ export class PatientPage implements OnInit {
 
   trackDownloadProgress() {
     this.events.subscribe('module-version-size', (versionData) => {
-      const currentModule = this.modulesHash[versionData.vr_module_id];
-      currentModule.size = versionData.size;
-      currentModule.ratio = 0.01;
-      this.app.tick();
+      this.zone.run(() => {
+        const currentModule = this.modulesHash[versionData.vr_module_id];
+        currentModule.size = versionData.size;
+        currentModule.downloaded_size = 0;
+        currentModule.ratio = 0;
+      });
     });
 
     this.events.subscribe('module-version-downloaded', (versionData) => {
-      const currentModule = this.modulesHash[versionData.vr_module_id];
-      currentModule.ratio = 1;
-      this.app.tick();
+      this.zone.run(() => {
+        const currentModule = this.modulesHash[versionData.vr_module_id];
+        currentModule.ratio = 1;
+      });
     });
 
     this.events.subscribe('module-version-installed', (versionData) => {
-      const currentModule = this.modulesHash[versionData.vr_module_id];
-      currentModule.ratio = null;
-      console.log(this.modules);
-      this.app.tick();
+      this.zone.run(() => {
+        const currentModule = this.modulesHash[versionData.vr_module_id];
+        currentModule.ratio = null;
+      });
     });
 
     this.events.subscribe('module-version-downloading-progress', (versionData) => {
-      const currentModule = this.modulesHash[versionData.vr_module_id];
-      currentModule.ratio = (versionData.data / currentModule.size);
-      this.app.tick();
+      this.zone.run(() => {
+        const currentModule = this.modulesHash[versionData.vr_module_id];
+        currentModule.downloaded_size += versionData.data;
+        currentModule.ratio = (currentModule.downloaded_size / currentModule.size);
+      });
     });
   }
 }
