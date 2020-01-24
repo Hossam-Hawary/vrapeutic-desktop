@@ -5,6 +5,7 @@ var fs = require("fs");
 var unzipper = require("unzipper");
 var path = require("path");
 var http = require("http");
+var rimraf = require("rimraf");
 var Store = /** @class */ (function () {
     function Store(opts) {
         // Renderer process has to get `app` module via `remote.app`, whereas the main process can get it directly
@@ -63,9 +64,11 @@ var Store = /** @class */ (function () {
                     file_1.on('finish', function () {
                         _this.log("Downloading Done... " + destPath, 'info');
                         file_1.close(); // close() is async, call cb after close completes.
-                        if (options.cb) {
-                            options.cb(destPath, options.cbOptions);
-                        }
+                        file_1.on('close', function () {
+                            if (options.cb) {
+                                options.cb(destPath, options.cbOptions);
+                            }
+                        });
                     });
                 }).on('error', function (err) {
                     console.log(err);
@@ -101,6 +104,10 @@ var Store = /** @class */ (function () {
     };
     Store.prototype.ensureDirExist = function (filePath) {
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    };
+    Store.prototype.removeDir = function (dirName) {
+        var dirPath = path.join(this.userDataPath, dirName);
+        rimraf.sync(dirPath);
     };
     Store.prototype.parseDataFile = function (filePath, defaults) {
         // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.

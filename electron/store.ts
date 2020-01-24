@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as unzipper from 'unzipper';
 import * as path from 'path';
 import * as http from 'http';
+import * as  rimraf from 'rimraf';
 
 class Store {
   userDataPath: string;
@@ -15,7 +16,7 @@ class Store {
     this.log = opts.logMsg;
     this.userDataPath = app.getPath('userData');
     // We'll use the `configName` property to set the file name and path.join to bring it all together as a string
-    this.configPath = path.join(this.userDataPath , opts.configName + '.json');
+    this.configPath = path.join(this.userDataPath, opts.configName + '.json');
 
     this.data = this.parseDataFile(this.configPath, opts.defaults);
     this.log(`Saved Data is loaded... ${JSON.stringify(this.data)}`);
@@ -65,7 +66,9 @@ class Store {
           file.on('finish', () => {
             this.log(`Downloading Done... ${destPath}`, 'info');
             file.close();  // close() is async, call cb after close completes.
-            if (options.cb) { options.cb(destPath, options.cbOptions); }
+            file.on('close', () => {
+              if (options.cb) { options.cb(destPath, options.cbOptions); }
+            });
           });
         }).on('error', (err) => { // Handle errors
           console.log(err);
@@ -80,19 +83,24 @@ class Store {
     }
   }
 
-  unzipFile(targetFile,  options: any = {}) {
+  unzipFile(targetFile, options: any = {}) {
     const dist = options.dist || path.dirname(targetFile);
     fs.createReadStream(targetFile)
       .pipe(unzipper.Extract({ path: dist }))
       .on('close', () => {
         if (options.cb) { options.cb(dist, options.cbOptions); }
-      }).on('error',() => {
+      }).on('error', () => {
         if (options.cb) { options.cb(false, options.cbOptions); }
       });
   }
 
   ensureDirExist(filePath) {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  }
+
+  removeDir(dirName) {
+    const dirPath = path.join(this.userDataPath, dirName);
+    rimraf.sync(dirPath);
   }
 
   parseDataFile(filePath, defaults) {
@@ -112,4 +120,4 @@ class Store {
 
 
 // expose the class
-module.exports.Store =  Store;
+module.exports.Store = Store;

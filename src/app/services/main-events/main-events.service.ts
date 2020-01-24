@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Events } from '@ionic/angular';
 import { HelperService } from '../helper/helper.service';
@@ -11,13 +11,17 @@ export class MainEventsService {
   headsetStates = { none: 0, ready: 1, unauthorized: 2, not_ready: 3, preparing: 5 };
   headsetConnectedState = this.headsetStates.none;
   headsetsPrepared = [];
+  trackedModules = {};
 
   constructor(
     private electronService: ElectronService,
     private events: Events,
-    private helperService: HelperService) {
+    private helperService: HelperService,
+    private zone: NgZone
+  ) {
     this.setupHeadsetEvents();
     this.setupRunningModulesEvents();
+    this.trackDownloadProgress();
     this.events.subscribe('userUpdate', (user) => {
       this.headsetsPrepared = [];
       this.headsetConnectedState = this.headsetStates.none;
@@ -138,4 +142,56 @@ export class MainEventsService {
     this.helperService.showLoading('We are preparing the headset..., please don\'t unplug it now');
   }
 
+  getTrackedModules() {
+    return this.trackedModules;
+  }
+
+  resetTrackingModules(modules) {
+    this.zone.run(() => {
+      this.trackedModules = {};
+      this.updateTrackedModules(modules);
+    });
+  }
+
+  updateTrackedModules(modules = []) {
+    modules.forEach((m) => {
+      if (!m.latest_version || this.trackedModules[m.id]) { return; }
+
+      this.trackedModules[m.id] = {};
+      this.sendEventAsync('module-latest-version', m.latest_version);
+    });
+  }
+
+  trackDownloadProgress() {
+    this.events.subscribe('module-version-size', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.size = versionData.size;
+        currentModule.downloaded_size = 0;
+        currentModule.ratio = 0;
+      });
+    });
+
+    this.events.subscribe('module-version-downloaded', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.ratio = 1;
+      });
+    });
+
+    this.events.subscribe('module-version-installed', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.ratio = null;
+      });
+    });
+
+    this.events.subscribe('module-version-downloading-progress', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.downloaded_size += versionData.data;
+        currentModule.ratio = (currentModule.downloaded_size / currentModule.size);
+      });
+    });
+  }
 }

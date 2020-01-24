@@ -1,7 +1,6 @@
 
 import { ipcMain, dialog } from 'electron';
 import * as path from 'path';
-import * as fs from 'fs';
 import { shell } from 'electron';
 const { Store } = require('./store');
 

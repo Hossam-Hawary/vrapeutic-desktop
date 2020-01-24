@@ -1,9 +1,9 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from '../../services/helper/helper.service';
 import { MainEventsService } from '../../services/main-events/main-events.service';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController, Events } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { EditPatientComponent } from '../edit-patient/edit-patient.component';
 
 @Component({
@@ -18,23 +18,19 @@ export class PatientPage implements OnInit {
   showConsole = false;
   id: any;
   production: boolean;
-  modulesHash = {};
 
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
     private helperService: HelperService,
     public mainEventsService: MainEventsService,
-    public modalController: ModalController,
-    private events: Events,
-    private zone: NgZone
+    public modalController: ModalController
   ) {
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
     this.loadPatient();
-    this.trackDownloadProgress();
   }
 
   async loadPatient() {
@@ -43,7 +39,7 @@ export class PatientPage implements OnInit {
       this.patient = await this.userService.getPatient(this.id) as any[];
       this.modules = await this.userService.getPatientModules(this.id) as any[];
       this.headsets = await this.userService.getCenterHeadsets();
-      this.checkModulesUpdates();
+      this.mainEventsService.updateTrackedModules(this.modules);
       this.helperService.removeLoading();
     } catch (err) {
       this.helperService.showError(err);
@@ -105,14 +101,6 @@ export class PatientPage implements OnInit {
   //   );
   // }
 
-  async checkModulesUpdates() {
-    this.modules.forEach((m) => {
-      if (!m.latest_version) { return; }
-      this.modulesHash[m.id] = m;
-      this.mainEventsService.sendEventAsync('module-latest-version', m.latest_version);
-    });
-  }
-
   async editPatient() {
     const modal = await this.modalController.create({
       component: EditPatientComponent,
@@ -134,39 +122,6 @@ export class PatientPage implements OnInit {
 
   resetModules() {
     this.mainEventsService.sendEventAsync('reset-all-installed-modules', this.showConsole);
-    this.checkModulesUpdates();
-  }
-
-  trackDownloadProgress() {
-    this.events.subscribe('module-version-size', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.modulesHash[versionData.vr_module_id];
-        currentModule.size = versionData.size;
-        currentModule.downloaded_size = 0;
-        currentModule.ratio = 0;
-      });
-    });
-
-    this.events.subscribe('module-version-downloaded', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.modulesHash[versionData.vr_module_id];
-        currentModule.ratio = 1;
-      });
-    });
-
-    this.events.subscribe('module-version-installed', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.modulesHash[versionData.vr_module_id];
-        currentModule.ratio = null;
-      });
-    });
-
-    this.events.subscribe('module-version-downloading-progress', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.modulesHash[versionData.vr_module_id];
-        currentModule.downloaded_size += versionData.data;
-        currentModule.ratio = (currentModule.downloaded_size / currentModule.size);
-      });
-    });
+    this.mainEventsService.resetTrackingModules(this.modules);
   }
 }

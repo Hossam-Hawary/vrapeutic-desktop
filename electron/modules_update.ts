@@ -17,7 +17,7 @@ const UPDATES_EVENTS = {
 let store;
 let sendEvToWin;
 let logMsg;
-
+const modulesDir = 'modules';
 exports.checkModulesUpdate = (logMsgFn, sendEvToWinFn) => {
   sendEvToWin = sendEvToWinFn;
   logMsg = logMsgFn;
@@ -56,7 +56,7 @@ function downloadNewVersion(latestVesionData) {
   };
 
   store.download(latestVesionData.build.url, path.join(
-    'modules', latestVesionData.vr_module_id.toString(), latestVesionData.name
+    modulesDir, latestVesionData.vr_module_id.toString(), latestVesionData.name
   ), downoadCB);
 }
 
@@ -106,10 +106,12 @@ function SetupEventsListeners() {
   });
 
   ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, (event) => {
+    store.removeDir(modulesDir);
     store.resetDefaults({ available_modules: [] });
   });
 
   ipcMain.on(UPDATES_EVENTS.reset_installed_module, (event, moduleId) => {
+    store.removeDir(path.join(modulesDir, moduleId) );
     store.set(moduleId, null);
   });
 

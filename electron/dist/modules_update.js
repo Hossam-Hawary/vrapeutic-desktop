@@ -52,6 +52,7 @@ var UPDATES_EVENTS = {
 var store;
 var sendEvToWin;
 var logMsg;
+var modulesDir = 'modules';
 exports.checkModulesUpdate = function (logMsgFn, sendEvToWinFn) {
     sendEvToWin = sendEvToWinFn;
     logMsg = logMsgFn;
@@ -141,6 +142,7 @@ function SetupEventsListeners() {
         store.set('available_modules', availableModules);
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, function (event) {
+        store.removeDir(modulesDir);
         store.resetDefaults({ available_modules: [] });
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_installed_module, function (event, moduleId) {
