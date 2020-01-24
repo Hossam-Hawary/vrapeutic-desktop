@@ -37,23 +37,8 @@ class VrModuleRunner {
           err: 'Looks like the module is not downloaded yet, please try again later.'
         });
       }
-      this.prepareRunningMode(modulePath, options);
       this.startDesktopModule(options.moduleName, modulePath);
     });
-  }
-
-  prepareRunningMode(modulePath, options) {
-    try {
-      const roomFilePath = path.join(modulePath, `${options.moduleName}_Data`, 'room.txt');
-      fs.writeFileSync(roomFilePath, `${options.roomId}`, { flag: 'w+' });
-    } catch (err) {
-      const msg = 'Error...' + 'prepareRunningMode' + JSON.stringify(err);
-      this.logMsg(msg, 'error');
-      this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
-        ready: false, moduleName: options.moduleName,
-        err: 'We could not prepare the module before starting it!'
-      });
-    }
   }
 
   startDesktopModule(moduleName, modulePath) {
@@ -61,7 +46,7 @@ class VrModuleRunner {
       const opened = shell.openItem(path.join(modulePath, `${moduleName}.exe`));
       this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, { ready: opened, moduleName });
     } catch (err) {
-      const msg = 'Error...' + 'prepareRunningMode' + JSON.stringify(err);
+      const msg = 'Error...' + 'startDesktopModule' + JSON.stringify(err);
       this.logMsg(msg, 'error');
       this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
         ready: false, moduleName,
