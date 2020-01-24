@@ -42,7 +42,7 @@ class VrModuleRunner {
 
   startDesktopModule(moduleName, modulePath) {
     try {
-      const opened = shell.openItem(path.join(modulePath, `${moduleName}.exe`));
+      const opened = shell.openItem(path.join(modulePath, moduleName, `${moduleName}.exe`));
       this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, { ready: opened, moduleName });
     } catch (err) {
       const msg = 'Error...' + 'startDesktopModule' + JSON.stringify(err);

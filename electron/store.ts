@@ -103,6 +103,10 @@ class Store {
     rimraf.sync(dirPath);
   }
 
+  rmoveDir(oldPath, newPath) {
+    fs.renameSync(oldPath, newPath);
+  }
+
   parseDataFile(filePath, defaults) {
     // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.
     // `fs.readFileSync` will return a JSON string which we then parse into a Javascript object
