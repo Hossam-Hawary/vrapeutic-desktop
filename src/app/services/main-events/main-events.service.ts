@@ -53,7 +53,8 @@ export class MainEventsService {
     const mainEvents = [
       'mode-switched', 'device-connected', 'device-disconnected', 'authorized-devices-changed',
       'offline-headset-ready', 'desktop-module-ready', 'main-error', 'unauthorized-device-connected',
-      'console-log', 'module-version-size', 'module-version-downloading-progress',
+      'console-log', 'new-module-version-available-to-download', 'new-module-version-available-to-install',
+      'module-version-size', 'module-version-downloading-progress',
       'module-version-downloaded', 'module-version-installed'
     ];
 
@@ -169,6 +170,7 @@ export class MainEventsService {
         currentModule.size = versionData.size;
         currentModule.downloaded_size = 0;
         currentModule.ratio = 0;
+        currentModule.downloading = true;
       });
     });
 
@@ -176,6 +178,8 @@ export class MainEventsService {
       this.zone.run(() => {
         const currentModule = this.trackedModules[versionData.vr_module_id];
         currentModule.ratio = 1;
+        currentModule.new_version = null;
+        currentModule.downloading = false;
       });
     });
 
@@ -183,6 +187,7 @@ export class MainEventsService {
       this.zone.run(() => {
         const currentModule = this.trackedModules[versionData.vr_module_id];
         currentModule.ratio = null;
+        currentModule.new_version_not_installed = null;
       });
     });
 
@@ -191,6 +196,20 @@ export class MainEventsService {
         const currentModule = this.trackedModules[versionData.vr_module_id];
         currentModule.downloaded_size += versionData.data;
         currentModule.ratio = (currentModule.downloaded_size / currentModule.size);
+      });
+    });
+
+    this.events.subscribe('new-module-version-available-to-download', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.new_version = versionData.name;
+      });
+    });
+
+    this.events.subscribe('new-module-version-available-to-install', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.new_version_not_installed = versionData.name;
       });
     });
   }

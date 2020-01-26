@@ -92,7 +92,7 @@
           <ion-card>
             <ion-card-header>
               <ion-card-title color="medium">{{module?.name}}</ion-card-title>
-              <div *ngIf="mainEventsService.trackedModules[module.id]?.ratio">
+              <div *ngIf="mainEventsService.trackedModules[module.id]?.downloading">
                 <div *ngIf="mainEventsService.trackedModules[module.id]?.ratio < 1">
                   <ion-progress-bar [value]="mainEventsService.trackedModules[module.id]?.ratio"
                   [buffer]="mainEventsService.trackedModules[module.id]?.ratio" 
@@ -106,6 +106,24 @@
                   Installing Updates...
                 </div>
               </div>
+
+              <div *ngIf="!mainEventsService.trackedModules[module.id]?.downloading">
+                <ion-text color="medium" *ngIf="mainEventsService.trackedModules[module.id]?.new_version">
+                  <ion-icon color="primary" name="alert"></ion-icon>
+                  The new version {{mainEventsService.trackedModules[module.id]?.new_version}} is available.
+                  <ion-button color="primary" fill="clear" size='small' (click)="downloadLatestVersion(module)">
+                    Download Now
+                  </ion-button>
+                </ion-text>
+                <ion-text color="medium" *ngIf="mainEventsService.trackedModules[module.id]?.new_version_not_installed">
+                <ion-icon color="primary" name="alert"></ion-icon>
+                  The new version {{mainEventsService.trackedModules[module.id]?.new_version}} is not installed.
+                  <ion-button color="primary" fill="clear" size='small' (click)="installLatestVersion(module)">
+                    Install Now
+                  </ion-button>
+                </ion-text>
+              </div>
+
             </ion-card-header>
             <ion-grid>
               <ion-row>

@@ -109,6 +109,9 @@ var Store = /** @class */ (function () {
         var dirPath = path.join(this.userDataPath, dirName);
         rimraf.sync(dirPath);
     };
+    Store.prototype.rmoveDir = function (oldPath, newPath) {
+        fs.renameSync(oldPath, newPath);
+    };
     Store.prototype.parseDataFile = function (filePath, defaults) {
         // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.
         // `fs.readFileSync` will return a JSON string which we then parse into a Javascript object

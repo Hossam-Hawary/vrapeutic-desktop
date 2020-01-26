@@ -8,6 +8,10 @@ const UPDATES_EVENTS = {
   reset_all_installed_modules: 'reset-all-installed-modules',
   reset_installed_module: 'reset-installed-module',
   module_latest_version: 'module-latest-version',
+  new_module_version_available_to_download: 'new-module-version-available-to-download',
+  new_module_version_available_to_install: 'new-module-version-available-to-install',
+  download_new_module_version: 'download-new-module-version',
+  install_new_module_version: 'install-new-module-version',
   module_version_size: 'module-version-size',
   module_version_downloading_progress: 'module-version-downloading-progress',
   module_version_downloaded: 'module-version-downloaded',
@@ -39,17 +43,22 @@ const showDialog = async (title, message, detail, buttons = ['Ok']) => {
 
 function compareModuleVersions(latestVesionData) {
   const currentVersionData = store.get(latestVesionData.vr_module_id) || {};
+  if (currentVersionData.downloading) { return; }
   if (currentVersionData.name === latestVesionData.name && currentVersionData.installed) { return; }
   if (currentVersionData.name === latestVesionData.name && currentVersionData.downloaded) {
-    return installDownloadedVersion(currentVersionData);
+    sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
   }
 
   logMsg(`You don't have the latest version.... ${JSON.stringify(currentVersionData)}`, 'updates');
-  downloadNewVersion(latestVesionData);
+  sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_download, latestVesionData);
 }
 
 function downloadNewVersion(latestVesionData) {
   logMsg(`Will download..... ${latestVesionData.name}`, 'updates');
+  const moduleId = latestVesionData.vr_module_id;
+  const currentVersionData = store.get(moduleId) || {};
+  currentVersionData.downloading = true;
+  store.set(moduleId, currentVersionData);
   const downoadCB = {
     cb: downloadNewVersionDoneCallback, cbOptions: latestVesionData,
     responseCB: downloadResponseCallback
@@ -71,7 +80,13 @@ function downloadResponseCallback(res, versionData) {
 }
 
 function downloadNewVersionDoneCallback(downloadedFile, versionData) {
-  if (!downloadedFile) { return logMsg('Version is not downloaded..', 'error'); }
+  if (!downloadedFile) {
+    logMsg('Version is not downloaded..', 'error');
+    const moduleId = versionData.vr_module_id;
+    const currentVersionData = store.get(moduleId) || {};
+    currentVersionData.downloading = false;
+    return store.set(moduleId, currentVersionData);
+  }
 
   versionData.downloaded = true;
   versionData.downloaded_file = downloadedFile;
@@ -111,7 +126,7 @@ function SetupEventsListeners() {
   });
 
   ipcMain.on(UPDATES_EVENTS.reset_installed_module, (event, moduleId) => {
-    store.removeDir(path.join(modulesDir, moduleId) );
+    store.removeDir(path.join(modulesDir, moduleId));
     store.set(moduleId, null);
   });
 
@@ -119,5 +134,18 @@ function SetupEventsListeners() {
     if (!latestVesionData) { return; }
 
     compareModuleVersions(latestVesionData);
+  });
+
+  ipcMain.on(UPDATES_EVENTS.download_new_module_version, (event, latestVesionData) => {
+    if (!latestVesionData) { return; }
+
+    downloadNewVersion(latestVesionData);
+  });
+
+  ipcMain.on(UPDATES_EVENTS.install_new_module_version, (event, latestVesionData) => {
+    if (!latestVesionData) { return; }
+    const currentVersionData = store.get(latestVesionData.vr_module_id) || {};
+
+    installDownloadedVersion(currentVersionData);
   });
 }

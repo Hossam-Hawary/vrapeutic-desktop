@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
-var fs = require("fs");
 var electron_2 = require("electron");
 var Store = require('./store').Store;
 var VrModuleRunner = /** @class */ (function () {
@@ -32,31 +31,16 @@ var VrModuleRunner = /** @class */ (function () {
                     err: 'Looks like the module is not downloaded yet, please try again later.'
                 });
             }
-            _this.prepareRunningMode(modulePath, options);
             _this.startDesktopModule(options.moduleName, modulePath);
         });
     };
-    VrModuleRunner.prototype.prepareRunningMode = function (modulePath, options) {
-        try {
-            var roomFilePath = path.join(modulePath, options.moduleName + "_Data", 'room.txt');
-            fs.writeFileSync(roomFilePath, "" + options.roomId, { flag: 'w+' });
-        }
-        catch (err) {
-            var msg = 'Error...' + 'prepareRunningMode' + JSON.stringify(err);
-            this.logMsg(msg, 'error');
-            this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
-                ready: false, moduleName: options.moduleName,
-                err: 'We could not prepare the module before starting it!'
-            });
-        }
-    };
     VrModuleRunner.prototype.startDesktopModule = function (moduleName, modulePath) {
         try {
-            var opened = electron_2.shell.openItem(path.join(modulePath, moduleName + ".exe"));
+            var opened = electron_2.shell.openItem(path.join(modulePath, moduleName, moduleName + ".exe"));
             this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, { ready: opened, moduleName: moduleName });
         }
         catch (err) {
-            var msg = 'Error...' + 'prepareRunningMode' + JSON.stringify(err);
+            var msg = 'Error...' + 'startDesktopModule' + JSON.stringify(err);
             this.logMsg(msg, 'error');
             this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
                 ready: false, moduleName: moduleName,

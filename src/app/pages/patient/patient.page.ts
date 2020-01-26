@@ -115,6 +115,14 @@ export class PatientPage implements OnInit {
     if (data.patient) { this.patient = data.patient; }
   }
 
+  downloadLatestVersion(vrModule) {
+    this.mainEventsService.sendEventAsync('download-new-module-version', vrModule.latest_version);
+  }
+
+  installLatestVersion(vrModule) {
+    this.mainEventsService.sendEventAsync('install-new-module-version', vrModule.latest_version);
+  }
+
   toggleConsole() {
     this.showConsole = !this.showConsole;
     this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
