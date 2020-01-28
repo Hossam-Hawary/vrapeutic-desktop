@@ -51,7 +51,6 @@ autoUpdater.logger = log;
 var server = require('./server');
 var modulesUpdate = require('./modules_update');
 var desktopAutoUpdate = require('./auto_update');
-var client = adb.createClient();
 var MAIN_EVENTS = {
     error: 'main-error',
     offline_headset_ready: 'offline-headset-ready',
@@ -62,9 +61,11 @@ var MAIN_EVENTS = {
     authorized_devices_changed: 'authorized-devices-changed',
     console_log: 'console-log',
     show_console_log: 'show-console-log',
-    send_console_log: 'send-console-log'
+    send_console_log: 'send-console-log',
+    close_main_win: 'close-main-win'
 };
 var appVersion = electron_1.app.getVersion();
+var client;
 var colors = {
     error: 'red',
     info: 'turquoise',
@@ -96,6 +97,10 @@ electron_1.ipcMain.on(MAIN_EVENTS.show_console_log, function (event, show) {
 });
 electron_1.ipcMain.on(MAIN_EVENTS.send_console_log, function (event, msg) {
     logMsg(msg, 'info');
+});
+electron_1.ipcMain.on(MAIN_EVENTS.close_main_win, function (event, msg) {
+    win.close();
+    electron_1.app.quit();
 });
 electron_1.app.on('ready', initDesktopApp);
 electron_1.app.on('activate', function () {
@@ -147,6 +152,9 @@ function createWindow() {
                         mainWindowBounds.height = height;
                         mainWindowBounds.width = width;
                         storeHelper.set('mainWindowBounds', mainWindowBounds);
+                    });
+                    win.on('close', function (ev) {
+                        modulesUpdate.windowWillClose(ev);
                     });
                     return [2 /*return*/];
             }
@@ -219,9 +227,15 @@ function trackDevices() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, client.trackDevices()];
+                    if (process.platform !== 'win32') {
+                        return [2 /*return*/, logMsg(process.platform, 'debug')];
+                    }
+                    client = adb.createClient();
+                    _a.label = 1;
                 case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, client.trackDevices()];
+                case 2:
                     tracker = _a.sent();
                     tracker.on('add', function (device) {
                         authorizeHeadsetDevice(device);
@@ -233,14 +247,14 @@ function trackDevices() {
                     tracker.on('end', function () {
                         console.log('Tracking stopped');
                     });
-                    return [3 /*break*/, 3];
-                case 2:
+                    return [3 /*break*/, 4];
+                case 3:
                     err_1 = _a.sent();
                     msg = 'Error...' + 'trackDevices' + JSON.stringify(err_1);
                     logMsg(msg, 'error');
                     sendEvToWin(MAIN_EVENTS.error, err_1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     });
@@ -261,7 +275,11 @@ function authorizeConnectedHeadsets() {
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, client.listDevices()];
+                case 0:
+                    if (process.platform !== 'win32') {
+                        return [2 /*return*/, logMsg(process.platform, 'debug')];
+                    }
+                    return [4 /*yield*/, client.listDevices()];
                 case 1:
                     devices = _a.sent();
                     devices.forEach(function (device) { return __awaiter(_this, void 0, void 0, function () {
@@ -287,7 +305,12 @@ function prepareHeadsetOnOfflineMode() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
+                    if (process.platform !== 'win32') {
+                        return [2 /*return*/, logMsg(process.platform, 'debug')];
+                    }
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
                     if (!headsetDevice) {
                         msg = 'Error: No Authorized Headset connected!';
                         logMsg(msg, 'error');
@@ -298,13 +321,13 @@ function prepareHeadsetOnOfflineMode() {
                     ipFilePath = path.join(__dirname, 'ip.json');
                     fs.writeFileSync(ipFilePath, data);
                     return [4 /*yield*/, client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json')];
-                case 1:
+                case 2:
                     transfer = _a.sent();
                     transfer.once('end', function () {
                         sendEvToWin(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice: headsetDevice });
                     });
-                    return [3 /*break*/, 3];
-                case 2:
+                    return [3 /*break*/, 4];
+                case 3:
                     err_2 = _a.sent();
                     sendEvToWin(MAIN_EVENTS.offline_headset_ready, {
                         ready: false, headsetDevice: headsetDevice,
@@ -313,8 +336,8 @@ function prepareHeadsetOnOfflineMode() {
                     msg = 'Error...' + 'prepareHeadsetOnOfflineMode' + JSON.stringify(err_2);
                     logMsg(msg, 'error');
                     sendEvToWin(MAIN_EVENTS.error, err_2);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     });

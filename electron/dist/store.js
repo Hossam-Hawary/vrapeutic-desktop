@@ -35,6 +35,12 @@ var Store = /** @class */ (function () {
             console.log(err);
         }
     };
+    Store.prototype.getAllKeys = function () {
+        return Object.keys(this.data);
+    };
+    Store.prototype.getAllValues = function () {
+        return Object.values(this.data);
+    };
     Store.prototype.resetDefaults = function (defaults) {
         this.data = defaults;
         try {

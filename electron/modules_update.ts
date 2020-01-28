@@ -4,7 +4,6 @@ import * as path from 'path';
 
 const { Store } = require('./store');
 const UPDATES_EVENTS = {
-  update_available_modules_list: 'update-available-modules',
   reset_all_installed_modules: 'reset-all-installed-modules',
   reset_installed_module: 'reset-installed-module',
   module_latest_version: 'module-latest-version',
@@ -15,23 +14,14 @@ const UPDATES_EVENTS = {
   module_version_size: 'module-version-size',
   module_version_downloading_progress: 'module-version-downloading-progress',
   module_version_downloaded: 'module-version-downloaded',
-  module_version_installed: 'module-version-installed'
+  module_version_installed: 'module-version-installed',
+  close_main_win: 'close-main-win'
 };
 
 let store;
 let sendEvToWin;
 let logMsg;
 const modulesDir = 'modules';
-exports.checkModulesUpdate = (logMsgFn, sendEvToWinFn) => {
-  sendEvToWin = sendEvToWinFn;
-  logMsg = logMsgFn;
-  store = new Store({
-    logMsg,
-    configName: 'modules-versions',
-    defaults: { available_modules: [] }
-  });
-  SetupEventsListeners();
-};
 
 const showDialog = async (title, message, detail, buttons = ['Ok']) => {
   const dialogOpts = {
@@ -41,11 +31,53 @@ const showDialog = async (title, message, detail, buttons = ['Ok']) => {
   return returnValue.response;
 };
 
+const checkRunningUpdates = () => {
+  return store.getAllValues().some((moduleVersion: any) => moduleVersion.downloading);
+};
+
+const ignoreRunningUpdates = () => {
+  const currenModulesVersions: any[] = store.getAllValues();
+  currenModulesVersions.filter((moduleVersion: any) => moduleVersion.downloading ).forEach((moduleVersion: any) => {
+    moduleVersion.downloading = false;
+    store.set(moduleVersion.vr_module_id, moduleVersion);
+  });
+};
+
+const informUserWithRunningUpdates = async () => {
+  const response = await showDialog(
+    'Modules Still Updating',
+    'Some of your modules are still updating',
+    '',
+    ['Quit', 'Continue Updating']);
+  if (response === 0) {
+    ignoreRunningUpdates();
+    ipcMain.emit(UPDATES_EVENTS.close_main_win);
+  }
+};
+
+exports.checkModulesUpdate = (logMsgFn, sendEvToWinFn) => {
+  sendEvToWin = sendEvToWinFn;
+  logMsg = logMsgFn;
+  store = new Store({
+    logMsg,
+    configName: 'modules-versions',
+    defaults: {}
+  });
+  SetupEventsListeners();
+};
+
+exports.windowWillClose = (ev) => {
+  if (checkRunningUpdates()) {
+    ev.preventDefault();
+    informUserWithRunningUpdates();
+  }
+};
+
 function compareModuleVersions(latestVesionData) {
   const currentVersionData = store.get(latestVesionData.vr_module_id) || {};
   if (currentVersionData.downloading) { return; }
-  if (currentVersionData.name === latestVesionData.name && currentVersionData.installed) { return; }
-  if (currentVersionData.name === latestVesionData.name && currentVersionData.downloaded) {
+  if (currentVersionData.id === latestVesionData.id && currentVersionData.installed) { return; }
+  if (currentVersionData.id === latestVesionData.id && currentVersionData.downloaded) {
     sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
   }
 
@@ -116,13 +148,9 @@ function versionInstallCallback(unzipedDir, versionData) {
 
 function SetupEventsListeners() {
 
-  ipcMain.on(UPDATES_EVENTS.update_available_modules_list, (event, availableModules) => {
-    store.set('available_modules', availableModules);
-  });
-
   ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, (event) => {
     store.removeDir(modulesDir);
-    store.resetDefaults({ available_modules: [] });
+    store.resetDefaults({});
   });
 
   ipcMain.on(UPDATES_EVENTS.reset_installed_module, (event, moduleId) => {

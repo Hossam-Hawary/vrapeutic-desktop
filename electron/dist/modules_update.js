@@ -40,7 +40,6 @@ var electron_1 = require("electron");
 var path = require("path");
 var Store = require('./store').Store;
 var UPDATES_EVENTS = {
-    update_available_modules_list: 'update-available-modules',
     reset_all_installed_modules: 'reset-all-installed-modules',
     reset_installed_module: 'reset-installed-module',
     module_latest_version: 'module-latest-version',
@@ -51,22 +50,13 @@ var UPDATES_EVENTS = {
     module_version_size: 'module-version-size',
     module_version_downloading_progress: 'module-version-downloading-progress',
     module_version_downloaded: 'module-version-downloaded',
-    module_version_installed: 'module-version-installed'
+    module_version_installed: 'module-version-installed',
+    close_main_win: 'close-main-win'
 };
 var store;
 var sendEvToWin;
 var logMsg;
 var modulesDir = 'modules';
-exports.checkModulesUpdate = function (logMsgFn, sendEvToWinFn) {
-    sendEvToWin = sendEvToWinFn;
-    logMsg = logMsgFn;
-    store = new Store({
-        logMsg: logMsg,
-        configName: 'modules-versions',
-        defaults: { available_modules: [] }
-    });
-    SetupEventsListeners();
-};
 var showDialog = function (title, message, detail, buttons) {
     if (buttons === void 0) { buttons = ['Ok']; }
     return __awaiter(_this, void 0, void 0, function () {
@@ -85,15 +75,56 @@ var showDialog = function (title, message, detail, buttons) {
         });
     });
 };
+var checkRunningUpdates = function () {
+    return store.getAllValues().some(function (moduleVersion) { return moduleVersion.downloading; });
+};
+var ignoreRunningUpdates = function () {
+    var currenModulesVersions = store.getAllValues();
+    currenModulesVersions.filter(function (moduleVersion) { return moduleVersion.downloading; }).forEach(function (moduleVersion) {
+        moduleVersion.downloading = false;
+        store.set(moduleVersion.vr_module_id, moduleVersion);
+    });
+};
+var informUserWithRunningUpdates = function () { return __awaiter(_this, void 0, void 0, function () {
+    var response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, showDialog('Modules Still Updating', 'Some of your modules are still updating', '', ['Quit', 'Continue Updating'])];
+            case 1:
+                response = _a.sent();
+                if (response === 0) {
+                    ignoreRunningUpdates();
+                    electron_1.ipcMain.emit(UPDATES_EVENTS.close_main_win);
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.checkModulesUpdate = function (logMsgFn, sendEvToWinFn) {
+    sendEvToWin = sendEvToWinFn;
+    logMsg = logMsgFn;
+    store = new Store({
+        logMsg: logMsg,
+        configName: 'modules-versions',
+        defaults: {}
+    });
+    SetupEventsListeners();
+};
+exports.windowWillClose = function (ev) {
+    if (checkRunningUpdates()) {
+        ev.preventDefault();
+        informUserWithRunningUpdates();
+    }
+};
 function compareModuleVersions(latestVesionData) {
     var currentVersionData = store.get(latestVesionData.vr_module_id) || {};
     if (currentVersionData.downloading) {
         return;
     }
-    if (currentVersionData.name === latestVesionData.name && currentVersionData.installed) {
+    if (currentVersionData.id === latestVesionData.id && currentVersionData.installed) {
         return;
     }
-    if (currentVersionData.name === latestVesionData.name && currentVersionData.downloaded) {
+    if (currentVersionData.id === latestVesionData.id && currentVersionData.downloaded) {
         sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
     }
     logMsg("You don't have the latest version.... " + JSON.stringify(currentVersionData), 'updates');
@@ -153,12 +184,9 @@ function versionInstallCallback(unzipedDir, versionData) {
     sendEvToWin(UPDATES_EVENTS.module_version_installed, versionData);
 }
 function SetupEventsListeners() {
-    electron_1.ipcMain.on(UPDATES_EVENTS.update_available_modules_list, function (event, availableModules) {
-        store.set('available_modules', availableModules);
-    });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, function (event) {
         store.removeDir(modulesDir);
-        store.resetDefaults({ available_modules: [] });
+        store.resetDefaults({});
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_installed_module, function (event, moduleId) {
         store.removeDir(path.join(modulesDir, moduleId));

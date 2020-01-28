@@ -15,7 +15,6 @@ autoUpdater.logger = log;
 const server = require('./server');
 const modulesUpdate = require('./modules_update');
 const desktopAutoUpdate = require('./auto_update');
-const client = adb.createClient();
 const MAIN_EVENTS = {
   error: 'main-error',
   offline_headset_ready: 'offline-headset-ready',
@@ -26,9 +25,11 @@ const MAIN_EVENTS = {
   authorized_devices_changed: 'authorized-devices-changed',
   console_log: 'console-log',
   show_console_log: 'show-console-log',
-  send_console_log: 'send-console-log'
+  send_console_log: 'send-console-log',
+  close_main_win: 'close-main-win'
 };
 const appVersion = app.getVersion();
+let client;
 const colors = {
   error: 'red',
   info: 'turquoise',
@@ -65,6 +66,11 @@ ipcMain.on(MAIN_EVENTS.show_console_log, (event, show) => {
 
 ipcMain.on(MAIN_EVENTS.send_console_log, (event, msg) => {
   logMsg(msg, 'info');
+});
+
+ipcMain.on(MAIN_EVENTS.close_main_win, (event, msg) => {
+  win.close();
+  app.quit();
 });
 
 app.on('ready', initDesktopApp);
@@ -114,6 +120,10 @@ async function createWindow() {
     mainWindowBounds.height = height;
     mainWindowBounds.width = width;
     storeHelper.set('mainWindowBounds', mainWindowBounds);
+  });
+
+  win.on('close', (ev) => {
+    modulesUpdate.windowWillClose(ev);
   });
 
 }
@@ -183,6 +193,9 @@ async function setupLogging() {
 }
 
 async function trackDevices() {
+  if (process.platform !== 'win32') { return logMsg(process.platform, 'debug'); }
+
+  client = adb.createClient();
   try {
     const tracker = await client.trackDevices();
     tracker.on('add', (device) => {
@@ -218,6 +231,8 @@ function authorizeHeadsetDevice(device) {
 }
 
 async function authorizeConnectedHeadsets() {
+  if (process.platform !== 'win32') { return logMsg(process.platform, 'debug'); }
+
   const devices = await client.listDevices();
   devices.forEach(async device => {
     const fet = await client.getFeatures(device.id);
@@ -227,6 +242,8 @@ async function authorizeConnectedHeadsets() {
 }
 
 async function prepareHeadsetOnOfflineMode() {
+  if (process.platform !== 'win32') { return logMsg(process.platform, 'debug'); }
+
   try {
 
     if (!headsetDevice) {

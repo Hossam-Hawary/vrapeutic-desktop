@@ -41,6 +41,14 @@ class Store {
     }
   }
 
+  getAllKeys() {
+    return Object.keys(this.data);
+  }
+
+  getAllValues() {
+    return Object.values(this.data);
+  }
+
   resetDefaults(defaults) {
     this.data = defaults;
     try {

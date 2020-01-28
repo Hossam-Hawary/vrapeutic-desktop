@@ -17,7 +17,7 @@ var VrModuleRunner = /** @class */ (function () {
         this.store = new Store({
             logMsg: this.logMsg,
             configName: 'modules-versions',
-            defaults: { available_modules: [] }
+            defaults: {}
         });
     }
     VrModuleRunner.prototype.SetupEventsListeners = function () {

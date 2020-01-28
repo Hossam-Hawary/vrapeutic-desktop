@@ -22,7 +22,7 @@ class VrModuleRunner {
     this.store = new Store({
       logMsg: this.logMsg,
       configName: 'modules-versions',
-      defaults: { available_modules: [] }
+      defaults: {}
     });
   }
 
