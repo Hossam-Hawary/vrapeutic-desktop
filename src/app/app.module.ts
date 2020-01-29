@@ -9,7 +9,6 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
 import { InterceptorModule } from './interceptor.module';
 import { ChartsModule } from 'ng2-charts';
-import {StatsComponent} from './pages/stats/stats.component';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';

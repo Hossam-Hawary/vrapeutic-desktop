@@ -59,7 +59,7 @@ class Store {
   }
 
   download(url, dest, options: any = {}, ext = 'zip') {
-    const destPath = path.join(this.userDataPath, (dest + '.' + ext));
+    let destPath = path.join(this.userDataPath, (dest + '.' + ext));
     try {
       this.ensureDirExist(destPath);
       this.log(`Try Downloading... ${destPath}`, 'info');
@@ -73,19 +73,21 @@ class Store {
 
           file.on('finish', () => {
             this.log(`Downloading Done... ${destPath}`, 'info');
-            file.close();  // close() is async, call cb after close completes.
             file.on('close', () => {
               if (options.cb) { options.cb(destPath, options.cbOptions); }
             });
+            file.close();  // close() is async, call cb after close completes.
           });
         }).on('error', (err) => { // Handle errors
-          console.log(err);
+          destPath = null;
           this.log(`Downloading request Error... ${JSON.stringify(err)}`, 'error');
-          fs.unlink(dest, this.log); // Delete the file async. (But we don't check the result)
+          this.removeFile(dest); // Delete the file async. (But we don't check the result)
           if (options.cb) { options.cb(false, options.cbOptions); }
         });
       });
+      return destPath;
     } catch (err) {
+      destPath = null;
       this.log(`Downloading Error... ${JSON.stringify(err)}`);
       if (options.cb) { options.cb(false, options.cbOptions); }
     }
@@ -111,8 +113,12 @@ class Store {
     rimraf.sync(dirPath);
   }
 
-  rmoveDir(oldPath, newPath) {
+  moveDir(oldPath, newPath) {
     fs.renameSync(oldPath, newPath);
+  }
+
+  removeFile(filePath) {
+    fs.unlink(filePath, this.log); // Delete the file async. (But we don't check the result)
   }
 
   parseDataFile(filePath, defaults) {

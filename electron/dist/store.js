@@ -69,24 +69,26 @@ var Store = /** @class */ (function () {
                     }
                     file_1.on('finish', function () {
                         _this.log("Downloading Done... " + destPath, 'info');
-                        file_1.close(); // close() is async, call cb after close completes.
                         file_1.on('close', function () {
                             if (options.cb) {
                                 options.cb(destPath, options.cbOptions);
                             }
                         });
+                        file_1.close(); // close() is async, call cb after close completes.
                     });
                 }).on('error', function (err) {
-                    console.log(err);
+                    destPath = null;
                     _this.log("Downloading request Error... " + JSON.stringify(err), 'error');
-                    fs.unlink(dest, _this.log); // Delete the file async. (But we don't check the result)
+                    _this.removeFile(dest); // Delete the file async. (But we don't check the result)
                     if (options.cb) {
                         options.cb(false, options.cbOptions);
                     }
                 });
             });
+            return destPath;
         }
         catch (err) {
+            destPath = null;
             this.log("Downloading Error... " + JSON.stringify(err));
             if (options.cb) {
                 options.cb(false, options.cbOptions);
@@ -115,8 +117,11 @@ var Store = /** @class */ (function () {
         var dirPath = path.join(this.userDataPath, dirName);
         rimraf.sync(dirPath);
     };
-    Store.prototype.rmoveDir = function (oldPath, newPath) {
+    Store.prototype.moveDir = function (oldPath, newPath) {
         fs.renameSync(oldPath, newPath);
+    };
+    Store.prototype.removeFile = function (filePath) {
+        fs.unlink(filePath, this.log); // Delete the file async. (But we don't check the result)
     };
     Store.prototype.parseDataFile = function (filePath, defaults) {
         // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.

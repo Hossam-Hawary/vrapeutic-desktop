@@ -22,6 +22,7 @@ let store;
 let sendEvToWin;
 let logMsg;
 const modulesDir = 'modules';
+const modulesResponses = [];
 
 const showDialog = async (title, message, detail, buttons = ['Ok']) => {
   const dialogOpts = {
@@ -36,9 +37,11 @@ const checkRunningUpdates = () => {
 };
 
 const ignoreRunningUpdates = () => {
+  modulesResponses.forEach(res => res.pause());
   const currenModulesVersions: any[] = store.getAllValues();
   currenModulesVersions.filter((moduleVersion: any) => moduleVersion.downloading ).forEach((moduleVersion: any) => {
-    moduleVersion.downloading = false;
+    store.removeFile(moduleVersion.downloading);
+    moduleVersion.downloading = null;
     store.set(moduleVersion.vr_module_id, moduleVersion);
   });
 };
@@ -88,23 +91,24 @@ function compareModuleVersions(latestVesionData) {
 function downloadNewVersion(latestVesionData) {
   logMsg(`Will download..... ${latestVesionData.name}`, 'updates');
   const moduleId = latestVesionData.vr_module_id;
-  const currentVersionData = store.get(moduleId) || {};
-  currentVersionData.downloading = true;
-  store.set(moduleId, currentVersionData);
+  const currentVersionData = store.get(moduleId) || { vr_module_id: moduleId};
   const downoadCB = {
     cb: downloadNewVersionDoneCallback, cbOptions: latestVesionData,
     responseCB: downloadResponseCallback
   };
-
-  store.download(latestVesionData.build.url, path.join(
+  const downloadPath = path.join(
     modulesDir, latestVesionData.vr_module_id.toString(), latestVesionData.name
-  ), downoadCB);
+    );
+  currentVersionData.downloading = store.download(latestVesionData.build.url, downloadPath, downoadCB);
+  store.set(moduleId, currentVersionData);
 }
 
 function downloadResponseCallback(res, versionData) {
   versionData.size = parseInt(res.headers['content-length'], 10);
 
   sendEvToWin(UPDATES_EVENTS.module_version_size, versionData);
+  modulesResponses.push(res);
+
   res.on('data', chunk => {
     versionData.data = chunk.length;
     sendEvToWin(UPDATES_EVENTS.module_version_downloading_progress, versionData);
@@ -115,8 +119,8 @@ function downloadNewVersionDoneCallback(downloadedFile, versionData) {
   if (!downloadedFile) {
     logMsg('Version is not downloaded..', 'error');
     const moduleId = versionData.vr_module_id;
-    const currentVersionData = store.get(moduleId) || {};
-    currentVersionData.downloading = false;
+    const currentVersionData = store.get(moduleId);
+    currentVersionData.downloading = null;
     return store.set(moduleId, currentVersionData);
   }
 

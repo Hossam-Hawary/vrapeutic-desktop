@@ -57,6 +57,7 @@ var store;
 var sendEvToWin;
 var logMsg;
 var modulesDir = 'modules';
+var modulesResponses = [];
 var showDialog = function (title, message, detail, buttons) {
     if (buttons === void 0) { buttons = ['Ok']; }
     return __awaiter(_this, void 0, void 0, function () {
@@ -79,9 +80,11 @@ var checkRunningUpdates = function () {
     return store.getAllValues().some(function (moduleVersion) { return moduleVersion.downloading; });
 };
 var ignoreRunningUpdates = function () {
+    modulesResponses.forEach(function (res) { return res.pause(); });
     var currenModulesVersions = store.getAllValues();
     currenModulesVersions.filter(function (moduleVersion) { return moduleVersion.downloading; }).forEach(function (moduleVersion) {
-        moduleVersion.downloading = false;
+        store.removeFile(moduleVersion.downloading);
+        moduleVersion.downloading = null;
         store.set(moduleVersion.vr_module_id, moduleVersion);
     });
 };
@@ -133,18 +136,19 @@ function compareModuleVersions(latestVesionData) {
 function downloadNewVersion(latestVesionData) {
     logMsg("Will download..... " + latestVesionData.name, 'updates');
     var moduleId = latestVesionData.vr_module_id;
-    var currentVersionData = store.get(moduleId) || {};
-    currentVersionData.downloading = true;
-    store.set(moduleId, currentVersionData);
+    var currentVersionData = store.get(moduleId) || { vr_module_id: moduleId };
     var downoadCB = {
         cb: downloadNewVersionDoneCallback, cbOptions: latestVesionData,
         responseCB: downloadResponseCallback
     };
-    store.download(latestVesionData.build.url, path.join(modulesDir, latestVesionData.vr_module_id.toString(), latestVesionData.name), downoadCB);
+    var downloadPath = path.join(modulesDir, latestVesionData.vr_module_id.toString(), latestVesionData.name);
+    currentVersionData.downloading = store.download(latestVesionData.build.url, downloadPath, downoadCB);
+    store.set(moduleId, currentVersionData);
 }
 function downloadResponseCallback(res, versionData) {
     versionData.size = parseInt(res.headers['content-length'], 10);
     sendEvToWin(UPDATES_EVENTS.module_version_size, versionData);
+    modulesResponses.push(res);
     res.on('data', function (chunk) {
         versionData.data = chunk.length;
         sendEvToWin(UPDATES_EVENTS.module_version_downloading_progress, versionData);
@@ -154,8 +158,8 @@ function downloadNewVersionDoneCallback(downloadedFile, versionData) {
     if (!downloadedFile) {
         logMsg('Version is not downloaded..', 'error');
         var moduleId = versionData.vr_module_id;
-        var currentVersionData = store.get(moduleId) || {};
-        currentVersionData.downloading = false;
+        var currentVersionData = store.get(moduleId);
+        currentVersionData.downloading = null;
         return store.set(moduleId, currentVersionData);
     }
     versionData.downloaded = true;
