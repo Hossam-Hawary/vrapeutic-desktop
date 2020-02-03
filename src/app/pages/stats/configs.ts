@@ -353,5 +353,43 @@ export let configs = {
       omission_score: 'number',
       distractibility_score: 'number'
     }
+  },
+  14: {
+    moduleName: 'Viblio',
+    chartsConfigs: [
+      {
+        id: '1',
+        chartType: 'line',
+        fieldNameX: 'attempt_start_time',
+        fieldNameY: 'impulsivity_score',
+        tooltipFields: ['level'],
+        dataX: [],
+        dataY: {},
+        tooltipData: {},
+        color: 'blue',
+        backgroundColor: 'white',
+        chartObject: null,
+        show: true,
+        legend: 'Viblio',
+        canGroupBy: [''],
+        canBeFieldY: ['impulsivity_score', 'response_time', 'omission_score', 'distractibility_score'],
+        groupBy: ''
+      }
+    ],
+    fieldsConfig: {
+      session_start_time: 'string',
+      attempt_start_time: 'string',
+      attempt_end_time: 'string',
+      expected_duration_in_seconds: 'number',
+      actual_duration_in_seconds: 'number',
+      level: 'string',
+      attempt_type: 'string',
+      correct_attempts: 'number',
+      wrong_attempts: 'number',
+      impulsivity_score: 'number',
+      response_time: 'number',
+      omission_score: 'number',
+      distractibility_score: 'number'
+    }
   }
 };

@@ -116,11 +116,19 @@ export class PatientPage implements OnInit {
   }
 
   downloadLatestVersion(vrModule) {
-    this.mainEventsService.sendEventAsync('download-new-module-version', vrModule.latest_version);
+    this.mainEventsService.downloadNewVersion(vrModule.latest_version);
   }
 
   installLatestVersion(vrModule) {
-    this.mainEventsService.sendEventAsync('install-new-module-version', vrModule.latest_version);
+    this.mainEventsService.installNewVersion(vrModule.latest_version);
+  }
+
+  pauseDownloading(vrModule) {
+    this.mainEventsService.pauseDownloadNewVersion(vrModule.latest_version);
+  }
+
+  resumeDownloading(vrModule) {
+    this.mainEventsService.resumeDownloadNewVersion(vrModule.latest_version);
   }
 
   toggleConsole() {

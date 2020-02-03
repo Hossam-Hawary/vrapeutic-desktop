@@ -92,22 +92,29 @@
           <ion-card>
             <ion-card-header>
               <ion-card-title color="medium">{{module?.name}}</ion-card-title>
-              <div *ngIf="mainEventsService.trackedModules[module.id]?.downloading">
-                <div *ngIf="mainEventsService.trackedModules[module.id]?.ratio < 1">
+                <div *ngIf="mainEventsService.trackedModules[module.id]?.downloading">
                   <ion-progress-bar [value]="mainEventsService.trackedModules[module.id]?.ratio"
                   [buffer]="mainEventsService.trackedModules[module.id]?.ratio" 
                   color="success" ></ion-progress-bar>
                   Downloading Updates...
+                  <ion-button *ngIf="!mainEventsService.trackedModules[module.id]?.paused"
+                  color="primary" fill="clear" size='small' (click)="pauseDownloading(module)">
+                    <ion-icon name="pause"></ion-icon>
+                  </ion-button>
+                  <ion-button *ngIf="mainEventsService.trackedModules[module.id]?.paused"
+                   color="primary" fill="clear" size='small' (click)="resumeDownloading(module)">
+                    <ion-icon name="play"></ion-icon>
+                  </ion-button
+                  >
                 </div>
-                <div *ngIf="mainEventsService.trackedModules[module.id]?.ratio == 1">
+                <div *ngIf="mainEventsService.trackedModules[module.id]?.installing">
                   <ion-progress-bar 
                   type="indeterminate"
                   color="primary" ></ion-progress-bar>
                   Installing Updates...
                 </div>
-              </div>
 
-              <div *ngIf="!mainEventsService.trackedModules[module.id]?.downloading">
+              <div *ngIf="!mainEventsService.trackedModules[module.id]?.downloading && !mainEventsService.trackedModules[module.id]?.installing">
                 <ion-text color="medium" *ngIf="mainEventsService.trackedModules[module.id]?.new_version">
                   <ion-icon color="primary" name="alert"></ion-icon>
                   The new version {{mainEventsService.trackedModules[module.id]?.new_version}} is available.

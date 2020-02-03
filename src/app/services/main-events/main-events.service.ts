@@ -55,7 +55,8 @@ export class MainEventsService {
       'offline-headset-ready', 'desktop-module-ready', 'main-error', 'unauthorized-device-connected',
       'console-log', 'new-module-version-available-to-download', 'new-module-version-available-to-install',
       'module-version-size', 'module-version-downloading-progress',
-      'module-version-downloaded', 'module-version-installed'
+      'module-version-downloaded', 'module-version-installed',
+      'module-version-install-error', 'module-version-download-error'
     ];
 
     mainEvents.forEach((evName) => {
@@ -163,41 +164,31 @@ export class MainEventsService {
     });
   }
 
+  downloadNewVersion(version) {
+    const currentModule = this.trackedModules[version.vr_module_id];
+    currentModule.downloading = true;
+    this.sendEventAsync('download-new-module-version', version);
+  }
+
+  installNewVersion(version) {
+    const currentModule = this.trackedModules[version.vr_module_id];
+    currentModule.installing = true;
+    this.sendEventAsync('install-new-module-version', version);
+  }
+
+  pauseDownloadNewVersion(version) {
+    const currentModule = this.trackedModules[version.vr_module_id];
+    currentModule.paused = true;
+    this.sendEventAsync('module-version-pause-downloading', version);
+  }
+
+  resumeDownloadNewVersion(version) {
+    const currentModule = this.trackedModules[version.vr_module_id];
+    currentModule.paused = false;
+    this.sendEventAsync('module-version-resume-downloading', version);
+  }
+
   trackDownloadProgress() {
-    this.events.subscribe('module-version-size', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.trackedModules[versionData.vr_module_id];
-        currentModule.size = versionData.size;
-        currentModule.downloaded_size = 0;
-        currentModule.ratio = 0;
-        currentModule.downloading = true;
-      });
-    });
-
-    this.events.subscribe('module-version-downloaded', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.trackedModules[versionData.vr_module_id];
-        currentModule.ratio = 1;
-        currentModule.new_version = null;
-        currentModule.downloading = false;
-      });
-    });
-
-    this.events.subscribe('module-version-installed', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.trackedModules[versionData.vr_module_id];
-        currentModule.ratio = null;
-        currentModule.new_version_not_installed = null;
-      });
-    });
-
-    this.events.subscribe('module-version-downloading-progress', (versionData) => {
-      this.zone.run(() => {
-        const currentModule = this.trackedModules[versionData.vr_module_id];
-        currentModule.downloaded_size += versionData.data;
-        currentModule.ratio = (currentModule.downloaded_size / currentModule.size);
-      });
-    });
 
     this.events.subscribe('new-module-version-available-to-download', (versionData) => {
       this.zone.run(() => {
@@ -210,6 +201,58 @@ export class MainEventsService {
       this.zone.run(() => {
         const currentModule = this.trackedModules[versionData.vr_module_id];
         currentModule.new_version_not_installed = versionData.name;
+      });
+    });
+
+    this.events.subscribe('module-version-size', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.size = versionData.size;
+        currentModule.downloaded_size = 0;
+        currentModule.ratio = 0;
+      });
+    });
+
+    this.events.subscribe('module-version-downloading-progress', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.downloaded_size += versionData.data;
+        currentModule.ratio = (currentModule.downloaded_size / currentModule.size);
+      });
+    });
+
+    this.events.subscribe('module-version-downloaded', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.ratio = 1;
+        currentModule.new_version = null;
+        currentModule.downloading = false;
+        this.helperService.showToast(`The version ${versionData.name} is downloaded successfully`);
+      });
+    });
+
+    this.events.subscribe('module-version-installed', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.new_version_not_installed = null;
+        currentModule.installing = false;
+        this.helperService.showToast(`The version ${versionData.name} is installed successfully`);
+      });
+    });
+
+    this.events.subscribe('module-version-download-error', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.downloading = false;
+        this.helperService.showError(`An error while downloading the version ${versionData.name}`);
+      });
+    });
+
+    this.events.subscribe('module-version-install-error', (versionData) => {
+      this.zone.run(() => {
+        const currentModule = this.trackedModules[versionData.vr_module_id];
+        currentModule.installing = false;
+        this.helperService.showError(`An error while installing the version ${versionData.name}`);
       });
     });
   }

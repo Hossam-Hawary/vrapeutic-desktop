@@ -51,13 +51,17 @@ var UPDATES_EVENTS = {
     module_version_downloading_progress: 'module-version-downloading-progress',
     module_version_downloaded: 'module-version-downloaded',
     module_version_installed: 'module-version-installed',
+    module_version_pause_downloading: 'module-version-pause-downloading',
+    module_version_resume_downloading: 'module-version-resume-downloading',
+    module_version_download_error: 'module-version-download-error',
+    module_version_install_error: 'module-version-install-error',
     close_main_win: 'close-main-win'
 };
 var store;
 var sendEvToWin;
 var logMsg;
 var modulesDir = 'modules';
-var modulesResponses = [];
+var modulesResponses = {};
 var showDialog = function (title, message, detail, buttons) {
     if (buttons === void 0) { buttons = ['Ok']; }
     return __awaiter(_this, void 0, void 0, function () {
@@ -80,7 +84,7 @@ var checkRunningUpdates = function () {
     return store.getAllValues().some(function (moduleVersion) { return moduleVersion.downloading; });
 };
 var ignoreRunningUpdates = function () {
-    modulesResponses.forEach(function (res) { return res.pause(); });
+    Object.values(modulesResponses).forEach(function (res) { return res.pause(); });
     var currenModulesVersions = store.getAllValues();
     currenModulesVersions.filter(function (moduleVersion) { return moduleVersion.downloading; }).forEach(function (moduleVersion) {
         store.removeFile(moduleVersion.downloading);
@@ -119,6 +123,9 @@ exports.windowWillClose = function (ev) {
         informUserWithRunningUpdates();
     }
 };
+function getModulePath(moduleID) {
+    return path.join(modulesDir, moduleID.toString());
+}
 function compareModuleVersions(latestVesionData) {
     var currentVersionData = store.get(latestVesionData.vr_module_id) || {};
     if (currentVersionData.downloading) {
@@ -128,7 +135,7 @@ function compareModuleVersions(latestVesionData) {
         return;
     }
     if (currentVersionData.id === latestVesionData.id && currentVersionData.downloaded) {
-        sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
+        return sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
     }
     logMsg("You don't have the latest version.... " + JSON.stringify(currentVersionData), 'updates');
     sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_download, latestVesionData);
@@ -141,14 +148,14 @@ function downloadNewVersion(latestVesionData) {
         cb: downloadNewVersionDoneCallback, cbOptions: latestVesionData,
         responseCB: downloadResponseCallback
     };
-    var downloadPath = path.join(modulesDir, latestVesionData.vr_module_id.toString(), latestVesionData.name);
+    var downloadPath = path.join(getModulePath(latestVesionData.vr_module_id), latestVesionData.name);
     currentVersionData.downloading = store.download(latestVesionData.build.url, downloadPath, downoadCB);
     store.set(moduleId, currentVersionData);
 }
 function downloadResponseCallback(res, versionData) {
     versionData.size = parseInt(res.headers['content-length'], 10);
     sendEvToWin(UPDATES_EVENTS.module_version_size, versionData);
-    modulesResponses.push(res);
+    modulesResponses[versionData.id] = res;
     res.on('data', function (chunk) {
         versionData.data = chunk.length;
         sendEvToWin(UPDATES_EVENTS.module_version_downloading_progress, versionData);
@@ -156,11 +163,7 @@ function downloadResponseCallback(res, versionData) {
 }
 function downloadNewVersionDoneCallback(downloadedFile, versionData) {
     if (!downloadedFile) {
-        logMsg('Version is not downloaded..', 'error');
-        var moduleId = versionData.vr_module_id;
-        var currentVersionData = store.get(moduleId);
-        currentVersionData.downloading = null;
-        return store.set(moduleId, currentVersionData);
+        return versionDownloadError(versionData);
     }
     versionData.downloaded = true;
     versionData.downloaded_file = downloadedFile;
@@ -180,12 +183,24 @@ function installDownloadedVersion(versionData) {
 }
 function versionInstallCallback(unzipedDir, versionData) {
     if (!unzipedDir) {
-        return logMsg('Version is not installed..', 'error');
-    } // ask user to redownload
+        logMsg('Version is not installed..', 'error');
+        return versionInstallError(versionData);
+    }
     versionData.installed = true;
     versionData.installation_dir = unzipedDir;
     store.set(versionData.vr_module_id, versionData);
     sendEvToWin(UPDATES_EVENTS.module_version_installed, versionData);
+}
+function versionDownloadError(versionData) {
+    logMsg('Version is not downloaded..', 'error');
+    var moduleId = versionData.vr_module_id;
+    var currentVersionData = store.get(moduleId);
+    currentVersionData.downloading = null;
+    store.set(moduleId, currentVersionData);
+    sendEvToWin(UPDATES_EVENTS.module_version_download_error, versionData);
+}
+function versionInstallError(versionData) {
+    sendEvToWin(UPDATES_EVENTS.module_version_install_error, versionData);
 }
 function SetupEventsListeners() {
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, function (event) {
@@ -214,6 +229,18 @@ function SetupEventsListeners() {
         }
         var currentVersionData = store.get(latestVesionData.vr_module_id) || {};
         installDownloadedVersion(currentVersionData);
+    });
+    electron_1.ipcMain.on(UPDATES_EVENTS.module_version_pause_downloading, function (event, versionData) {
+        if (!versionData || !modulesResponses[versionData.id]) {
+            return;
+        }
+        modulesResponses[versionData.id].pause();
+    });
+    electron_1.ipcMain.on(UPDATES_EVENTS.module_version_resume_downloading, function (event, versionData) {
+        if (!versionData || !modulesResponses[versionData.id]) {
+            return;
+        }
+        modulesResponses[versionData.id].resume();
     });
 }
 //# sourceMappingURL=modules_update.js.map

@@ -15,6 +15,10 @@ const UPDATES_EVENTS = {
   module_version_downloading_progress: 'module-version-downloading-progress',
   module_version_downloaded: 'module-version-downloaded',
   module_version_installed: 'module-version-installed',
+  module_version_pause_downloading: 'module-version-pause-downloading',
+  module_version_resume_downloading: 'module-version-resume-downloading',
+  module_version_download_error: 'module-version-download-error',
+  module_version_install_error: 'module-version-install-error',
   close_main_win: 'close-main-win'
 };
 
@@ -22,7 +26,7 @@ let store;
 let sendEvToWin;
 let logMsg;
 const modulesDir = 'modules';
-const modulesResponses = [];
+const modulesResponses = {};
 
 const showDialog = async (title, message, detail, buttons = ['Ok']) => {
   const dialogOpts = {
@@ -37,7 +41,7 @@ const checkRunningUpdates = () => {
 };
 
 const ignoreRunningUpdates = () => {
-  modulesResponses.forEach(res => res.pause());
+  Object.values(modulesResponses).forEach((res: any) => res.pause());
   const currenModulesVersions: any[] = store.getAllValues();
   currenModulesVersions.filter((moduleVersion: any) => moduleVersion.downloading ).forEach((moduleVersion: any) => {
     store.removeFile(moduleVersion.downloading);
@@ -49,7 +53,7 @@ const ignoreRunningUpdates = () => {
 const informUserWithRunningUpdates = async () => {
   const response = await showDialog(
     'Modules Still Updating',
-    'Some of your modules are still updating',
+    'Some of your modules still updating',
     '',
     ['Quit', 'Continue Updating']);
   if (response === 0) {
@@ -76,12 +80,18 @@ exports.windowWillClose = (ev) => {
   }
 };
 
+function getModulePath(moduleID) {
+  return  path.join(
+    modulesDir, moduleID.toString()
+  );
+}
+
 function compareModuleVersions(latestVesionData) {
   const currentVersionData = store.get(latestVesionData.vr_module_id) || {};
   if (currentVersionData.downloading) { return; }
   if (currentVersionData.id === latestVesionData.id && currentVersionData.installed) { return; }
   if (currentVersionData.id === latestVesionData.id && currentVersionData.downloaded) {
-    sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
+    return sendEvToWin(UPDATES_EVENTS.new_module_version_available_to_install, currentVersionData);
   }
 
   logMsg(`You don't have the latest version.... ${JSON.stringify(currentVersionData)}`, 'updates');
@@ -97,8 +107,8 @@ function downloadNewVersion(latestVesionData) {
     responseCB: downloadResponseCallback
   };
   const downloadPath = path.join(
-    modulesDir, latestVesionData.vr_module_id.toString(), latestVesionData.name
-    );
+    getModulePath(latestVesionData.vr_module_id), latestVesionData.name
+  );
   currentVersionData.downloading = store.download(latestVesionData.build.url, downloadPath, downoadCB);
   store.set(moduleId, currentVersionData);
 }
@@ -107,7 +117,7 @@ function downloadResponseCallback(res, versionData) {
   versionData.size = parseInt(res.headers['content-length'], 10);
 
   sendEvToWin(UPDATES_EVENTS.module_version_size, versionData);
-  modulesResponses.push(res);
+  modulesResponses[versionData.id] = res;
 
   res.on('data', chunk => {
     versionData.data = chunk.length;
@@ -117,11 +127,7 @@ function downloadResponseCallback(res, versionData) {
 
 function downloadNewVersionDoneCallback(downloadedFile, versionData) {
   if (!downloadedFile) {
-    logMsg('Version is not downloaded..', 'error');
-    const moduleId = versionData.vr_module_id;
-    const currentVersionData = store.get(moduleId);
-    currentVersionData.downloading = null;
-    return store.set(moduleId, currentVersionData);
+    return versionDownloadError(versionData);
   }
 
   versionData.downloaded = true;
@@ -142,12 +148,28 @@ function installDownloadedVersion(versionData) {
 }
 
 function versionInstallCallback(unzipedDir, versionData) {
-  if (!unzipedDir) { return logMsg('Version is not installed..', 'error'); } // ask user to redownload
+  if (!unzipedDir) {
+    logMsg('Version is not installed..', 'error'); 
+    return versionInstallError(versionData);
+  }
 
   versionData.installed = true;
   versionData.installation_dir = unzipedDir;
   store.set(versionData.vr_module_id, versionData);
   sendEvToWin(UPDATES_EVENTS.module_version_installed, versionData);
+}
+
+function versionDownloadError(versionData) {
+  logMsg('Version is not downloaded..', 'error');
+  const moduleId = versionData.vr_module_id;
+  const currentVersionData = store.get(moduleId);
+  currentVersionData.downloading = null;
+  store.set(moduleId, currentVersionData);
+  sendEvToWin(UPDATES_EVENTS.module_version_download_error, versionData);
+}
+
+function versionInstallError(versionData) {
+  sendEvToWin(UPDATES_EVENTS.module_version_install_error, versionData);
 }
 
 function SetupEventsListeners() {
@@ -179,5 +201,17 @@ function SetupEventsListeners() {
     const currentVersionData = store.get(latestVesionData.vr_module_id) || {};
 
     installDownloadedVersion(currentVersionData);
+  });
+
+  ipcMain.on(UPDATES_EVENTS.module_version_pause_downloading, (event, versionData) => {
+    if (!versionData || !modulesResponses[versionData.id]) { return; }
+
+    modulesResponses[versionData.id].pause();
+  });
+
+  ipcMain.on(UPDATES_EVENTS.module_version_resume_downloading, (event, versionData) => {
+    if (!versionData || !modulesResponses[versionData.id]) { return; }
+
+    modulesResponses[versionData.id].resume();
   });
 }
