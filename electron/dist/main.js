@@ -120,6 +120,7 @@ function initDesktopApp() {
             server.runLocalServer(logMsg);
             desktopAutoUpdate.SetupAutoUpdate(logMsg, sendEvToWin);
             modulesUpdate.checkModulesUpdate(logMsg, sendEvToWin);
+            createIpFile();
             return [2 /*return*/];
         });
     });
@@ -283,15 +284,10 @@ function authorizeConnectedHeadsets() {
                 case 1:
                     devices = _a.sent();
                     devices.forEach(function (device) { return __awaiter(_this, void 0, void 0, function () {
-                        var fet;
                         return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, client.getFeatures(device.id)];
-                                case 1:
-                                    fet = _a.sent();
-                                    authorizeHeadsetDevice(device);
-                                    return [2 /*return*/];
-                            }
+                            // const fet = await client.getFeatures(device.id);
+                            authorizeHeadsetDevice(device);
+                            return [2 /*return*/];
                         });
                     }); });
                     return [2 /*return*/];
@@ -301,7 +297,7 @@ function authorizeConnectedHeadsets() {
 }
 function prepareHeadsetOnOfflineMode() {
     return __awaiter(this, void 0, void 0, function () {
-        var msg, ipInfo, data, ipFilePath, transfer, err_2, msg;
+        var msg, ipFile, transfer, err_2, msg;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -316,11 +312,8 @@ function prepareHeadsetOnOfflineMode() {
                         logMsg(msg, 'error');
                         return [2 /*return*/, sendEvToWin(MAIN_EVENTS.offline_headset_ready, { ready: false, headsetDevice: headsetDevice, err: 'No Authorized Headset connected!' })];
                     }
-                    ipInfo = { ip: internalIp.v4.sync() };
-                    data = JSON.stringify(ipInfo, null, 4);
-                    ipFilePath = path.join(__dirname, 'ip.json');
-                    fs.writeFileSync(ipFilePath, data);
-                    return [4 /*yield*/, client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json')];
+                    ipFile = createIpFile();
+                    return [4 /*yield*/, client.push(headsetDevice.id, ipFile, '/sdcard/Download/ip.json')];
                 case 2:
                     transfer = _a.sent();
                     transfer.once('end', function () {
@@ -341,5 +334,15 @@ function prepareHeadsetOnOfflineMode() {
             }
         });
     });
+}
+function createIpFile() {
+    var ipInfo = { ip: internalIp.v4.sync() };
+    // const data = JSON.stringify(ipInfo, null, 4);
+    // const ipFilePath = path.join(__dirname, 'ip.json');
+    // fs.writeFileSync(ipFilePath, data);
+    var fileName = 'ip.json';
+    storeHelper.writeUserFile(fileName, ipInfo);
+    logMsg(storeHelper.getFullUserFilePath(fileName), 'debug');
+    return storeHelper.getFullUserFilePath(fileName);
 }
 //# sourceMappingURL=main.js.map

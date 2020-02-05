@@ -91,6 +91,7 @@ async function initDesktopApp() {
   server.runLocalServer(logMsg);
   desktopAutoUpdate.SetupAutoUpdate(logMsg, sendEvToWin);
   modulesUpdate.checkModulesUpdate(logMsg, sendEvToWin);
+  createIpFile();
 }
 
 async function createWindow() {
@@ -235,7 +236,7 @@ async function authorizeConnectedHeadsets() {
 
   const devices = await client.listDevices();
   devices.forEach(async device => {
-    const fet = await client.getFeatures(device.id);
+    // const fet = await client.getFeatures(device.id);
     authorizeHeadsetDevice(device);
   });
 
@@ -255,12 +256,8 @@ async function prepareHeadsetOnOfflineMode() {
         { ready: false, headsetDevice, err: 'No Authorized Headset connected!' }
       );
     }
-
-    const ipInfo = { ip: internalIp.v4.sync() };
-    const data = JSON.stringify(ipInfo, null, 4);
-    const ipFilePath = path.join(__dirname, 'ip.json');
-    fs.writeFileSync(ipFilePath, data);
-    const transfer = await client.push(headsetDevice.id, ipFilePath, '/sdcard/Download/ip.json');
+    const ipFile = createIpFile();
+    const transfer = await client.push(headsetDevice.id, ipFile, '/sdcard/Download/ip.json');
     transfer.once('end', () => {
       sendEvToWin(MAIN_EVENTS.offline_headset_ready, { ready: true, headsetDevice });
     });
@@ -275,4 +272,14 @@ async function prepareHeadsetOnOfflineMode() {
     logMsg(msg, 'error');
     sendEvToWin(MAIN_EVENTS.error, err);
   }
+}
+
+function createIpFile() {
+  const ipInfo = { ip: internalIp.v4.sync() };
+  // const data = JSON.stringify(ipInfo, null, 4);
+  // const ipFilePath = path.join(__dirname, 'ip.json');
+  // fs.writeFileSync(ipFilePath, data);
+  const fileName = 'ip.json';
+  storeHelper.writeUserFile(fileName, ipInfo);
+  return storeHelper.getFullUserFilePath(fileName);
 }

@@ -58,6 +58,15 @@ class Store {
     }
   }
 
+  writeUserFile(filePath, data) {
+    const userFilePath = path.join(this.userDataPath, filePath);
+    fs.writeFileSync(userFilePath, JSON.stringify(data));
+  }
+
+  getFullUserFilePath(filePath) {
+    return path.join(this.userDataPath, filePath);
+  }
+
   download(url, dest, options: any = {}, ext = 'zip') {
     let destPath = path.join(this.userDataPath, (dest + '.' + ext));
     try {

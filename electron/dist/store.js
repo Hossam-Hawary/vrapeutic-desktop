@@ -50,6 +50,13 @@ var Store = /** @class */ (function () {
             console.log(err);
         }
     };
+    Store.prototype.writeUserFile = function (filePath, data) {
+        var userFilePath = path.join(this.userDataPath, filePath);
+        fs.writeFileSync(userFilePath, JSON.stringify(data));
+    };
+    Store.prototype.getFullUserFilePath = function (filePath) {
+        return path.join(this.userDataPath, filePath);
+    };
     Store.prototype.download = function (url, dest, options, ext) {
         var _this = this;
         if (options === void 0) { options = {}; }
