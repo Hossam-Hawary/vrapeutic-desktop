@@ -342,7 +342,6 @@ function createIpFile() {
     // fs.writeFileSync(ipFilePath, data);
     var fileName = 'ip.json';
     storeHelper.writeUserFile(fileName, ipInfo);
-    logMsg(storeHelper.getFullUserFilePath(fileName), 'debug');
     return storeHelper.getFullUserFilePath(fileName);
 }
 //# sourceMappingURL=main.js.map
