@@ -65,7 +65,7 @@ var Store = /** @class */ (function () {
         try {
             this.ensureDirExist(destPath);
             this.log("Try Downloading... " + destPath, 'info');
-            var file_1 = fs.createWriteStream(destPath);
+            var file_1 = fs.createWriteStream(destPath, { mode: 493 });
             // You shouldn't call write on your tempFile write stream until you've received the 'open' event from the stream.
             // The file won't exist until you see that event.
             file_1.on('open', function (fd) {

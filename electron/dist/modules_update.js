@@ -96,7 +96,7 @@ var informUserWithRunningUpdates = function () { return __awaiter(_this, void 0,
     var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, showDialog('Modules Still Updating', 'Some of your modules still updating', '', ['Quit', 'Continue Updating'])];
+            case 0: return [4 /*yield*/, showDialog('Running Updating', 'Some of your modules still updating', '', ['Quit', 'Continue Updating'])];
             case 1:
                 response = _a.sent();
                 if (response === 0) {

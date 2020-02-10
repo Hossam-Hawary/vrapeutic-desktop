@@ -52,7 +52,7 @@ const ignoreRunningUpdates = () => {
 
 const informUserWithRunningUpdates = async () => {
   const response = await showDialog(
-    'Modules Still Updating',
+    'Running Updating',
     'Some of your modules still updating',
     '',
     ['Quit', 'Continue Updating']);

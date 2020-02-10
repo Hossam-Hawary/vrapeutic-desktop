@@ -102,6 +102,9 @@ electron_1.ipcMain.on(MAIN_EVENTS.close_main_win, function (event, msg) {
     win.close();
     electron_1.app.quit();
 });
+electron_1.app.on('window-all-closed', function () {
+    electron_1.app.quit();
+});
 electron_1.app.on('ready', initDesktopApp);
 electron_1.app.on('activate', function () {
     if (win === null) {

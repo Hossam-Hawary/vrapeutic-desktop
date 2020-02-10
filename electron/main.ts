@@ -73,6 +73,10 @@ ipcMain.on(MAIN_EVENTS.close_main_win, (event, msg) => {
   app.quit();
 });
 
+app.on('window-all-closed', () => {
+  app.quit();
+});
+
 app.on('ready', initDesktopApp);
 
 app.on('activate', () => {
