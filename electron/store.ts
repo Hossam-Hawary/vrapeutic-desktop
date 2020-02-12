@@ -72,11 +72,12 @@ class Store {
     try {
       this.ensureDirExist(destPath);
       this.log(`Try Downloading... ${destPath}`, 'info');
-      const file = fs.createWriteStream(destPath, { mode: 0o755 });
+      const file = fs.createWriteStream(destPath, { mode: 0o777 });
       // You shouldn't call write on your tempFile write stream until you've received the 'open' event from the stream.
       // The file won't exist until you see that event.
       file.on('open', (fd) => {
         const request = http.get(url, (response) => {
+          console.log(request);
           response.pipe(file);
           if (options.responseCB) { options.responseCB(response, options.cbOptions); }
 
