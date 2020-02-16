@@ -71,7 +71,6 @@ var Store = /** @class */ (function () {
             file_1.on('open', function (fd) {
                 var request = http.get(url, function (response) {
                     console.log(request);
-                    _this.log("Downloading request..." + JSON.stringify(request));
                     response.pipe(file_1);
                     if (options.responseCB) {
                         options.responseCB(response, options.cbOptions);

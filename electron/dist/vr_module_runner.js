@@ -23,7 +23,7 @@ var VrModuleRunner = /** @class */ (function () {
     VrModuleRunner.prototype.SetupEventsListeners = function () {
         var _this = this;
         electron_1.ipcMain.on(this.MODULES_EVENTS.run_module, function (event, options) {
-            var moduleData = _this.store.get(options.moduleId) || {};
+            var moduleData = _this.store.get(options.moduleId.toString()) || {};
             var modulePath = moduleData.installation_dir;
             if (!modulePath) {
                 _this.sendEvToWin(_this.MODULES_EVENTS.desktop_module_deady, {
@@ -35,12 +35,13 @@ var VrModuleRunner = /** @class */ (function () {
         });
     };
     VrModuleRunner.prototype.startDesktopModule = function (moduleName, modulePath) {
+        var moduleFilePath = path.join(modulePath, moduleName, moduleName + ".exe");
         try {
-            var opened = electron_2.shell.openItem(path.join(modulePath, moduleName, moduleName + ".exe"));
+            var opened = electron_2.shell.openItem(moduleFilePath);
             this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, { ready: opened, moduleName: moduleName });
         }
         catch (err) {
-            var msg = 'Error...' + 'startDesktopModule' + JSON.stringify(err);
+            var msg = 'Error...' + 'startDesktopModule > ' + moduleFilePath + JSON.stringify(err);
             this.logMsg(msg, 'error');
             this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
                 ready: false, moduleName: moduleName,

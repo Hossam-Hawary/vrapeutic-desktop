@@ -28,7 +28,7 @@ class VrModuleRunner {
 
   SetupEventsListeners() {
     ipcMain.on(this.MODULES_EVENTS.run_module, (event, options) => {
-      const moduleData = this.store.get(options.moduleId) || {};
+      const moduleData = this.store.get(options.moduleId.toString()) || {};
       const modulePath = moduleData.installation_dir;
       if (!modulePath) {
         this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
@@ -41,11 +41,12 @@ class VrModuleRunner {
   }
 
   startDesktopModule(moduleName, modulePath) {
+    const moduleFilePath = path.join(modulePath, moduleName, `${moduleName}.exe`);
     try {
-      const opened = shell.openItem(path.join(modulePath, moduleName, `${moduleName}.exe`));
+      const opened = shell.openItem(moduleFilePath);
       this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, { ready: opened, moduleName });
     } catch (err) {
-      const msg = 'Error...' + 'startDesktopModule' + JSON.stringify(err);
+      const msg = 'Error...' + 'startDesktopModule > ' + moduleFilePath + JSON.stringify(err);
       this.logMsg(msg, 'error');
       this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
         ready: false, moduleName,

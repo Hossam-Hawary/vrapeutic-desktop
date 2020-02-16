@@ -70,7 +70,6 @@ ipcMain.on(MAIN_EVENTS.send_console_log, (event, msg) => {
 
 ipcMain.on(MAIN_EVENTS.close_main_win, (event, msg) => {
   win.close();
-  app.quit();
 });
 
 app.on('window-all-closed', () => {
