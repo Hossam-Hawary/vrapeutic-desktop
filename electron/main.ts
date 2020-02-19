@@ -92,7 +92,7 @@ async function initDesktopApp() {
   createWindow();
   trackDevices();
   server.runLocalServer(logMsg);
-  desktopAutoUpdate.SetupAutoUpdate(logMsg, sendEvToWin);
+  desktopAutoUpdate.SetupAutoUpdate(logMsg, sendEvToWin, storeHelper);
   modulesUpdate.checkModulesUpdate(logMsg, sendEvToWin);
   createIpFile();
 }
@@ -279,9 +279,6 @@ async function prepareHeadsetOnOfflineMode() {
 
 function createIpFile() {
   const ipInfo = { ip: internalIp.v4.sync() };
-  // const data = JSON.stringify(ipInfo, null, 4);
-  // const ipFilePath = path.join(__dirname, 'ip.json');
-  // fs.writeFileSync(ipFilePath, data);
   const fileName = 'ip.json';
   storeHelper.writeUserFile(fileName, ipInfo);
   return storeHelper.getFullUserFilePath(fileName);

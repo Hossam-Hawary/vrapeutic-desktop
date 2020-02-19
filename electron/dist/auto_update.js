@@ -39,12 +39,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var autoUpdater = require('electron-updater').autoUpdater;
 var baseFeedUrl = 'https://hazel-xi-seven.now.sh';
-exports.SetupAutoUpdate = function (logMsg, sendEvToWin) {
-    var UPDATES_EVENTS = {
-        desktop_latest_version: 'module-latest-version'
-    };
-    electron_1.ipcMain.on(UPDATES_EVENTS.desktop_latest_version, function (event, moduleVesion) {
-    });
+exports.SetupAutoUpdate = function (logMsg, sendEvToWin, storeHelper) {
+    var UPDATES_EVENTS = {};
+    function stopAskingToinstallToday() {
+        var today = (new Date()).toLocaleDateString();
+        logMsg('Remind me tomorrow for this update...' + today, 'info');
+        storeHelper.set('stop_auto_update_install_today', today);
+    }
     var platform = process.platform;
     if (platform.toLowerCase() === 'linux') {
         platform = 'AppImage';
@@ -72,13 +73,17 @@ exports.SetupAutoUpdate = function (logMsg, sendEvToWin) {
                     autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName) {
                         var dialogOpts = {
                             type: 'info',
-                            buttons: ['Restart', 'Later'],
+                            buttons: ['Restart', 'Later', 'Remind Me Tomorrow'],
                             title: 'Application Update',
                             message: process.platform === 'win32' ? releaseNotes : releaseName,
                             detail: 'A new version has been downloaded. Restart the application to apply the updates.'
                         };
                         electron_1.dialog.showMessageBox(dialogOpts).then(function (returnValue) {
-                            if (returnValue.response === 0) {
+                            var stopToday = storeHelper.get('stop_auto_update_install_today');
+                            if (returnValue.response === 2) {
+                                return stopAskingToinstallToday();
+                            }
+                            if (returnValue.response === 0 && stopToday !== (new Date()).toLocaleDateString()) {
                                 autoUpdater.quitAndInstall();
                             }
                         });
@@ -119,7 +124,7 @@ exports.SetupAutoUpdate = function (logMsg, sendEvToWin) {
                                     return [2 /*return*/];
                             }
                         });
-                    }); }, 60000 * 15);
+                    }); }, 60000 * 60);
                     return [2 /*return*/];
             }
         });

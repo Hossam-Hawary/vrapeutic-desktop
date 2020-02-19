@@ -3,14 +3,15 @@ import { ipcMain, dialog } from 'electron';
 const { autoUpdater } = require('electron-updater');
 const baseFeedUrl = 'https://hazel-xi-seven.now.sh';
 
-exports.SetupAutoUpdate = (logMsg, sendEvToWin) => {
+exports.SetupAutoUpdate = (logMsg, sendEvToWin, storeHelper) => {
   const UPDATES_EVENTS = {
-    desktop_latest_version: 'module-latest-version'
   };
 
-  ipcMain.on(UPDATES_EVENTS.desktop_latest_version, (event, moduleVesion) => {
-
-  });
+  function stopAskingToinstallToday() {
+    const today = (new Date()).toLocaleDateString();
+    logMsg('Remind me tomorrow for this update...' + today, 'info');
+    storeHelper.set('stop_auto_update_install_today', today);
+  }
 
   let platform: string = process.platform;
   if (platform.toLowerCase() === 'linux') {
@@ -39,14 +40,16 @@ exports.SetupAutoUpdate = (logMsg, sendEvToWin) => {
     autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
       const dialogOpts = {
         type: 'info',
-        buttons: ['Restart', 'Later'],
+        buttons: ['Restart', 'Later', 'Remind Me Tomorrow'],
         title: 'Application Update',
         message: process.platform === 'win32' ? releaseNotes : releaseName,
         detail: 'A new version has been downloaded. Restart the application to apply the updates.'
       };
 
       dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) { autoUpdater.quitAndInstall(); }
+        const stopToday = storeHelper.get('stop_auto_update_install_today');
+        if (returnValue.response === 2) { return stopAskingToinstallToday(); }
+        if (returnValue.response === 0 && stopToday !== (new Date()).toLocaleDateString()) { autoUpdater.quitAndInstall(); }
       });
     });
 
@@ -71,6 +74,6 @@ exports.SetupAutoUpdate = (logMsg, sendEvToWin) => {
     logMsg('Check Done...' + JSON.stringify(await autoUpdater.checkForUpdatesAndNotify()), 'info');
     setInterval(async () => {
       logMsg('Check Done...' + JSON.stringify(await autoUpdater.checkForUpdatesAndNotify()), 'info');
-    }, 60000 * 15);
+    }, 60000 * 60);
   }, 60000);
 };
