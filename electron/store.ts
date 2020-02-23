@@ -77,7 +77,6 @@ class Store {
       // The file won't exist until you see that event.
       file.on('open', (fd) => {
         const request = http.get(url, (response) => {
-          console.log(request);
           response.pipe(file);
           if (options.responseCB) { options.responseCB(response, options.cbOptions); }
 

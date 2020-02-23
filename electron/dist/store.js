@@ -70,7 +70,6 @@ var Store = /** @class */ (function () {
             // The file won't exist until you see that event.
             file_1.on('open', function (fd) {
                 var request = http.get(url, function (response) {
-                    console.log(request);
                     response.pipe(file_1);
                     if (options.responseCB) {
                         options.responseCB(response, options.cbOptions);

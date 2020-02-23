@@ -69,10 +69,12 @@ ipcMain.on(MAIN_EVENTS.send_console_log, (event, msg) => {
 });
 
 ipcMain.on(MAIN_EVENTS.close_main_win, (event, msg) => {
+  console.log('close_main_win....');
   win.close();
 });
 
 app.on('window-all-closed', () => {
+  console.log('window-all-closed.....');
   app.quit();
 });
 
@@ -82,6 +84,10 @@ app.on('activate', () => {
   if (win === null) {
     initDesktopApp();
   }
+});
+
+app.on('will-quit', () => {
+  console.log('will-quit....');
 });
 
 async function initDesktopApp() {
@@ -116,6 +122,10 @@ async function createWindow() {
 
   // win.webContents.openDevTools();
   win.on('closed', () => {
+    console.log('closed....');
+    if (consoleWin) {
+      consoleWin.close();
+    }
     win = null;
   });
 
@@ -127,13 +137,14 @@ async function createWindow() {
   });
 
   win.on('close', (ev) => {
+    console.log('will close....');
     modulesUpdate.windowWillClose(ev);
   });
 
 }
 
 function createConsoleWindow() {
-  const consoleWindowBounds: any = { width: 800, height: 600, show: false, closable: false };
+  const consoleWindowBounds: any = { width: 800, height: 600, show: false};
   consoleWindowBounds.webPreferences = { nodeIntegration: true };
   consoleWindowBounds.parent = win;
   consoleWin = new BrowserWindow(consoleWindowBounds);
@@ -144,6 +155,11 @@ function createConsoleWindow() {
       slashes: true,
     })
   );
+  consoleWin.on('closed', () => {
+    console.log('consoleWin closed....');
+    consoleWin = null;
+    // console.log('consoleWin null....');
+  });
 }
 
 function createStoreHelper() {
@@ -186,7 +202,7 @@ async function setupLogging() {
   // Set maximum log size in bytes. When it exceeds, old log will be saved
   // as log.old.log file
   log.transports.file.maxSize = 5 * 1024 * 1024;
-  log.transports.file.file = path.join(__dirname, '/../../../../', 'log.log');
+  log.transports.file.file = path.join(app.getPath('userData'), 'log.log');
   // fs.createWriteStream options, must be set before first logging
   log.transports.file.streamConfig = { flags: 'w' };
   // set existed file stream

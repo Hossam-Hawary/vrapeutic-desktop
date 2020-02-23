@@ -99,9 +99,11 @@ electron_1.ipcMain.on(MAIN_EVENTS.send_console_log, function (event, msg) {
     logMsg(msg, 'info');
 });
 electron_1.ipcMain.on(MAIN_EVENTS.close_main_win, function (event, msg) {
+    console.log('close_main_win....');
     win.close();
 });
 electron_1.app.on('window-all-closed', function () {
+    console.log('window-all-closed.....');
     electron_1.app.quit();
 });
 electron_1.app.on('ready', initDesktopApp);
@@ -109,6 +111,9 @@ electron_1.app.on('activate', function () {
     if (win === null) {
         initDesktopApp();
     }
+});
+electron_1.app.on('will-quit', function () {
+    console.log('will-quit....');
 });
 function initDesktopApp() {
     return __awaiter(this, void 0, void 0, function () {
@@ -148,6 +153,10 @@ function createWindow() {
                     }));
                     // win.webContents.openDevTools();
                     win.on('closed', function () {
+                        console.log('closed....');
+                        if (consoleWin) {
+                            consoleWin.close();
+                        }
                         win = null;
                     });
                     win.on('resize', function () {
@@ -157,6 +166,7 @@ function createWindow() {
                         storeHelper.set('mainWindowBounds', mainWindowBounds);
                     });
                     win.on('close', function (ev) {
+                        console.log('will close....');
                         modulesUpdate.windowWillClose(ev);
                     });
                     return [2 /*return*/];
@@ -165,7 +175,7 @@ function createWindow() {
     });
 }
 function createConsoleWindow() {
-    var consoleWindowBounds = { width: 800, height: 600, show: false, closable: false };
+    var consoleWindowBounds = { width: 800, height: 600, show: false };
     consoleWindowBounds.webPreferences = { nodeIntegration: true };
     consoleWindowBounds.parent = win;
     consoleWin = new electron_1.BrowserWindow(consoleWindowBounds);
@@ -174,6 +184,11 @@ function createConsoleWindow() {
         protocol: 'file:',
         slashes: true,
     }));
+    consoleWin.on('closed', function () {
+        console.log('consoleWin closed....');
+        consoleWin = null;
+        // console.log('consoleWin null....');
+    });
 }
 function createStoreHelper() {
     storeHelper = new Store({
@@ -212,7 +227,7 @@ function setupLogging() {
             // Set maximum log size in bytes. When it exceeds, old log will be saved
             // as log.old.log file
             log.transports.file.maxSize = 5 * 1024 * 1024;
-            log.transports.file.file = path.join(__dirname, '/../../../../', 'log.log');
+            log.transports.file.file = path.join(electron_1.app.getPath('userData'), 'log.log');
             // fs.createWriteStream options, must be set before first logging
             log.transports.file.streamConfig = { flags: 'w' };
             // set existed file stream

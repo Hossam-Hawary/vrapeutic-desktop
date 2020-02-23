@@ -99,7 +99,8 @@ export let configs = {
       impulsivity_score_with_aiming: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   8: {
@@ -140,7 +141,8 @@ export let configs = {
       impulsivity_score: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   9: {
@@ -185,7 +187,8 @@ export let configs = {
       impulsivity_score_with_aiming: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   10: {
@@ -230,7 +233,8 @@ export let configs = {
       impulsivity_score_with_aiming: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   11: {
@@ -271,7 +275,8 @@ export let configs = {
       impulsivity_score: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   12: {
@@ -312,7 +317,8 @@ export let configs = {
       impulsivity_score: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   13: {
@@ -332,7 +338,7 @@ export let configs = {
         chartObject: null,
         show: true,
         legend: 'IllyTale',
-        canGroupBy: [''],
+        canGroupBy: ['', 'level'],
         canBeFieldY: ['impulsivity_score', 'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
@@ -351,7 +357,8 @@ export let configs = {
       impulsivity_score: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   14: {
@@ -371,7 +378,7 @@ export let configs = {
         chartObject: null,
         show: true,
         legend: 'Viblio',
-        canGroupBy: [''],
+        canGroupBy: ['', 'level'],
         canBeFieldY: ['impulsivity_score', 'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
@@ -389,7 +396,8 @@ export let configs = {
       impulsivity_score: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   },
   15: {
@@ -409,7 +417,7 @@ export let configs = {
         chartObject: null,
         show: true,
         legend: 'Repella',
-        canGroupBy: [''],
+        canGroupBy: ['', 'level'],
         canBeFieldY: ['impulsivity_score', 'response_time', 'omission_score', 'distractibility_score'],
         groupBy: ''
       }
@@ -425,7 +433,8 @@ export let configs = {
       impulsivity_score: 'number',
       response_time: 'number',
       omission_score: 'number',
-      distractibility_score: 'number'
+      distractibility_score: 'number',
+      actual_attention_time: 'number'
     }
   }
 };

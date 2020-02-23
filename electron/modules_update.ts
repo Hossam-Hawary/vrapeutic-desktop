@@ -75,6 +75,7 @@ exports.checkModulesUpdate = (logMsgFn, sendEvToWinFn) => {
 
 exports.windowWillClose = (ev) => {
   if (checkRunningUpdates()) {
+    console.log('closw preventDefault....');
     ev.preventDefault();
     informUserWithRunningUpdates();
   }

@@ -194,10 +194,12 @@ exports.runLocalServer = (logMsg) => {
 
         socket.on('changeControllerRotation', (data) => {
             socket.broadcast.emit('updateControllerRotation' + data.controllerName, data);
+            logMsg(`changeControllerRotation::${data.controllerName}: ${JSON.stringify(data)}`);
         });
 
         socket.on('changeControllerPosition', (data) => {
             socket.broadcast.emit('updateControllerPosition' + data.controllerName, data);
+            logMsg(`updateControllerPosition::${data.controllerName}: ${JSON.stringify(data)}`);
         });
         // broadcast: https://github.com/socketio/socket.io/blob/master/docs/API.md#flag-broadcast
     });
