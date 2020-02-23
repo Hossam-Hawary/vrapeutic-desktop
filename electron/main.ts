@@ -45,6 +45,8 @@ let consoleWin: BrowserWindow;
 let storeHelper: any;
 let vrmoduleRunnerHelper: any;
 const logMsg = (msg, type = 'debug') => {
+  if (!consoleWin) { return; }
+
   msg = `[${appVersion}] ${msg}`;
   consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg, color: colors[type] });
 };

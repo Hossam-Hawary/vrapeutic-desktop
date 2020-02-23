@@ -80,6 +80,9 @@ var storeHelper;
 var vrmoduleRunnerHelper;
 var logMsg = function (msg, type) {
     if (type === void 0) { type = 'debug'; }
+    if (!consoleWin) {
+        return;
+    }
     msg = "[" + appVersion + "] " + msg;
     consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg: msg, color: colors[type] });
 };
