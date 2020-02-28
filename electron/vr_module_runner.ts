@@ -5,7 +5,6 @@ import { shell } from 'electron';
 const { Store } = require('./store');
 
 class VrModuleRunner {
-  store;
   sendEvToWin;
   logMsg;
 
@@ -19,19 +18,15 @@ class VrModuleRunner {
     this.logMsg = opts.logMsg;
     this.sendEvToWin = opts.sendEvToWin;
     this.SetupEventsListeners();
-    this.store = new Store({
-      logMsg: this.logMsg,
-      configName: 'modules-versions',
-      defaults: {}
-    });
   }
 
   SetupEventsListeners() {
     ipcMain.on(this.MODULES_EVENTS.run_module, (event, options) => {
-      const moduleData = this.store.get(options.moduleId.toString()) || {};
+      const store = this.getStoreData();
+      const moduleData = store.get(options.moduleId.toString()) || {};
       const modulePath = moduleData.installation_dir;
       if (!modulePath) {
-        this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
+        return this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
           ready: false, moduleName: options.moduleName,
           err: 'Looks like the module is not downloaded yet, please try again later.'
         });
@@ -53,6 +48,14 @@ class VrModuleRunner {
         err: 'We could not run the module!'
       });
     }
+  }
+
+  getStoreData() {
+    return new Store({
+      logMsg: this.logMsg,
+      configName: 'modules-versions',
+      defaults: {}
+    });
   }
 }
 module.exports.VrModuleRunner = VrModuleRunner;

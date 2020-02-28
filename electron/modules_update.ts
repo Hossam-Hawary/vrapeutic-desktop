@@ -124,6 +124,9 @@ function downloadResponseCallback(res, versionData) {
     versionData.data = chunk.length;
     sendEvToWin(UPDATES_EVENTS.module_version_downloading_progress, versionData);
   });
+  res.on('end', () => {
+    logMsg(`end res..... ${versionData.name}`, 'updates');
+  });
 }
 
 function downloadNewVersionDoneCallback(downloadedFile, versionData) {

@@ -119,7 +119,7 @@ exports.checkModulesUpdate = function (logMsgFn, sendEvToWinFn) {
 };
 exports.windowWillClose = function (ev) {
     if (checkRunningUpdates()) {
-        console.log('closw preventDefault....');
+        console.log('close preventDefault....');
         ev.preventDefault();
         informUserWithRunningUpdates();
     }
@@ -160,6 +160,9 @@ function downloadResponseCallback(res, versionData) {
     res.on('data', function (chunk) {
         versionData.data = chunk.length;
         sendEvToWin(UPDATES_EVENTS.module_version_downloading_progress, versionData);
+    });
+    res.on('end', function () {
+        logMsg("end res..... " + versionData.name, 'updates');
     });
 }
 function downloadNewVersionDoneCallback(downloadedFile, versionData) {

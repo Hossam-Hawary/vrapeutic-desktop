@@ -92,6 +92,12 @@ class Store {
           this.log(`Downloading request Error... ${JSON.stringify(err)}`, 'error');
           this.removeFile(dest); // Delete the file async. (But we don't check the result)
           if (options.cb) { options.cb(false, options.cbOptions); }
+        }).on('end', (en) => {
+          console.log('req end...', en);
+        }).on('abort', (en) => {
+          console.log('req abort...', en);
+        }).on('timeout', (en) => {
+          console.log('req timeout...', en);
         });
       });
       return destPath;

@@ -146,7 +146,7 @@ async function createWindow() {
 }
 
 function createConsoleWindow() {
-  const consoleWindowBounds: any = { width: 800, height: 600, show: false};
+  const consoleWindowBounds: any = { width: 800, height: 600, show: false };
   consoleWindowBounds.webPreferences = { nodeIntegration: true };
   consoleWindowBounds.parent = win;
   consoleWin = new BrowserWindow(consoleWindowBounds);
@@ -300,4 +300,13 @@ function createIpFile() {
   const fileName = 'ip.json';
   storeHelper.writeUserFile(fileName, ipInfo);
   return storeHelper.getFullUserFilePath(fileName);
+}
+
+function isNetworkError(errorObject) {
+  return errorObject.message === 'net::ERR_INTERNET_DISCONNECTED' ||
+    errorObject.message === 'net::ERR_PROXY_CONNECTION_FAILED' ||
+    errorObject.message === 'net::ERR_CONNECTION_RESET' ||
+    errorObject.message === 'net::ERR_CONNECTION_CLOSE' ||
+    errorObject.message === 'net::ERR_NAME_NOT_RESOLVED' ||
+    errorObject.message === 'net::ERR_CONNECTION_TIMED_OUT';
 }

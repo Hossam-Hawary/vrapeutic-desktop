@@ -14,19 +14,15 @@ var VrModuleRunner = /** @class */ (function () {
         this.logMsg = opts.logMsg;
         this.sendEvToWin = opts.sendEvToWin;
         this.SetupEventsListeners();
-        this.store = new Store({
-            logMsg: this.logMsg,
-            configName: 'modules-versions',
-            defaults: {}
-        });
     }
     VrModuleRunner.prototype.SetupEventsListeners = function () {
         var _this = this;
         electron_1.ipcMain.on(this.MODULES_EVENTS.run_module, function (event, options) {
-            var moduleData = _this.store.get(options.moduleId.toString()) || {};
+            var store = _this.getStoreData();
+            var moduleData = store.get(options.moduleId.toString()) || {};
             var modulePath = moduleData.installation_dir;
             if (!modulePath) {
-                _this.sendEvToWin(_this.MODULES_EVENTS.desktop_module_deady, {
+                return _this.sendEvToWin(_this.MODULES_EVENTS.desktop_module_deady, {
                     ready: false, moduleName: options.moduleName,
                     err: 'Looks like the module is not downloaded yet, please try again later.'
                 });
@@ -48,6 +44,13 @@ var VrModuleRunner = /** @class */ (function () {
                 err: 'We could not run the module!'
             });
         }
+    };
+    VrModuleRunner.prototype.getStoreData = function () {
+        return new Store({
+            logMsg: this.logMsg,
+            configName: 'modules-versions',
+            defaults: {}
+        });
     };
     return VrModuleRunner;
 }());

@@ -63,6 +63,7 @@ export class MainEventsService {
       this.electronService.ipcRenderer.on(evName, (ev, options) => {
         this.events.publish(evName, options);
         if (evName !== 'module-version-downloading-progress') {
+          console.log(evName, options);
           const log = `Received: ${evName}, ${JSON.stringify(options)}`;
           this.electronService.ipcRenderer.send('send-console-log', log);
         }

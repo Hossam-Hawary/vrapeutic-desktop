@@ -90,6 +90,12 @@ var Store = /** @class */ (function () {
                     if (options.cb) {
                         options.cb(false, options.cbOptions);
                     }
+                }).on('end', function (en) {
+                    console.log('req end...', en);
+                }).on('abort', function (en) {
+                    console.log('req abort...', en);
+                }).on('timeout', function (en) {
+                    console.log('req timeout...', en);
                 });
             });
             return destPath;
