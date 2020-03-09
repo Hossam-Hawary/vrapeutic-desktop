@@ -154,6 +154,10 @@
                     </ion-button>
                   </ion-col>
                 </ion-row>
+                  <ion-button *ngIf="!mainEventsService.trackedModules[module.id]?.downloading && !mainEventsService.trackedModules[module.id]?.installing"
+                    color="meduim" fill="clear" size='small' (click)="resetModule(module)" >
+                    Clear
+                  </ion-button>
               </ion-grid>
             </ion-card-content>
           </ion-card>

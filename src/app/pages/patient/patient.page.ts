@@ -136,8 +136,39 @@ export class PatientPage implements OnInit {
     this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
   }
 
+  resetModule(module) {
+    this.helperService.showAlert(
+      `You are going to remove all ${module.name} files from your storage.`,
+      'Warning',
+      ['Cancel',
+        {
+          text: 'Clear',
+          role: 'ok',
+          cssClass: 'warning',
+          handler: (clear) => {
+            this.mainEventsService.resetOneTrackingModule(module);
+          }
+        }]
+    );
+  }
+
   resetModules() {
-    this.mainEventsService.sendEventAsync('reset-all-installed-modules', this.showConsole);
-    this.mainEventsService.resetTrackingModules(this.modules);
+    if (this.mainEventsService.isDownloadingModules() || this.mainEventsService.isInstallingModules() ) {
+       return this.helperService.showError('We cannot clear modules while downloading or installing modules');
+    }
+
+    this.helperService.showAlert(
+      'You are going to remove all downloaded modules from your storage.',
+      'Warning',
+      ['Cancel',
+        {
+          text: 'Clear All',
+          role: 'ok',
+          cssClass: 'warning',
+          handler: (clear) => {
+            this.mainEventsService.resetTrackingModules(this.modules);
+          }
+        }]
+    );
   }
 }

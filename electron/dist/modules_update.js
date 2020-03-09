@@ -208,12 +208,15 @@ function versionInstallError(versionData) {
 }
 function SetupEventsListeners() {
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, function (event) {
+        if (checkRunningUpdates()) {
+            return;
+        }
         store.removeDir(modulesDir);
         store.resetDefaults({});
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_installed_module, function (event, moduleId) {
-        store.removeDir(path.join(modulesDir, moduleId));
-        store.set(moduleId, null);
+        store.removeDir(path.join(modulesDir, moduleId.toString()));
+        store.set(moduleId, {});
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.module_latest_version, function (event, latestVesionData) {
         if (!latestVesionData) {

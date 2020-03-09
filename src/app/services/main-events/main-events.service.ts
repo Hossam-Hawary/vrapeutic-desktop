@@ -3,6 +3,7 @@ import { ElectronService } from 'ngx-electron';
 import { Events } from '@ionic/angular';
 import { HelperService } from '../helper/helper.service';
 import { environment } from '../../../environments/environment';
+import { ReturnStatement } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -149,7 +150,21 @@ export class MainEventsService {
     return this.trackedModules;
   }
 
+  resetOneTrackingModule(module) {
+    const currenModule = this.trackedModules[module.id];
+    if (currenModule.downloading || currenModule.installing) { return; }
+
+    this.sendEventAsync('reset-installed-module', module.id);
+    this.trackedModules[module.id] = null;
+    this.zone.run(() => {
+      this.updateOneTrackedModule(module);
+    });
+  }
+
   resetTrackingModules(modules) {
+    if (this.isDownloadingModules() || this.isInstallingModules()) { return; }
+
+    this.sendEventAsync('reset-all-installed-modules', {});
     this.zone.run(() => {
       this.trackedModules = {};
       this.updateTrackedModules(modules);
@@ -158,11 +173,15 @@ export class MainEventsService {
 
   updateTrackedModules(modules = []) {
     modules.forEach((m) => {
-      if (!m.latest_version || this.trackedModules[m.id]) { return; }
-
-      this.trackedModules[m.id] = {};
-      this.sendEventAsync('module-latest-version', m.latest_version);
+      this.updateOneTrackedModule(m);
     });
+  }
+
+  updateOneTrackedModule(module) {
+    if (!module.latest_version || this.trackedModules[module.id]) { return; }
+
+    this.trackedModules[module.id] = {};
+    this.sendEventAsync('module-latest-version', module.latest_version);
   }
 
   downloadNewVersion(version) {
@@ -187,6 +206,14 @@ export class MainEventsService {
     const currentModule = this.trackedModules[version.vr_module_id];
     currentModule.paused = false;
     this.sendEventAsync('module-version-resume-downloading', version);
+  }
+
+  isDownloadingModules() {
+    return Object.values(this.trackedModules).some((m: any) => m.downloading);
+  }
+
+  isInstallingModules() {
+    return Object.values(this.trackedModules).some((m: any) => m.installing);
   }
 
   trackDownloadProgress() {

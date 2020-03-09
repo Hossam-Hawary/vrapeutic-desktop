@@ -179,13 +179,15 @@ function versionInstallError(versionData) {
 function SetupEventsListeners() {
 
   ipcMain.on(UPDATES_EVENTS.reset_all_installed_modules, (event) => {
+    if (checkRunningUpdates()) { return; }
+
     store.removeDir(modulesDir);
     store.resetDefaults({});
   });
 
   ipcMain.on(UPDATES_EVENTS.reset_installed_module, (event, moduleId) => {
-    store.removeDir(path.join(modulesDir, moduleId));
-    store.set(moduleId, null);
+    store.removeDir(path.join(modulesDir, moduleId.toString()));
+    store.set(moduleId, {});
   });
 
   ipcMain.on(UPDATES_EVENTS.module_latest_version, (event, latestVesionData) => {
