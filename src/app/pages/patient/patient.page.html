@@ -111,6 +111,10 @@
                   color="primary" fill="clear" size='small' (click)="resumeDownloading(module)">
                   <ion-icon name="play"></ion-icon>
                 </ion-button>
+                <ion-button
+                  color="primary" fill="clear" size='small' (click)="cancelDownloading(module)">
+                  <ion-icon name="close-circle"></ion-icon>
+                </ion-button>
               </div>
 
               <div *ngIf="mainEventsService.trackedModules[module.id]?.installing">
@@ -158,6 +162,10 @@
                     color="meduim" fill="clear" size='small' (click)="resetModule(module)" >
                     Clear
                   </ion-button>
+                <ion-button
+                  color="meduim" fill="clear" size='small' (click)="installAndroid(module)">
+                  Install Android
+                </ion-button>
               </ion-grid>
             </ion-card-content>
           </ion-card>

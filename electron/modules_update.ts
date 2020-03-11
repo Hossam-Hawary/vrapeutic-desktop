@@ -17,6 +17,7 @@ const UPDATES_EVENTS = {
   module_version_installed: 'module-version-installed',
   module_version_pause_downloading: 'module-version-pause-downloading',
   module_version_resume_downloading: 'module-version-resume-downloading',
+  module_version_cancel_downloading: 'module-version-cancel-downloading',
   module_version_download_error: 'module-version-download-error',
   module_version_install_error: 'module-version-install-error',
   close_main_win: 'close-main-win'
@@ -40,13 +41,19 @@ const checkRunningUpdates = () => {
   return store.getAllValues().some((moduleVersion: any) => moduleVersion.downloading);
 };
 
+const cancelDownloadinModuleUpdates = (moduleVersion, versionId = null) => {
+  if (!moduleVersion || !moduleVersion.downloading) { return; }
+
+  if (versionId) { modulesResponses[versionId].pause(); }
+  store.removeFile(moduleVersion.downloading);
+  moduleVersion.downloading = null;
+  store.set(moduleVersion.vr_module_id, moduleVersion);
+};
+
 const ignoreRunningUpdates = () => {
-  Object.values(modulesResponses).forEach((res: any) => res.pause());
   const currenModulesVersions: any[] = store.getAllValues();
   currenModulesVersions.filter((moduleVersion: any) => moduleVersion.downloading ).forEach((moduleVersion: any) => {
-    store.removeFile(moduleVersion.downloading);
-    moduleVersion.downloading = null;
-    store.set(moduleVersion.vr_module_id, moduleVersion);
+    cancelDownloadinModuleUpdates(moduleVersion);
   });
 };
 
@@ -186,7 +193,7 @@ function SetupEventsListeners() {
   });
 
   ipcMain.on(UPDATES_EVENTS.reset_installed_module, (event, moduleId) => {
-    store.removeDir(path.join(modulesDir, moduleId.toString()));
+    store.removeDir(getModulePath(moduleId));
     store.set(moduleId, {});
   });
 
@@ -219,5 +226,11 @@ function SetupEventsListeners() {
     if (!versionData || !modulesResponses[versionData.id]) { return; }
 
     modulesResponses[versionData.id].resume();
+  });
+
+  ipcMain.on(UPDATES_EVENTS.module_version_cancel_downloading, (event, versionData) => {
+    if (!versionData || !modulesResponses[versionData.id]) { return; }
+
+    cancelDownloadinModuleUpdates(store.get(versionData.vr_module_id), versionData.id);
   });
 }

@@ -131,9 +131,24 @@ export class PatientPage implements OnInit {
     this.mainEventsService.resumeDownloadNewVersion(vrModule.latest_version);
   }
 
-  toggleConsole() {
-    this.showConsole = !this.showConsole;
-    this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
+  cancelDownloading(vrModule) {
+    this.helperService.showAlert(
+      `You are going to cancel downloading ${vrModule.name} updates`,
+      'Warning',
+      ['Continue Download',
+        {
+          text: 'Cancel Download',
+          role: 'ok',
+          cssClass: 'warning',
+          handler: (clear) => {
+            this.mainEventsService.cancelDownloadNewVersion(vrModule.latest_version);
+          }
+        }]
+    );
+  }
+
+  installAndroid(module) {
+    this.mainEventsService.installAndroidModule(module);
   }
 
   resetModule(module) {
@@ -170,5 +185,10 @@ export class PatientPage implements OnInit {
           }
         }]
     );
+  }
+
+  toggleConsole() {
+    this.showConsole = !this.showConsole;
+    this.mainEventsService.sendEventAsync('show-console-log', this.showConsole);
   }
 }

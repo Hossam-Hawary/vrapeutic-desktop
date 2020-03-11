@@ -87,6 +87,9 @@ var logMsg = function (msg, type) {
     consoleWin.webContents.send(MAIN_EVENTS.console_log, { msg: msg, color: colors[type] });
 };
 var sendEvToWin = function (evName, options) {
+    if (!win) {
+        return;
+    }
     win.webContents.send(evName, options);
 };
 electron_1.ipcMain.on(MAIN_EVENTS.authorized_devices, function (event, newAuthorizedHeadsets) {

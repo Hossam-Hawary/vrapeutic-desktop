@@ -53,6 +53,7 @@ var UPDATES_EVENTS = {
     module_version_installed: 'module-version-installed',
     module_version_pause_downloading: 'module-version-pause-downloading',
     module_version_resume_downloading: 'module-version-resume-downloading',
+    module_version_cancel_downloading: 'module-version-cancel-downloading',
     module_version_download_error: 'module-version-download-error',
     module_version_install_error: 'module-version-install-error',
     close_main_win: 'close-main-win'
@@ -83,13 +84,22 @@ var showDialog = function (title, message, detail, buttons) {
 var checkRunningUpdates = function () {
     return store.getAllValues().some(function (moduleVersion) { return moduleVersion.downloading; });
 };
+var cancelDownloadinModuleUpdates = function (moduleVersion, versionId) {
+    if (versionId === void 0) { versionId = null; }
+    if (!moduleVersion || !moduleVersion.downloading) {
+        return;
+    }
+    if (versionId) {
+        modulesResponses[versionId].pause();
+    }
+    store.removeFile(moduleVersion.downloading);
+    moduleVersion.downloading = null;
+    store.set(moduleVersion.vr_module_id, moduleVersion);
+};
 var ignoreRunningUpdates = function () {
-    Object.values(modulesResponses).forEach(function (res) { return res.pause(); });
     var currenModulesVersions = store.getAllValues();
     currenModulesVersions.filter(function (moduleVersion) { return moduleVersion.downloading; }).forEach(function (moduleVersion) {
-        store.removeFile(moduleVersion.downloading);
-        moduleVersion.downloading = null;
-        store.set(moduleVersion.vr_module_id, moduleVersion);
+        cancelDownloadinModuleUpdates(moduleVersion);
     });
 };
 var informUserWithRunningUpdates = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -215,7 +225,7 @@ function SetupEventsListeners() {
         store.resetDefaults({});
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.reset_installed_module, function (event, moduleId) {
-        store.removeDir(path.join(modulesDir, moduleId.toString()));
+        store.removeDir(getModulePath(moduleId));
         store.set(moduleId, {});
     });
     electron_1.ipcMain.on(UPDATES_EVENTS.module_latest_version, function (event, latestVesionData) {
@@ -248,6 +258,12 @@ function SetupEventsListeners() {
             return;
         }
         modulesResponses[versionData.id].resume();
+    });
+    electron_1.ipcMain.on(UPDATES_EVENTS.module_version_cancel_downloading, function (event, versionData) {
+        if (!versionData || !modulesResponses[versionData.id]) {
+            return;
+        }
+        cancelDownloadinModuleUpdates(store.get(versionData.vr_module_id), versionData.id);
     });
 }
 //# sourceMappingURL=modules_update.js.map

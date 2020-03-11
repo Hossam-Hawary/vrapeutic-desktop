@@ -56,8 +56,8 @@ export class MainEventsService {
       'offline-headset-ready', 'desktop-module-ready', 'main-error', 'unauthorized-device-connected',
       'console-log', 'new-module-version-available-to-download', 'new-module-version-available-to-install',
       'module-version-size', 'module-version-downloading-progress',
-      'module-version-downloaded', 'module-version-installed',
-      'module-version-install-error', 'module-version-download-error'
+      'module-version-downloaded', 'module-version-installed', 'module-version-install-error',
+      'module-version-download-error', 'install-android-module-ready', 'installing-android-module'
     ];
 
     mainEvents.forEach((evName) => {
@@ -100,7 +100,24 @@ export class MainEventsService {
     return this.headsetConnectedState === this.headsetStates.ready;
   }
 
+  preparingConnectedHeadset() {
+    this.helperService.showToast('An Authorized device is connected');
+    this.helperService.showLoading('We are preparing the headset..., please don\'t unplug it now');
+  }
+
   setupHeadsetEvents() {
+    this.events.subscribe('installing-android-module', (options) => {
+      this.helperService.showLoading(options.msg);
+    });
+
+    this.events.subscribe('install-android-module-ready', (options) => {
+      if (!options.ready) {
+        return this.helperService.showError(options.err);
+      }
+
+      this.helperService.showToast(options.msg);
+    });
+
     this.events.subscribe('device-connected', (device) => {
       this.headsetConnectedState = this.headsetStates.preparing;
       this.preparingConnectedHeadset();
@@ -132,7 +149,6 @@ export class MainEventsService {
 
   setupRunningModulesEvents() {
     this.events.subscribe('desktop-module-ready', (options) => {
-      this.helperService.removeLoading();
       if (!options.ready) {
         return this.helperService.showError(options.err);
       }
@@ -141,13 +157,15 @@ export class MainEventsService {
     });
   }
 
-  preparingConnectedHeadset() {
-    this.helperService.showToast('An Authorized device is connected');
-    this.helperService.showLoading('We are preparing the headset..., please don\'t unplug it now');
-  }
-
   getTrackedModules() {
     return this.trackedModules;
+  }
+
+  installAndroidModule(module) {
+    const headset = 1; //this.getReadyHeadset();
+    // if (!headset) { return; }
+
+    this.sendEventAsync('install-android-module-to-headset', { module, headset});
   }
 
   resetOneTrackingModule(module) {
@@ -206,6 +224,14 @@ export class MainEventsService {
     const currentModule = this.trackedModules[version.vr_module_id];
     currentModule.paused = false;
     this.sendEventAsync('module-version-resume-downloading', version);
+  }
+
+  cancelDownloadNewVersion(version) {
+    const currentModule = this.trackedModules[version.vr_module_id];
+    currentModule.downloading = false;
+    currentModule.paused = false;
+    currentModule.ratio = 0;
+    this.sendEventAsync('module-version-cancel-downloading', version);
   }
 
   isDownloadingModules() {

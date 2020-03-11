@@ -52,6 +52,8 @@ const logMsg = (msg, type = 'debug') => {
 };
 
 const sendEvToWin = (evName, options) => {
+  if (!win) { return; }
+
   win.webContents.send(evName, options);
 };
 
