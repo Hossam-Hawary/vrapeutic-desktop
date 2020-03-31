@@ -71,10 +71,10 @@ class VrModuleRunner {
     const module = options.module;
     const headset = options.headset;
     try {
-      const moduleApkPath = path.join(modulePath, module.name, `${module.name}.apk`);
       this.sendEvToWin(this.MODULES_EVENTS.installaling_android_module, {
         module, msg: 'Installing the android module...'
       });
+      const moduleApkPath = path.join(modulePath, module.name, `${module.name}.apk`);
       await this.client.install(headset.id, moduleApkPath);
       this.sendEvToWin(this.MODULES_EVENTS.install_android_module_ready, {
         ready: true, module,

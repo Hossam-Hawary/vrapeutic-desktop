@@ -106,10 +106,10 @@ var VrModuleRunner = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        moduleApkPath = path.join(modulePath, module.name, module.name + ".apk");
                         this.sendEvToWin(this.MODULES_EVENTS.installaling_android_module, {
                             module: module, msg: 'Installing the android module...'
                         });
+                        moduleApkPath = path.join(modulePath, module.name, module.name + ".apk");
                         return [4 /*yield*/, this.client.install(headset.id, moduleApkPath)];
                     case 2:
                         _a.sent();

@@ -71,7 +71,7 @@ export class PatientPage implements OnInit {
   async runModuleOffline(module) {
     this.getNewSessionId(
       module,
-      this.headsets.find((h) => h.serial === this.mainEventsService.getReadyHeadset()).id
+      this.headsets.find((h) => h.serial === this.mainEventsService.getReadyHeadset().id).id
     );
   }
 

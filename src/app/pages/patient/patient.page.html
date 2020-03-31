@@ -154,14 +154,14 @@
                     </ion-button>
                   </ion-col>
                 </ion-row>
-                  <ion-button *ngIf="!mainEventsService.trackedModules[module.id]?.downloading && !mainEventsService.trackedModules[module.id]?.installing"
-                    color="meduim" fill="clear" size='small' (click)="resetModule(module)" >
+                <ion-row *ngIf="!mainEventsService.trackedModules[module.id]?.downloading && !mainEventsService.trackedModules[module.id]?.installing">
+                  <ion-button color="meduim" fill="clear" size='small' (click)="resetModule(module)" >
                     Clear
                   </ion-button>
-                <ion-button
-                  color="meduim" fill="clear" size='small' (click)="installAndroid(module)">
+                <ion-button color="meduim" fill="clear" size='small' (click)="installAndroid(module)">
                   Install Android
                 </ion-button>
+                </ion-row>
               </ion-grid>
             </ion-card-content>
           </ion-card>

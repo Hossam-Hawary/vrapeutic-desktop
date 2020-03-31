@@ -73,7 +73,7 @@ export class MainEventsService {
   }
 
   getReadyHeadset() {
-    return this.headsetsPrepared[0].id;
+    return this.headsetsPrepared[0];
   }
 
   noHeadsetsReady() {
@@ -162,8 +162,8 @@ export class MainEventsService {
   }
 
   installAndroidModule(module) {
-    const headset = 1; //this.getReadyHeadset();
-    // if (!headset) { return; }
+    const headset = this.getReadyHeadset();
+    if (!headset) { return; }
 
     this.sendEventAsync('install-android-module-to-headset', { module, headset});
   }
