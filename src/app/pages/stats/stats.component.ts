@@ -20,6 +20,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() allData: any[];
   @Input() moduleId: number;
   @Input() sessionName: string;
+  @Input() sessionsScope: string;
   @ViewChild('canvas', { static: true }) canvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
@@ -85,7 +86,8 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
       const tooltipData = {};
       this.validData.forEach((sessionData: any) => {
         const y = sessionData[chart.fieldNameY].toFixed(2);
-        const x = (new Date(sessionData[chart.fieldNameX])).toLocaleTimeString();
+        let x: any = (new Date(sessionData[chart.fieldNameX]));
+        x = this.sessionsScope === 'One Session' ?  x.toLocaleTimeString() : x.toLocaleString();
         if (y < 0) { return; }
         const dataGroup = sessionData[chart.groupBy] || chart.fieldNameY;
         chart.dataY[dataGroup] = chart.dataY[dataGroup] || [];

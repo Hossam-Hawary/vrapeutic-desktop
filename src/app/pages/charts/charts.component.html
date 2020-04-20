@@ -6,9 +6,20 @@
     <ion-title>{{'PATIENT.PATIENT' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding>
 
-  <ion-list class="sessions-list" no-padding>
+<ion-content padding>
+<ion-list class="sessions-list" no-padding>
+  <ion-item *ngIf="sessions?.length" color='secondary' size="small" slot="start">
+    <ion-label position="stacked">Data Scope</ion-label>
+    <ion-select (ionChange)="changeSessionScope()" [(ngModel)]="selectedSessionsScope" interface="popover">
+      <ion-select-option *ngFor="let sessionsScope of sessionsScopes" [value]="sessionsScope">
+        {{ sessionsScope }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>
+
+  <ion-list class="sessions-list" no-padding *ngIf="selectedSessionsScope == 'One Session'">
     <ion-item *ngIf="sessions?.length" color='secondary' size="small" slot="start">
       <ion-label position="stacked">Session</ion-label>
       <ion-select (ionChange)="getStatistics()" [(ngModel)]="selectedSession" interface="popover">
@@ -26,5 +37,9 @@
       <div class="empty-text">No Sessions Available</div>
     </div>
 
-    <app-stats *ngIf="showStats" [moduleId]= "moduleId" [allData]="sessionStatistics" [sessionName]="selectedSession.session_date"></app-stats>
+    <app-stats *ngIf="showStats"
+     [moduleId]= "moduleId" [allData]="sessionStatistics"
+     [sessionName]="selectedSession.sessiion_date"
+     [sessionsScope]="selectedSessionsScope"
+     ></app-stats>
 </ion-content>

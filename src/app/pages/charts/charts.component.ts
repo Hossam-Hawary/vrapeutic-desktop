@@ -1,9 +1,9 @@
 import { ChartsService } from './../../services/charts/charts.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
 import { HelperService } from './../../services/helper/helper.service';
 import { ActivatedRoute } from '@angular/router';
-import { StatsComponent } from '../stats/stats.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-charts',
@@ -14,10 +14,14 @@ export class ChartsComponent implements OnInit {
   patientId;
   moduleId;
   selectedSession: any;
+  sessionsScopes: any[] = [];
+  selectedSessionsScope;
   sessions: any[] = [];
   sessionStatistics: any[] = [];
   allSessionsStatistics: any[] = [];
   showStats = false;
+  selectedDateRange: { startDate: moment.Moment, endDate: moment.Moment };
+
   constructor(
     public chartsService: ChartsService,
     private userService: UserService,
@@ -28,21 +32,31 @@ export class ChartsComponent implements OnInit {
   ngOnInit() {
     this.patientId = this.route.snapshot.paramMap.get('patient_id');
     this.moduleId = this.route.snapshot.paramMap.get('module_id');
-    this.ModuleSessions();
-    this.chartsService.getModuleStatistics(
-      { patient_id: this.patientId, vr_module_id: this.moduleId });
+    this.sessionsScopes = this.chartsService.sessionsScopes;
+    this.initDefautChartData();
   }
 
-  async ModuleSessions() {
+  async initDefautChartData() {
     try {
       await this.helperService.showLoading();
       this.sessions = await this.userService.getPatientModuleSessions(this.patientId, this.moduleId) as any[];
-      this.selectedSession = this.sessions[0];
-      await this.getStatistics();
+      this.selectedSessionsScope = 'One Session';
+      this.changeSessionScope();
       this.helperService.removeLoading();
     } catch (err) {
       this.helperService.showError(err);
     }
+  }
+
+  async changeSessionScope() {
+    this.showStats = false;
+    if (this.selectedSessionsScope === 'One Session') {
+      this.selectedSession = this.sessions[0];
+      await this.getStatistics();
+    } else {
+      await this.getAllSessionsStatisticsMerged();
+    }
+    this.showStats = true;
   }
 
   async getStatistics() {
@@ -50,68 +64,21 @@ export class ChartsComponent implements OnInit {
 
     try {
       await this.helperService.showLoading();
-      this.showStats = false;
       this.sessionStatistics = await this.chartsService.loadSessionStatistics(this.selectedSession.id) as any[];
       this.helperService.removeLoading();
-      this.showStats = true;
-      // TODO: You can use session's statistics as you like
-
-      // [
-      //     {
-      //       "score": 0.15,
-      //       "character": "Hussein",
-      //       "Collectable": "Gem",
-      //       "distractor": "Camel",
-      //       "maze_path": "Circle",
-      //       "environment": "Desert",
-      //       "session_start_time": "2019-07-10T21:07:54.940Z",
-      //       "attempt_start_time": "2019-07-10T21:22:54.940Z",
-      //       "attempt_end_time": "2019-07-10T21:23:32.940Z",
-      //       "attempt_expected_time": "2019-07-10T21:23:24.940Z",
-      //       "expected_duration_in_seconds": 30,
-      //       "actual_duration_in_seconds": 38,
-      //       "level": "1"
-      //     },
-      //     {
-      //       ....
-      //     }
-      // ]
     } catch (err) {
       this.helperService.showError(err);
     }
   }
 
   async getAllSessionsStatisticsMerged() {
-    this.allSessionsStatistics = await this.getAllSessionsStatistics() as any[];
-    console.log(this.allSessionsStatistics);
-    if (!this.allSessionsStatistics.length) { return; }
-
-    // use statistics here
-
-    //   [
-    //     {
-    //       "score": 0.15,
-    //       "character": "Hussein",
-    //       "Collectable": "Gem",
-    //       "distractor": "Camel",
-    //       "maze_path": "Circle",
-    //       "environment": "Desert",
-    //       "session_start_time": "2019-07-10T21:07:54.940Z",
-    //       "attempt_start_time": "2019-07-10T21:22:54.940Z",
-    //       "attempt_end_time": "2019-07-10T21:23:32.940Z",
-    //       "attempt_expected_time": "2019-07-10T21:23:24.940Z",
-    //       "expected_duration_in_seconds": 30,
-    //       "actual_duration_in_seconds": 38,
-    //       "level": "1"
-    //     },
-    //     {
-    //       ....
-    //     }
-    // ]
+    this.sessionStatistics = await this.getAllSessionsStatistics() as any[];
+    if (!this.sessionStatistics.length) { return; }
    }
+
   async getAllSessionsStatisticsGroupedBySession() {
-    this.allSessionsStatistics = await this.getAllSessionsStatistics('session') as any[];
-    if (!this.allSessionsStatistics.length) { return; }
+    this.sessionStatistics = await this.getAllSessionsStatistics('session') as any[];
+    if (!this.sessionStatistics.length) { return; }
 
     // use statistics here
 
@@ -147,8 +114,8 @@ export class ChartsComponent implements OnInit {
   }
 
   async getAllSessionsStatisticsGroupedByWeek() {
-    this.allSessionsStatistics = await this.getAllSessionsStatistics('week') as any[];
-    if (!this.allSessionsStatistics.length) { return; }
+    this.sessionStatistics = await this.getAllSessionsStatistics('week') as any[];
+    if (!this.sessionStatistics.length) { return; }
 
     // use statistics here
 
@@ -165,8 +132,8 @@ export class ChartsComponent implements OnInit {
   }
 
   async getAllSessionsStatisticsGroupedByMonth() {
-    this.allSessionsStatistics = await this.getAllSessionsStatistics('month') as any[];
-    if (!this.allSessionsStatistics.length) { return; }
+    this.sessionStatistics = await this.getAllSessionsStatistics('month') as any[];
+    if (!this.sessionStatistics.length) { return; }
 
     // use statistics here
 
