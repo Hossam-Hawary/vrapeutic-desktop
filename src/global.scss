@@ -9,6 +9,10 @@
 @import '~@ionic/angular/css/text-alignment.css';
 @import '~@ionic/angular/css/text-transformation.css';
 @import '~@ionic/angular/css/flex-utils.css';
+// $fa-font-path: "~font-awesome/fonts";
+// @import "~font-awesome/scss/font-awesome.scss";
+@import "ngx-datetime-range-picker/ngx-datetime-range-picker.theme.scss";
+@include ngx-datetime-range-picker-theme();
 
 .error {
   color: red;
@@ -59,6 +63,19 @@ th div.mat-sort-header-container {
   text-align: center;
 }
 
-.mat-sort-header-container  .mat-sort-header-button {
+.mat-sort-header-container .mat-sort-header-button {
   padding: 7px;
+}
+
+// date range picker 
+.m1-date-range-picker mat-form-field.full-width {
+  margin-bottom: 15px;
+}
+
+.m1-date-range-picker .ranges {
+  width: min-content;
+}
+
+.mat-form-field-appearance-legacy .mat-form-field-infix {
+  font-size: 1.6rem;
 }

@@ -10,6 +10,7 @@ import { ChartsComponent } from './charts.component';
 import { ChartsModule } from 'ng2-charts';
 import { StatsComponent } from '../stats/stats.component';
 import { MatTableModule, MatSortModule, MatFormFieldModule } from '@angular/material';
+import { NgxDatetimeRangePickerModule } from "ngx-datetime-range-picker";
 
 const routes: Routes = [
 
@@ -29,7 +30,8 @@ const routes: Routes = [
     ChartsModule,
     MatTableModule,
     MatSortModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    NgxDatetimeRangePickerModule.forRoot()
   ],
   declarations: [ChartsComponent, StatsComponent],
 })

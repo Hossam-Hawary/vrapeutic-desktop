@@ -7,10 +7,17 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-<ion-list class="sessions-list" no-padding>
+
+<ion-content class="ion-padding">
+<div *ngIf="selectedSessionsScope == 'Within Dates'">
+  <ngx-datetime-range-picker name="date" [options]="datePickerOptions" [settings]="datePickerSettings"
+   (dateRangeChanged)="onDateFilterChange($event)" required>
+  </ngx-datetime-range-picker>
+</div>
+
+<ion-list class="sessions-list ion-no-padding">
   <ion-item *ngIf="sessions?.length" color='secondary' size="small" slot="start">
-    <ion-label position="stacked">Data Scope</ion-label>
+    <ion-label position="stacked">Sessions Scope</ion-label>
     <ion-select (ionChange)="changeSessionScope()" [(ngModel)]="selectedSessionsScope" interface="popover">
       <ion-select-option *ngFor="let sessionsScope of sessionsScopes" [value]="sessionsScope">
         {{ sessionsScope }}
@@ -19,7 +26,7 @@
   </ion-item>
 </ion-list>
 
-  <ion-list class="sessions-list" no-padding *ngIf="selectedSessionsScope == 'One Session'">
+  <ion-list class="sessions-list ion-no-padding" *ngIf="selectedSessionsScope == 'One Session'">
     <ion-item *ngIf="sessions?.length" color='secondary' size="small" slot="start">
       <ion-label position="stacked">Session</ion-label>
       <ion-select (ionChange)="getStatistics()" [(ngModel)]="selectedSession" interface="popover">
@@ -39,7 +46,8 @@
 
     <app-stats *ngIf="showStats"
      [moduleId]= "moduleId" [allData]="sessionStatistics"
-     [sessionName]="selectedSession.sessiion_date"
+     [sessionName]="selectedSession.session_date"
      [sessionsScope]="selectedSessionsScope"
      ></app-stats>
+
 </ion-content>

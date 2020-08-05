@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
@@ -65,13 +65,14 @@ var modulesDir = 'modules';
 var modulesResponses = {};
 var showDialog = function (title, message, detail, buttons) {
     if (buttons === void 0) { buttons = ['Ok']; }
-    return __awaiter(_this, void 0, void 0, function () {
+    return __awaiter(void 0, void 0, void 0, function () {
         var dialogOpts, returnValue;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     dialogOpts = {
-                        type: 'info', buttons: buttons, title: title, message: message, detail: detail
+                        type: 'info',
+                        buttons: buttons, title: title, message: message, detail: detail
                     };
                     return [4 /*yield*/, electron_1.dialog.showMessageBox(dialogOpts)];
                 case 1:
@@ -102,7 +103,7 @@ var ignoreRunningUpdates = function () {
         cancelDownloadinModuleUpdates(moduleVersion);
     });
 };
-var informUserWithRunningUpdates = function () { return __awaiter(_this, void 0, void 0, function () {
+var informUserWithRunningUpdates = function () { return __awaiter(void 0, void 0, void 0, function () {
     var response;
     return __generator(this, function (_a) {
         switch (_a.label) {

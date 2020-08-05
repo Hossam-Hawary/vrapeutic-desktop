@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var autoUpdater = require('electron-updater').autoUpdater;
@@ -53,9 +53,8 @@ exports.SetupAutoUpdate = function (logMsg, sendEvToWin, storeHelper) {
     // const feed: any = `${baseFeedUrl}/update/${platform}/${appVersion}`;
     // logMsg(feed, 'info');
     // autoUpdater.setFeedURL(feed);
-    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
+    setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, _c, _d;
-        var _this = this;
         return __generator(this, function (_e) {
             switch (_e.label) {
                 case 0:
@@ -110,7 +109,7 @@ exports.SetupAutoUpdate = function (logMsg, sendEvToWin, storeHelper) {
                 case 1:
                     // logMsg(autoUpdater.getFeedURL(), 'info');
                     _a.apply(void 0, [_b + _d.apply(_c, [_e.sent()]), 'info']);
-                    setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
+                    setInterval(function () { return __awaiter(void 0, void 0, void 0, function () {
                         var _a, _b, _c, _d;
                         return __generator(this, function (_e) {
                             switch (_e.label) {

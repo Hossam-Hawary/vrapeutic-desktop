@@ -5,7 +5,7 @@ import { ApiService } from '../api/api.service';
   providedIn: 'root'
 })
 export class ChartsService {
-  sessionsScopes: any[] = ['One Session', 'Merged Sessions'];
+  sessionsScopes: any[] = ['One Session', 'Within Dates', 'All Sessions'];
 
   constructor(private api: ApiService) {
   }

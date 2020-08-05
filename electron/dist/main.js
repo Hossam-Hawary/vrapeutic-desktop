@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -346,7 +347,8 @@ function prepareHeadsetOnOfflineMode() {
                 case 3:
                     err_2 = _a.sent();
                     sendEvToWin(MAIN_EVENTS.offline_headset_ready, {
-                        ready: false, headsetDevice: headsetDevice,
+                        ready: false,
+                        headsetDevice: headsetDevice,
                         err: err_2.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
                     });
                     msg = 'Error...' + 'prepareHeadsetOnOfflineMode' + JSON.stringify(err_2);

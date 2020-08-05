@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -73,7 +74,8 @@ var VrModuleRunner = /** @class */ (function () {
             console.log('modulePath', modulePath);
             if (!modulePath) {
                 return _this.sendEvToWin(_this.MODULES_EVENTS.install_android_module_ready, {
-                    ready: false, module: module,
+                    ready: false,
+                    module: module,
                     err: 'We could not find the module to install it'
                 });
             }
@@ -90,7 +92,8 @@ var VrModuleRunner = /** @class */ (function () {
             var msg = 'Error...' + 'startDesktopModule > ' + moduleFilePath + JSON.stringify(err);
             this.logMsg(msg, 'error');
             this.sendEvToWin(this.MODULES_EVENTS.desktop_module_deady, {
-                ready: false, moduleName: moduleName,
+                ready: false,
+                moduleName: moduleName,
                 err: 'We could not run the module!'
             });
         }
@@ -107,14 +110,16 @@ var VrModuleRunner = /** @class */ (function () {
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         this.sendEvToWin(this.MODULES_EVENTS.installaling_android_module, {
-                            module: module, msg: 'Installing the android module...'
+                            module: module,
+                            msg: 'Installing the android module...'
                         });
                         moduleApkPath = path.join(modulePath, module.name, module.name + ".apk");
                         return [4 /*yield*/, this.client.install(headset.id, moduleApkPath)];
                     case 2:
                         _a.sent();
                         this.sendEvToWin(this.MODULES_EVENTS.install_android_module_ready, {
-                            ready: true, module: module,
+                            ready: true,
+                            module: module,
                             msg: 'The android module is installed successfully'
                         });
                         return [3 /*break*/, 4];
@@ -122,7 +127,8 @@ var VrModuleRunner = /** @class */ (function () {
                         err_1 = _a.sent();
                         console.log(err_1);
                         this.sendEvToWin(this.MODULES_EVENTS.install_android_module_ready, {
-                            ready: false, module: module,
+                            ready: false,
+                            module: module,
                             err: "Error while installing the android module: " + err_1.stack
                         });
                         return [3 /*break*/, 4];

@@ -120,7 +120,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         fill: false,
         backgroundColor: color,
         borderColor: color,
-        borderWidth: 3
+        borderWidth: 1
       } as ChartDataSets;
     });
     this.selectedChartConfigs.tooltipData = indexedTooltipData;
@@ -133,13 +133,13 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         legend: {
           display: true,
           labels: {
-            fontSize: 16
+            fontSize: 12
           }
         },
         title: {
           display: true,
           text: `${this.selectedChartConfigs.legend} (${this.selectedChartConfigs.fieldNameY.split('_').join(' ') })`,
-          fontSize: 18,
+          fontSize: 14,
           fontColor: this.selectedChartConfigs.color
         },
         hover: {
@@ -149,8 +149,8 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         tooltips: {
           enabled: true,
           mode: 'single' as InteractionMode,
-          titleFontSize: 15,
-          bodyFontSize: 15,
+          titleFontSize: 14,
+          bodyFontSize: 14,
           intersect: true,
           displayColors: false,
           callbacks: {
@@ -169,9 +169,9 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         scales: {
           xAxes: [{
             display: true,
-            barPercentage: 0.5,
-            barThickness: 40,
-            maxBarThickness: 50,
+            barPercentage: 0.2,
+            barThickness: 10,
+            maxBarThickness: 20,
             offset: true,
             gridLines: {
               offsetGridLines: true
