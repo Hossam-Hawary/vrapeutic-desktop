@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
 import { Chart, InteractionMode, ChartDataSets } from 'chart.js';
 
 import { configs } from './configs';
@@ -15,7 +15,7 @@ import * as XLSX from 'xlsx';
   templateUrl: './stats.component.html',
   styleUrls: ['./stats.component.css']
 })
-export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StatsComponent implements OnInit, OnDestroy {
 
   @Input() allData: any[];
   @Input() moduleId: number;
@@ -53,15 +53,17 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   initModule(moduleId: number) {
     this.fieldsConfig = configs[moduleId].fieldsConfig;
     this.curModuleName = configs[moduleId].moduleName;
-    this.validData = this.validateAndFilterData(this.allData);
-    this.sortedData = this.validData.slice();
     this.displayedColumns = Object.keys(this.fieldsConfig);
     this.chartsSettings = configs[moduleId].chartsConfigs;
     this.selectedChart = this.chartsSettings[0].id;
     this.rebuildChart();
   }
 
-  ngAfterViewInit(): void {}
+  validateAndResetData() {
+    this.validData = this.validateAndFilterData(this.allData);
+    this.sortedData = this.validData.slice();
+    this.emptyChart = !this.validData.length;
+  }
 
   validateAndFilterData(allData) {
     const filteredData: any[] = [];
@@ -74,14 +76,16 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   validateObject = (dataObj: any) => {
-    let valid = true;
-    Object.keys(this.fieldsConfig).forEach(key => {
-      valid = valid && (this.fieldsConfig[key] === typeof (dataObj[key]));
-    });
-    return valid;
+    const fieldY = this.selectedChartConfigs.fieldNameY;
+    const fieldX = this.selectedChartConfigs.fieldNameX;
+
+    return (this.fieldsConfig[fieldY] === typeof (dataObj[fieldY]) && this.fieldsConfig[fieldX] === typeof (dataObj[fieldX]));
   }
 
   collectStatsData() {
+    this.validateAndResetData();
+    if (!this.validData.length) { return; }
+
     this.chartsSettings.forEach((chart: ChartsConfig) => {
       const tooltipData = {};
       this.validData.forEach((sessionData: any) => {
@@ -91,7 +95,7 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (y < 0) { return; }
         const dataGroup = sessionData[chart.groupBy] || chart.fieldNameY;
         chart.dataY[dataGroup] = chart.dataY[dataGroup] || [];
-        chart.dataY[dataGroup].push(({ x, y}));
+        chart.dataY[dataGroup].push({ x, y});
         chart.dataX.push(x);
         chart.tooltipFields.forEach((tooltipField: string) => {
           tooltipData[dataGroup] = tooltipData[dataGroup] || {};
@@ -107,9 +111,11 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   buildCharts() {
-    this.collectStatsData();
     const indexedTooltipData = [];
     this.selectedChartConfigs = this.chartsSettings.find((chartConfig) => (chartConfig.id === this.selectedChart));
+    this.collectStatsData();
+    if (!this.validData.length) { return; }
+
     const datasets: ChartDataSets[] = Object.entries(this.selectedChartConfigs.dataY).map((entry, index) => {
 
       indexedTooltipData.push(this.selectedChartConfigs.tooltipData[entry[0]]);
@@ -124,10 +130,6 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
       } as ChartDataSets;
     });
     this.selectedChartConfigs.tooltipData = indexedTooltipData;
-
-    if (!datasets.length) { return this.emptyChart = true; }
-    this.emptyChart = false;
-
     const options = {
         responsive: true,
         legend: {
@@ -186,22 +188,21 @@ export class StatsComponent implements OnInit, AfterViewInit, OnDestroy {
           }],
         }
       };
-    const chart = new Chart(this.selectedChartConfigs.id, {
-      type: this.selectedChartConfigs.chartType,
+
+    setTimeout(() => {
+      const chart = new Chart(this.selectedChartConfigs.id, {
+        type: this.selectedChartConfigs.chartType,
         data: {
           labels: this.selectedChartConfigs.dataX,
           datasets
         },
         options
       });
-
-    this.selectedChartConfigs.chartObject = chart;
+      this.selectedChartConfigs.chartObject = chart;
+    }, 400);
   }
 
   rebuildChart() {
-    if (!this.validData.length) { return this.emptyChart = true; }
-    this.emptyChart = false;
-
     this.chartsSettings.forEach((chart: ChartsConfig) => {
       chart.dataX = [];
       chart.dataY = {};
