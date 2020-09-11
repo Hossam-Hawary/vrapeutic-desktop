@@ -119,6 +119,7 @@
     "hammerjs": "^2.0.8",
     "install": "^0.13.0",
     "internal-ip": "^4.3.0",
+    "local-devices": "^3.0.0",
     "logger-electron": "^1.2.8",
     "ng2-charts": "^2.2.3",
     "ngx-datetime-range-picker": "^2.0.2",

@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="ion-padding">
   <ion-card>
     <ion-card-content>
       <div class="headset-status">
@@ -22,14 +22,14 @@
             The connected headset is ready.
           </ion-text>
         </div>
-        
+
         <div *ngIf="mainEventsService.preparingHeadset()">
           <ion-spinner></ion-spinner>
           <ion-text color="primary">
             We are preparing the connected headset now, please wait...
           </ion-text>
         </div>
-        
+
         <div *ngIf="mainEventsService.headsetIsNotAuthorized()">
           <ion-icon color="warning" name="alert"></ion-icon>
           <ion-text color="warning">
@@ -42,14 +42,14 @@
             The connected headset is not ready, you can try to re-plug it.
           </ion-text>
         </div>
-        
+
         <div *ngIf="mainEventsService.someHeadsetsReady()">
           <ion-icon color="success" name="checkmark-circle-outline"></ion-icon>
           <ion-text color="success">
             You have some ready headsets, you are safe to run any module now.
           </ion-text>
         </div>
-        
+
         <div *ngIf="mainEventsService.noHeadsetsReady()">
           <ion-icon color="danger" name="close-circle-outline"></ion-icon>
           <ion-text color="danger">
@@ -81,9 +81,17 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
+
+  <ion-item color='secondary'>
+    <ion-label>Connect To Headset Wirelessly </ion-label>
+    <ion-select placeholder="Select Headset" (ionChange)="connectToHeadsetWirelessly($event)">
+      <ion-select-option *ngFor="let headset of headsets" [value]="headset.serial">{{ headset.name }} ({{headset.headset_type}})</ion-select-option>
+    </ion-select>
+  </ion-item>
+
   <ion-list>
     <ion-grid>
-      <ion-row align-items-start justify-content-center>
+      <ion-row class="ion-align-items-start ion-justify-content-center">
         <ion-col size="3" *ngFor="let module of modules">
           <ion-card [ngClass]="{'has-updates': mainEventsService.trackedModules[module.id]?.new_version}">
             <img [src]="module?.image ||'assets/imgs/vr_logo.jpeg'"/>
@@ -96,7 +104,7 @@
             <ion-card-content>
               <div *ngIf="mainEventsService.trackedModules[module.id]?.downloading">
                 <ion-progress-bar [value]="mainEventsService.trackedModules[module.id]?.ratio"
-                [buffer]="mainEventsService.trackedModules[module.id]?.ratio" 
+                [buffer]="mainEventsService.trackedModules[module.id]?.ratio"
                 color="success" ></ion-progress-bar>
                 Downloading Updates...
                 <ion-button *ngIf="!mainEventsService.trackedModules[module.id]?.paused"
@@ -114,7 +122,7 @@
               </div>
 
               <div *ngIf="mainEventsService.trackedModules[module.id]?.installing">
-                <ion-progress-bar 
+                <ion-progress-bar
                 type="indeterminate"
                 color="primary" ></ion-progress-bar>
                 Installing Updates...
@@ -146,7 +154,7 @@
                       <!-- {{'PATIENT.START_MODULE' | translate}} -->
                     </ion-button>
                   </ion-col>
-                  <ion-col>                 
+                  <ion-col>
                     <ion-button fill="outline"  expand="full" shape="round" color="secondary"
                     [routerLink]="['/patient/', patient.id, 'modules', module.id, 'charts']">
                     <ion-icon name="analytics" slot="icon-only"></ion-icon>

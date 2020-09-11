@@ -9,6 +9,7 @@ import * as capcon from 'capture-console';
 const log = require('electron-log');
 const { netLog } = require('electron');
 const { Store } = require('./store');
+const { SocketClient } = require('./socket_client');
 const { VrModuleRunner } = require('./vr_module_runner');
 
 autoUpdater.logger = log;
@@ -43,7 +44,8 @@ let authorizedHeadsets = [];
 let win: BrowserWindow;
 let consoleWin: BrowserWindow;
 let storeHelper: any;
-let vrmoduleRunnerHelper: any;
+let vrModuleRunnerHelper: any;
+let socketClientHelper: any;
 const logMsg = (msg, type = 'debug') => {
   if (!consoleWin) { return; }
 
@@ -97,8 +99,7 @@ app.on('will-quit', () => {
 async function initDesktopApp() {
   setupLogging();
   createConsoleWindow();
-  createStoreHelper();
-  createModuleRunnerHelper();
+  createNeededHelpers();
   createWindow();
   trackDevices();
   server.runLocalServer(logMsg);
@@ -166,6 +167,12 @@ function createConsoleWindow() {
   });
 }
 
+function createNeededHelpers() {
+  createStoreHelper();
+  vrModuleRunnerHelper = new VrModuleRunner({ logMsg, sendEvToWin});
+  socketClientHelper = new SocketClient({ logMsg, configName: 'user-preferences' });
+}
+
 function createStoreHelper() {
   storeHelper = new Store({
     logMsg,
@@ -173,13 +180,6 @@ function createStoreHelper() {
     defaults: {
       mainWindowBounds: { width: 800, height: 700, center: true, show: false }
     }
-  });
-}
-
-function createModuleRunnerHelper() {
-  vrmoduleRunnerHelper = new VrModuleRunner({
-    logMsg,
-    sendEvToWin
   });
 }
 
@@ -288,7 +288,7 @@ async function prepareHeadsetOnOfflineMode() {
   } catch (err) {
     sendEvToWin(MAIN_EVENTS.offline_headset_ready, {
       ready: false, headsetDevice,
-      err: err.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
+      err: err.message || 'ADB Failure: Something went wrong while pushing file to connected headset',
     });
 
     const msg = 'Error...' + 'prepareHeadsetOnOfflineMode' + JSON.stringify(err);

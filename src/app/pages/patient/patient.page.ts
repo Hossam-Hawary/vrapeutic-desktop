@@ -75,6 +75,11 @@ export class PatientPage implements OnInit {
     );
   }
 
+  async connectToHeadsetWirelessly(ev) {
+    await this.helperService.showLoading();
+    this.mainEventsService.connectToHeadsetWirelessly(ev.detail.value);
+  }
+
   // async selectHeadset(module) {
   //   const inputs = [];
   //   this.headsets.forEach(headset => {

@@ -57,7 +57,8 @@ export class MainEventsService {
       'console-log', 'new-module-version-available-to-download', 'new-module-version-available-to-install',
       'module-version-size', 'module-version-downloading-progress',
       'module-version-downloaded', 'module-version-installed', 'module-version-install-error',
-      'module-version-download-error', 'install-android-module-ready', 'installing-android-module'
+      'module-version-download-error', 'install-android-module-ready', 'installing-android-module',
+      'some-headsets-found', 'finding-to-headset', 'wrong-headset-selected', 'no-headset-selected'
     ];
 
     mainEvents.forEach((evName) => {
@@ -145,6 +146,22 @@ export class MainEventsService {
       this.headsetConnectedState = this.headsetStates.ready;
       this.helperService.showToast('The Connected Headset is ready now, you can unplug it safely');
     });
+
+    this.events.subscribe('finding-to-headset', (options) => {
+      this.helperService.showToast(options.msg);
+    });
+
+    this.events.subscribe('wrong-headset-selected', (options) => {
+      this.helperService.showError(options.msg);
+    });
+
+    this.events.subscribe('some-headsets-found', (options) => {
+      this.helperService.showToast(options.msg);
+    });
+  }
+
+  connectToHeadsetWirelessly(selectedSerial) {
+    this.sendEventAsync('connect-headset-wirelessly', { selectedSerial });
   }
 
   setupRunningModulesEvents() {
