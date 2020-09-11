@@ -170,7 +170,7 @@ function createConsoleWindow() {
 function createNeededHelpers() {
   createStoreHelper();
   vrModuleRunnerHelper = new VrModuleRunner({ logMsg, sendEvToWin});
-  socketClientHelper = new SocketClient({ logMsg, configName: 'user-preferences' });
+  socketClientHelper = new SocketClient({ logMsg, sendEvToWin });
 }
 
 function createStoreHelper() {

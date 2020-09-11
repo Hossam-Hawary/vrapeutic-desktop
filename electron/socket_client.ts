@@ -6,7 +6,6 @@ import { ipcMain } from 'electron';
 
 class SocketClient {
   port = 8910;
-  client = new Net.Socket();
   log: any;
   sendEvToWin: any;
   selectedSerial: string;
@@ -36,12 +35,12 @@ class SocketClient {
           msg: 'Please, select one of your headsets'
         });
       }
-      if (!this.availableHeadsets.includes(options.selectedSerial)) {
-        return this.sendEvToWin(this.CLIENT_EVENTS.wrong_headset_selected, {
-          msg: `We cannot find this headset in your authorized headsets: ${options.selectedSerial}`,
-          selectedSerial: options.selectedSerial
-        });
-      }
+      // if (!this.availableHeadsets.includes(options.selectedSerial)) {
+      //   return this.sendEvToWin(this.CLIENT_EVENTS.wrong_headset_selected, {
+      //     msg: `We cannot find this headset in your authorized headsets: ${options.selectedSerial}`,
+      //     selectedSerial: options.selectedSerial
+      //   });
+      // }
       this.findLocalServers(options.selectedSerial);
       this.sendEvToWin(this.CLIENT_EVENTS.finding_to_headset, {
         msg: `We are trying to find this headset around...: ${options.selectedSerial}`,
@@ -70,26 +69,27 @@ class SocketClient {
         const host = devices[i].ip;
         const address = 'http://' + host + ':' + this.port;
         console.log(address);
+        const client = new Net.Socket();
         // Create a new TCP client.
-        this.client.connect({ port: this.port, host }, this.onConnect);
-        this.client.on('data', this.onDataReceived);
-        this.client.on('end', this.onEnd);
-        this.client.on('error', this.onError);
+        client.connect({ port: this.port, host }, () => { this.onConnect(client); });
+        client.on('data', (chunk) => { this.onDataReceived(chunk, client); });
+        client.on('end', () => { this.onEnd(client); });
+        client.on('error', (err) => { this.onError(err, client); });
       }
     });
   }
 
-  onConnect() {
-    console.log('TCP connection established with the server.');
-    this.client.write('serial');
+  onConnect(client) {
+    console.log('TCP connection established with the server...');
+    client.write('serial');
   }
 
-  onError(err) {
-    console.log(err);
-    this.client.end();
+  onError(err, client) {
+    console.log('connect error...', err);
+    client.end();
   }
 
-  onDataReceived(chunk) {
+  onDataReceived(chunk, client) {
     console.log(`Data received from the server: ${chunk.toString()}.`);
     const serial = chunk.toString();
 
@@ -99,13 +99,13 @@ class SocketClient {
 
     console.log('SERIAL is: ' + serial);
     if (serial === this.selectedSerial) {
-      this.client.write('connect ' + ip.address());
+      client.write('connect ' + ip.address());
       this.sendEvToWin(this.CLIENT_EVENTS.offline_headset_ready, { ready: true, headsetDevice: { id: serial }} );
     }
-    this.client.end();
+    client.end();
   }
 
-  onEnd() {
+  onEnd(client) {
     console.log('Requested an end to the TCP connection');
   }
 }

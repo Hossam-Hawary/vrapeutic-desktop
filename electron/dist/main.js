@@ -47,6 +47,7 @@ var capcon = require("capture-console");
 var log = require('electron-log');
 var netLog = require('electron').netLog;
 var Store = require('./store').Store;
+var SocketClient = require('./socket_client').SocketClient;
 var VrModuleRunner = require('./vr_module_runner').VrModuleRunner;
 autoUpdater.logger = log;
 var server = require('./server');
@@ -78,7 +79,8 @@ var authorizedHeadsets = [];
 var win;
 var consoleWin;
 var storeHelper;
-var vrmoduleRunnerHelper;
+var vrModuleRunnerHelper;
+var socketClientHelper;
 var logMsg = function (msg, type) {
     if (type === void 0) { type = 'debug'; }
     if (!consoleWin) {
@@ -127,8 +129,7 @@ function initDesktopApp() {
         return __generator(this, function (_a) {
             setupLogging();
             createConsoleWindow();
-            createStoreHelper();
-            createModuleRunnerHelper();
+            createNeededHelpers();
             createWindow();
             trackDevices();
             server.runLocalServer(logMsg);
@@ -197,6 +198,11 @@ function createConsoleWindow() {
         // console.log('consoleWin null....');
     });
 }
+function createNeededHelpers() {
+    createStoreHelper();
+    vrModuleRunnerHelper = new VrModuleRunner({ logMsg: logMsg, sendEvToWin: sendEvToWin });
+    socketClientHelper = new SocketClient({ logMsg: logMsg, sendEvToWin: sendEvToWin });
+}
 function createStoreHelper() {
     storeHelper = new Store({
         logMsg: logMsg,
@@ -204,12 +210,6 @@ function createStoreHelper() {
         defaults: {
             mainWindowBounds: { width: 800, height: 700, center: true, show: false }
         }
-    });
-}
-function createModuleRunnerHelper() {
-    vrmoduleRunnerHelper = new VrModuleRunner({
-        logMsg: logMsg,
-        sendEvToWin: sendEvToWin
     });
 }
 function setupLogging() {
@@ -349,7 +349,7 @@ function prepareHeadsetOnOfflineMode() {
                     sendEvToWin(MAIN_EVENTS.offline_headset_ready, {
                         ready: false,
                         headsetDevice: headsetDevice,
-                        err: err_2.message || 'ADB Faliure: Something went wrong while pushing file to connected headset',
+                        err: err_2.message || 'ADB Failure: Something went wrong while pushing file to connected headset',
                     });
                     msg = 'Error...' + 'prepareHeadsetOnOfflineMode' + JSON.stringify(err_2);
                     logMsg(msg, 'error');

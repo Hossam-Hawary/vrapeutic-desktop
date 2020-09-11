@@ -24,6 +24,7 @@
     "vr_module_runner",
     "auto_update",
     "modules_update",
-    "store"
+    "store",
+    "socket_client"
   ],
 }
