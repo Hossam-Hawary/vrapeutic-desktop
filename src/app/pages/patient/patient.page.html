@@ -3,10 +3,14 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons slot="start">
       <ion-button  (click)="editPatient()">
         <ion-icon name="create"></ion-icon>
       </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-label>Connect Wirelessly</ion-label>
+      <ion-toggle color="secondary" [(ngModel)]="wirelessHeadset"></ion-toggle>
     </ion-buttons>
     <ion-title>{{'PATIENT.PATIENT' | translate }}</ion-title>
   </ion-toolbar>
@@ -82,10 +86,10 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-item color='secondary'>
+  <ion-item color='secondary'  *ngIf="wirelessHeadset">
     <ion-label>Connect To Headset Wirelessly </ion-label>
     <ion-select placeholder="Select Headset" (ionChange)="connectToHeadsetWirelessly($event)">
-      <ion-select-option *ngFor="let headset of headsets" [value]="headset.serial">{{ headset.name }} ({{headset.headset_type}})</ion-select-option>
+      <ion-select-option *ngFor="let headset of headsets" [value]="headset.serial">{{ headset.name }} ({{headset.serial}})</ion-select-option>
     </ion-select>
   </ion-item>
 

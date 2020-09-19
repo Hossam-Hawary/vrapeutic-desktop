@@ -18,7 +18,7 @@ export class PatientPage implements OnInit {
   showConsole = false;
   id: any;
   production: boolean;
-
+  wirelessHeadset;
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -46,16 +46,34 @@ export class PatientPage implements OnInit {
     }
   }
 
+  runModule(module) {
+    if(this.wirelessHeadset) { return this.runModuleOnUsbHeadset(module); }
+
+    this.runModuleOnWirelessHeadset(module);
+  }
+
+  async runModuleOnUsbHeadset(module) {
+    const readyHeadsetSerial = this.mainEventsService.getReadyHeadset().id;
+    const result: any = await this.getNewSessionId(
+      module,
+      this.headsets.find((h) => h.serial === readyHeadsetSerial).id
+    );
+    this.mainEventsService.runModuleAfterHeadsetConnected(module.name, module.id, result.room_id);
+  }
+
+  async runModuleOnWirelessHeadset(module) {
+    const readyHeadsetSerial = this.mainEventsService.getReadyHeadset().id;
+    const result: any = await this.getNewSessionId(
+      module,
+      this.headsets.find((h) => h.serial === readyHeadsetSerial).id
+    );
+    this.mainEventsService.reconnectHeadsetWirelesslyToRunModule(module.name, module.id, result.room_id);
+  }
+
   async getNewSessionId(module, headset) {
     try {
       await this.helperService.showLoading();
-      const result: any = await this.userService.getPatientSessionId(this.id, module.id, headset);
-      this.mainEventsService.sendEventAsync('run-module',
-        {
-          moduleId: module.id,
-          moduleName: module.name,
-          roomId: result.room_id
-        });
+      return await this.userService.getPatientSessionId(this.id, module.id, headset);
     } catch (err) {
       console.log('getNewSessionId err', err);
       this.helperService.showError(err);
@@ -63,48 +81,10 @@ export class PatientPage implements OnInit {
     }
   }
 
-  runModule(module) {
-    return this.runModuleOffline(module);
-    // this.selectHeadset(module);
-  }
-
-  async runModuleOffline(module) {
-    this.getNewSessionId(
-      module,
-      this.headsets.find((h) => h.serial === this.mainEventsService.getReadyHeadset().id).id
-    );
-  }
-
   async connectToHeadsetWirelessly(ev) {
     await this.helperService.showLoading();
     this.mainEventsService.connectToHeadsetWirelessly(ev.detail.value);
   }
-
-  // async selectHeadset(module) {
-  //   const inputs = [];
-  //   this.headsets.forEach(headset => {
-  //     inputs.push({
-  //       type: 'radio',
-  //       label: headset.name,
-  //       value: headset.id,
-  //       checked: this.headsets[0].id === headset.id
-  //     });
-  //   });
-
-  //   this.helperService.showAlert('', 'Select Headset',
-  //     [
-  //       {
-  //         text: 'Cancel',
-  //       }, {
-  //         text: 'Start',
-  //         handler: (headset) => {
-  //           this.getNewSessionId(module, headset);
-  //         }
-  //       }
-  //     ],
-  //     true, inputs
-  //   );
-  // }
 
   async editPatient() {
     const modal = await this.modalController.create({
@@ -173,8 +153,8 @@ export class PatientPage implements OnInit {
   }
 
   resetModules() {
-    if (this.mainEventsService.isDownloadingModules() || this.mainEventsService.isInstallingModules() ) {
-       return this.helperService.showError('We cannot clear modules while downloading or installing modules');
+    if (this.mainEventsService.isDownloadingModules() || this.mainEventsService.isInstallingModules()) {
+      return this.helperService.showError('We cannot clear modules while downloading or installing modules');
     }
 
     this.helperService.showAlert(

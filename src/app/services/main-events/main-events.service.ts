@@ -58,7 +58,7 @@ export class MainEventsService {
       'module-version-size', 'module-version-downloading-progress',
       'module-version-downloaded', 'module-version-installed', 'module-version-install-error',
       'module-version-download-error', 'install-android-module-ready', 'installing-android-module',
-      'some-headsets-found', 'finding-to-headset', 'wrong-headset-selected', 'no-headset-selected'
+      'some-headsets-found', 'finding-selected-headset', 'wrong-headset-selected', 'no-headset-selected', 'headset-module-ready'
     ];
 
     mainEvents.forEach((evName) => {
@@ -164,6 +164,15 @@ export class MainEventsService {
     this.sendEventAsync('connect-headset-wirelessly', { selectedSerial });
   }
 
+  reconnectHeadsetWirelesslyToRunModule(moduleName, moduleId, roomId) {
+    this.sendEventAsync('connect-headset-wirelessly',
+      {
+        selectedSerial: this.getReadyHeadset().id,
+        awaitingVrModuleToRun: { moduleId, moduleName, roomId }
+      }
+    );
+  }
+
   setupRunningModulesEvents() {
     this.events.subscribe('desktop-module-ready', (options) => {
       if (!options.ready) {
@@ -172,6 +181,22 @@ export class MainEventsService {
 
       this.helperService.showToast('The Desktop Module is ready now');
     });
+
+    this.events.subscribe('headset-module-ready', (options) => {
+      if (!options.ready) {
+        return this.helperService.showError(options.msg);
+      }
+
+      this.helperService.showToast('The VR Module is ready now on the headset');
+      this.runModuleAfterHeadsetConnected(options.moduleName, options.moduleId, options.roomId);
+    });
+  }
+
+  runModuleAfterHeadsetConnected(moduleName, moduleId, roomId) {
+    this.sendEventAsync('run-module', {
+      moduleName, moduleId, roomId
+    }
+    );
   }
 
   getTrackedModules() {
