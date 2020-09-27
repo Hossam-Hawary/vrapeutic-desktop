@@ -84,7 +84,6 @@ var SocketClient = /** @class */ (function () {
         });
     };
     SocketClient.prototype.tryToConnect = function (options) {
-        var _this = this;
         if (!options.selectedSerial) {
             return this.sendEvToWin(this.CLIENT_EVENTS.no_headset_selected, {
                 msg: 'Please, select one of your headsets'
@@ -96,13 +95,7 @@ var SocketClient = /** @class */ (function () {
         //     selectedSerial: options.selectedSerial
         //   });
         // }
-        this.connectedIP = null;
-        clearInterval(this.findingServerInterval);
-        this.findingServerInterval = timers_1.setInterval(function () { return _this.findLocalServers(options.selectedSerial); }, 5000);
-        this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
-            msg: "We are trying to find this headset around...: " + options.selectedSerial,
-            selectedSerial: options.selectedSerial
-        });
+        this.setFindingInterval(options.selectedSerial);
     };
     SocketClient.prototype.findLocalServers = function (selectedSerial) {
         return __awaiter(this, void 0, void 0, function () {
@@ -153,7 +146,7 @@ var SocketClient = /** @class */ (function () {
     SocketClient.prototype.onDataReceived = function (chunk, client) {
         console.log("Data received from the server: " + chunk.toString() + ".");
         if (this.connectedIP) {
-            clearInterval(this.findingServerInterval);
+            this.clearFindingInterval(this.selectedSerial);
             client.end();
             return this.sendEvToWin(this.CLIENT_EVENTS.some_headsets_found, {
                 connected: false,
@@ -169,6 +162,7 @@ var SocketClient = /** @class */ (function () {
             client.write('connect ' + ip.address());
             this.connectedIP = client;
             console.log('connectedIP...', client);
+            this.clearFindingInterval(this.selectedSerial);
             this.sendEvToWin(this.CLIENT_EVENTS.offline_headset_ready, { ready: true, headsetDevice: { id: serial } });
         }
         if (this.awaitingVrModuleToRun) {
@@ -179,6 +173,29 @@ var SocketClient = /** @class */ (function () {
     };
     SocketClient.prototype.onEnd = function (client) {
         console.log('Requested an end to the TCP connection');
+    };
+    SocketClient.prototype.setFindingInterval = function (selectedSerial) {
+        var _this = this;
+        this.connectedIP = null;
+        this.findingServerInterval = timers_1.setInterval(function () { return _this.findLocalServers(selectedSerial); }, 5000);
+        setTimeout(function () { return _this.clearFindingInterval(selectedSerial); }, 30000);
+        this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
+            msg: "We are trying to find this headset around...: " + selectedSerial,
+            running: true,
+            selectedSerial: selectedSerial
+        });
+    };
+    SocketClient.prototype.clearFindingInterval = function (selectedSerial) {
+        if (!this.findingServerInterval) {
+            return;
+        }
+        clearInterval(this.findingServerInterval);
+        this.findingServerInterval = null;
+        this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
+            msg: "We Stopped the finding interval now: " + selectedSerial,
+            running: false,
+            selectedSerial: selectedSerial
+        });
     };
     return SocketClient;
 }());

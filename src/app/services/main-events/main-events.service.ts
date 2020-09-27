@@ -147,8 +147,8 @@ export class MainEventsService {
       this.helperService.showToast('The Connected Headset is ready now, you can unplug it safely');
     });
 
-    this.events.subscribe('finding-to-headset', (options) => {
-      this.helperService.showToast(options.msg);
+    this.events.subscribe('finding-selected-headset', (options) => {
+      if (!options.running) { this.helperService.showToast(options.msg); }
     });
 
     this.events.subscribe('wrong-headset-selected', (options) => {

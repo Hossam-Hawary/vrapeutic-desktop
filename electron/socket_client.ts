@@ -57,13 +57,7 @@ class SocketClient {
     //     selectedSerial: options.selectedSerial
     //   });
     // }
-    this.connectedIP = null;
-    clearInterval(this.findingServerInterval);
-    this.findingServerInterval = setInterval(() => this.findLocalServers(options.selectedSerial), 5000);
-    this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
-      msg: `We are trying to find this headset around...: ${options.selectedSerial}`,
-      selectedSerial: options.selectedSerial
-    });
+    this.setFindingInterval(options.selectedSerial);
   }
 
   async findLocalServers(selectedSerial) {
@@ -87,7 +81,7 @@ class SocketClient {
         client.on('end', () => { this.onEnd(client); });
         client.on('error', (err) => { this.onError(err, client); });
       });
-    } catch(err) {
+    } catch (err) {
       console.log('findLocalServers. error..', this.selectedSerial, err);
     }
 
@@ -106,7 +100,7 @@ class SocketClient {
   onDataReceived(chunk, client) {
     console.log(`Data received from the server: ${chunk.toString()}.`);
     if (this.connectedIP) {
-      clearInterval(this.findingServerInterval);
+      this.clearFindingInterval(this.selectedSerial);
       client.end();
       return this.sendEvToWin(this.CLIENT_EVENTS.some_headsets_found, {
         connected: false, msg: `We are already connected to the selected headset ${chunk.toString()}`
@@ -123,7 +117,7 @@ class SocketClient {
       client.write('connect ' + ip.address());
       this.connectedIP = client;
       console.log('connectedIP...', client);
-      clearInterval(this.findingServerInterval);
+      this.clearFindingInterval(this.selectedSerial);
       this.sendEvToWin(this.CLIENT_EVENTS.offline_headset_ready, { ready: true, headsetDevice: { id: serial } });
     }
 
@@ -139,5 +133,28 @@ class SocketClient {
   onEnd(client) {
     console.log('Requested an end to the TCP connection');
   }
+
+  setFindingInterval(selectedSerial) {
+    this.connectedIP = null;
+
+    this.findingServerInterval = setInterval(() => this.findLocalServers(selectedSerial), 5000);
+    setTimeout(() => this.clearFindingInterval(selectedSerial), 30000);
+    this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
+      msg: `We are trying to find this headset around...: ${selectedSerial}`,
+      running: true, selectedSerial
+    });
+  }
+
+  clearFindingInterval(selectedSerial) {
+    if (!this.findingServerInterval) { return; }
+
+    clearInterval(this.findingServerInterval);
+    this.findingServerInterval = null;
+    this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
+      msg: `Seems the headset is not around, we stopped the searching now: ${selectedSerial}`,
+      running: false, selectedSerial
+    });
+  }
 }
+
 module.exports.SocketClient = SocketClient;

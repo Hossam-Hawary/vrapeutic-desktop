@@ -47,9 +47,9 @@ export class PatientPage implements OnInit {
   }
 
   runModule(module) {
-    if(this.wirelessHeadset) { return this.runModuleOnUsbHeadset(module); }
+    if (this.wirelessHeadset) { return this.runModuleOnWirelessHeadset(module); }
 
-    this.runModuleOnWirelessHeadset(module);
+    this.runModuleOnUsbHeadset(module);
   }
 
   async runModuleOnUsbHeadset(module) {
