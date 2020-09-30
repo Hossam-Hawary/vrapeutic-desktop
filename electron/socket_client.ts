@@ -46,11 +46,11 @@ class SocketClient {
   }
 
   tryToConnect(options) {
-    if (!options.selectedSerial) {
-      return this.sendEvToWin(this.CLIENT_EVENTS.no_headset_selected, {
-        msg: 'Please, select one of your headsets'
-      });
-    }
+    // if (!options.selectedSerial) {
+    //   return this.sendEvToWin(this.CLIENT_EVENTS.no_headset_selected, {
+    //     msg: 'Please, select one of your headsets'
+    //   });
+    // }
     // if (!this.availableHeadsets.includes(options.selectedSerial)) {
     //   return this.sendEvToWin(this.CLIENT_EVENTS.wrong_headset_selected, {
     //     msg: `We cannot find this headset in your authorized headsets: ${options.selectedSerial}`,
@@ -136,7 +136,7 @@ class SocketClient {
 
   setFindingInterval(selectedSerial) {
     this.connectedIP = null;
-
+    this.findLocalServers(selectedSerial);
     this.findingServerInterval = setInterval(() => this.findLocalServers(selectedSerial), 5000);
     setTimeout(() => this.clearFindingInterval(selectedSerial), 30000);
     this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {

@@ -6,7 +6,7 @@
     <ion-title>{{'PATIENT.ADD_PATIENT' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding>
+<ion-content class="ion-padding">
   <form [formGroup]="patientForm">
     <ion-list>
       <ion-item>
@@ -37,12 +37,12 @@
         <ion-list-header>
           {{'PATIENT.GENDER' | translate }}
         </ion-list-header>
-      
+
         <ion-item>
           <ion-label>{{'PATIENT.MALE' | translate }}</ion-label>
           <ion-radio value="male"></ion-radio>
         </ion-item>
-      
+
         <ion-item>
           <ion-label>{{'PATIENT.FEMALE' | translate }}</ion-label>
           <ion-radio value="female"></ion-radio>

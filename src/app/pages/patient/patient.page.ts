@@ -47,7 +47,7 @@ export class PatientPage implements OnInit {
   }
 
   runModule(module) {
-    if (this.wirelessHeadset) { return this.runModuleOnWirelessHeadset(module); }
+    if (this.mainEventsService.wirelessMode) { return this.runModuleOnWirelessHeadset(module); }
 
     this.runModuleOnUsbHeadset(module);
   }
@@ -58,16 +58,17 @@ export class PatientPage implements OnInit {
       module,
       this.headsets.find((h) => h.serial === readyHeadsetSerial).id
     );
-    this.mainEventsService.runModuleAfterHeadsetConnected(module.name, module.id, result.room_id);
+    this.mainEventsService.runModuleAfterHeadsetConnected(module.name, module.id);
   }
 
   async runModuleOnWirelessHeadset(module) {
-    const readyHeadsetSerial = this.mainEventsService.getReadyHeadset().id;
-    const result: any = await this.getNewSessionId(
+    const wirelessHeadsetSelected = this.mainEventsService.wirelessHeadsetSelected;
+    if (!wirelessHeadsetSelected) { return this.helperService.showError('No Headset Selected'); }
+    this.mainEventsService.reconnectHeadsetWirelesslyToRunModule(module.name, module.id);
+    this.getNewSessionId(
       module,
-      this.headsets.find((h) => h.serial === readyHeadsetSerial).id
+      this.headsets.find((h) => h.serial === wirelessHeadsetSelected).id
     );
-    this.mainEventsService.reconnectHeadsetWirelesslyToRunModule(module.name, module.id, result.room_id);
   }
 
   async getNewSessionId(module, headset) {
@@ -79,11 +80,6 @@ export class PatientPage implements OnInit {
       this.helperService.showError(err);
       return false;
     }
-  }
-
-  async connectToHeadsetWirelessly(ev) {
-    await this.helperService.showLoading();
-    this.mainEventsService.connectToHeadsetWirelessly(ev.detail.value);
   }
 
   async editPatient() {

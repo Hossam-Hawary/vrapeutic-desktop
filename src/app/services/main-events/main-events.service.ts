@@ -13,7 +13,8 @@ export class MainEventsService {
   headsetConnectedState = this.headsetStates.none;
   headsetsPrepared = [];
   trackedModules = {};
-
+  wirelessMode;
+  wirelessHeadsetSelected;
   constructor(
     private electronService: ElectronService,
     private events: Events,
@@ -78,7 +79,8 @@ export class MainEventsService {
   }
 
   noHeadsetsReady() {
-    return !this.headsetsPrepared.length && !(this.headsetConnectedState === this.headsetStates.preparing);
+    return (!this.wirelessMode || !this.wirelessHeadsetSelected) &&
+      (!this.headsetsPrepared.length && !(this.headsetConnectedState === this.headsetStates.preparing));
   }
 
   someHeadsetsReady() {
@@ -154,21 +156,13 @@ export class MainEventsService {
     this.events.subscribe('wrong-headset-selected', (options) => {
       this.helperService.showError(options.msg);
     });
-
-    this.events.subscribe('some-headsets-found', (options) => {
-      this.helperService.showToast(options.msg);
-    });
   }
 
-  connectToHeadsetWirelessly(selectedSerial) {
-    this.sendEventAsync('connect-headset-wirelessly', { selectedSerial });
-  }
-
-  reconnectHeadsetWirelesslyToRunModule(moduleName, moduleId, roomId) {
+  reconnectHeadsetWirelesslyToRunModule(moduleName, moduleId) {
     this.sendEventAsync('connect-headset-wirelessly',
       {
-        selectedSerial: this.getReadyHeadset().id,
-        awaitingVrModuleToRun: { moduleId, moduleName, roomId }
+        selectedSerial: this.wirelessHeadsetSelected,
+        awaitingVrModuleToRun: { moduleId, moduleName }
       }
     );
   }
@@ -188,13 +182,13 @@ export class MainEventsService {
       }
 
       this.helperService.showToast('The VR Module is ready now on the headset');
-      this.runModuleAfterHeadsetConnected(options.moduleName, options.moduleId, options.roomId);
+      this.runModuleAfterHeadsetConnected(options.moduleName, options.moduleId);
     });
   }
 
-  runModuleAfterHeadsetConnected(moduleName, moduleId, roomId) {
+  runModuleAfterHeadsetConnected(moduleName, moduleId) {
     this.sendEventAsync('run-module', {
-      moduleName, moduleId, roomId
+      moduleName, moduleId
     }
     );
   }

@@ -84,11 +84,11 @@ var SocketClient = /** @class */ (function () {
         });
     };
     SocketClient.prototype.tryToConnect = function (options) {
-        if (!options.selectedSerial) {
-            return this.sendEvToWin(this.CLIENT_EVENTS.no_headset_selected, {
-                msg: 'Please, select one of your headsets'
-            });
-        }
+        // if (!options.selectedSerial) {
+        //   return this.sendEvToWin(this.CLIENT_EVENTS.no_headset_selected, {
+        //     msg: 'Please, select one of your headsets'
+        //   });
+        // }
         // if (!this.availableHeadsets.includes(options.selectedSerial)) {
         //   return this.sendEvToWin(this.CLIENT_EVENTS.wrong_headset_selected, {
         //     msg: `We cannot find this headset in your authorized headsets: ${options.selectedSerial}`,
@@ -177,6 +177,7 @@ var SocketClient = /** @class */ (function () {
     SocketClient.prototype.setFindingInterval = function (selectedSerial) {
         var _this = this;
         this.connectedIP = null;
+        this.findLocalServers(selectedSerial);
         this.findingServerInterval = timers_1.setInterval(function () { return _this.findLocalServers(selectedSerial); }, 5000);
         setTimeout(function () { return _this.clearFindingInterval(selectedSerial); }, 30000);
         this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
@@ -192,7 +193,7 @@ var SocketClient = /** @class */ (function () {
         clearInterval(this.findingServerInterval);
         this.findingServerInterval = null;
         this.sendEvToWin(this.CLIENT_EVENTS.finding_selected_headset, {
-            msg: "We Stopped the finding interval now: " + selectedSerial,
+            msg: "Seems the headset is not around, we stopped the searching now: " + selectedSerial,
             running: false,
             selectedSerial: selectedSerial
         });

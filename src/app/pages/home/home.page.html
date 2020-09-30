@@ -14,18 +14,18 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-  <ion-list no-padding *ngIf="patients?.length">
+<ion-content class="ion-padding">
+  <ion-list class="ion-no-padding" *ngIf="patients?.length">
     <ion-item *ngFor="let patient of patients" [routerLink]="['/patient/', patient.id]">
       <ion-avatar slot="start">
         <ion-img [src]="patient?.photo ||'assets/imgs/avatar.png'" ></ion-img>
       </ion-avatar>
-      <div class="usernameSection" no-padding>
+      <div class="usernameSection ion-no-padding">
         <h5>
           <ion-icon  name="person" color="medium"></ion-icon>
           {{patient?.name}}
         </h5>
-        <p class="descText" no-margin no-padding>{{patient?.diagnosis}}</p>
+        <p class="descText ion-no-padding ion-no-margin">{{patient?.diagnosis}}</p>
       </div>
     </ion-item>
   </ion-list>
