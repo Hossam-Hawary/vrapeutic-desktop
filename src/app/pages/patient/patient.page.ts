@@ -54,7 +54,7 @@ export class PatientPage implements OnInit {
 
   async runModuleOnUsbHeadset(module) {
     const readyHeadsetSerial = this.mainEventsService.getReadyHeadset().id;
-    const result: any = await this.getNewSessionId(
+    await this.getNewSessionId(
       module,
       this.headsets.find((h) => h.serial === readyHeadsetSerial).id
     );
@@ -64,7 +64,7 @@ export class PatientPage implements OnInit {
   async runModuleOnWirelessHeadset(module) {
     const wirelessHeadsetSelected = this.mainEventsService.wirelessHeadsetSelected;
     if (!wirelessHeadsetSelected) { return this.helperService.showError('No Headset Selected'); }
-    this.mainEventsService.reconnectHeadsetWirelesslyToRunModule(module.name, module.id);
+    this.mainEventsService.reconnectHeadsetWirelesslyToRunModule(module.name, module.id, module.package_name);
     this.getNewSessionId(
       module,
       this.headsets.find((h) => h.serial === wirelessHeadsetSelected).id
@@ -73,7 +73,12 @@ export class PatientPage implements OnInit {
 
   async getNewSessionId(module, headset) {
     try {
-      await this.helperService.showLoading();
+      await this.helperService.showLoading(
+        `
+        Connecting to the headset: '${this.mainEventsService.wirelessHeadsetSelected}',
+         make sure it's open and the VR module: '${module.name}' is running on it.
+        `
+        );
       return await this.userService.getPatientSessionId(this.id, module.id, headset);
     } catch (err) {
       console.log('getNewSessionId err', err);

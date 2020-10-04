@@ -17,7 +17,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item color='secondary' *ngIf="mainEventsService.wirelessMode">
+  <ion-item [color]="mainEventsService.wirelessHeadsetSelected ? 'secondary' : 'danger'" *ngIf="mainEventsService.wirelessMode">
     <ion-label>Connect To Headset Wirelessly </ion-label>
     <ion-select placeholder="Select Headset" [(ngModel)]="mainEventsService.wirelessHeadsetSelected">
       <ion-select-option *ngFor="let headset of headsets" [value]="headset.serial">{{ headset.name }} ({{headset.serial}})

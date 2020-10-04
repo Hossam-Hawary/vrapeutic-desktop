@@ -3,7 +3,6 @@ import { ElectronService } from 'ngx-electron';
 import { Events } from '@ionic/angular';
 import { HelperService } from '../helper/helper.service';
 import { environment } from '../../../environments/environment';
-import { ReturnStatement } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -59,7 +58,7 @@ export class MainEventsService {
       'module-version-size', 'module-version-downloading-progress',
       'module-version-downloaded', 'module-version-installed', 'module-version-install-error',
       'module-version-download-error', 'install-android-module-ready', 'installing-android-module',
-      'some-headsets-found', 'finding-selected-headset', 'wrong-headset-selected', 'no-headset-selected', 'headset-module-ready'
+      'some-headsets-found', 'finding-selected-headset', 'wrong-module-detected', 'no-headset-selected', 'headset-module-ready'
     ];
 
     mainEvents.forEach((evName) => {
@@ -153,16 +152,16 @@ export class MainEventsService {
       if (!options.running) { this.helperService.showToast(options.msg); }
     });
 
-    this.events.subscribe('wrong-headset-selected', (options) => {
+    this.events.subscribe('wrong-module-detected', (options) => {
       this.helperService.showError(options.msg);
     });
   }
 
-  reconnectHeadsetWirelesslyToRunModule(moduleName, moduleId) {
+  reconnectHeadsetWirelesslyToRunModule(moduleName, moduleId, packageName) {
     this.sendEventAsync('connect-headset-wirelessly',
       {
         selectedSerial: this.wirelessHeadsetSelected,
-        awaitingVrModuleToRun: { moduleId, moduleName }
+        awaitingVrModuleToRun: { moduleId, moduleName, packageName }
       }
     );
   }
