@@ -134,12 +134,12 @@ class SocketClient {
           running: true, serial: this.selectedSerial
         });
       } else {
-        this.sendEvToWin(this.CLIENT_EVENTS.wrong_module_detected, {
-          connected: false, selectedSerial: this.selectedSerial,
-          msg: `
-            We detected that the running module on the selected headset is '${moduleName}' not '${this.awaitingVrModuleToRun.moduleName}'
-          `
-        });
+        // this.sendEvToWin(this.CLIENT_EVENTS.wrong_module_detected, {
+        //   connected: false, selectedSerial: this.selectedSerial,
+        //   msg: `
+        //     We detected that the running module on the selected headset is '${moduleName}' not '${this.awaitingVrModuleToRun.moduleName}'
+        //   `
+        // });
       }
     } else if (data[0] === 'gotServerUrl') {
       this.headsetIsConnectedSuccessfully(client);
