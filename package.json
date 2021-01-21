@@ -128,7 +128,7 @@
     "pusher-js": "^4.4.0",
     "rxjs": "~6.3.3",
     "shortid": "^2.2.14",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.0",
     "tslib": "^1.9.0",
     "unzipper": "^0.10.5",
     "xlsx": "^0.15.1",
