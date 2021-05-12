@@ -106,7 +106,7 @@
     "adbkit": "^2.11.1",
     "body-parser": "^1.19.0",
     "capture-console": "^1.0.1",
-    "chart.js": "^2.8.0",
+    "chart.js": "^2.9.4",
     "core-js": "^2.5.4",
     "electron-debug": "^3.0.1",
     "electron-log": "^4.0.6",
