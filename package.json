@@ -131,7 +131,7 @@
     "socket.io": "^2.2.0",
     "tslib": "^1.9.0",
     "unzipper": "^0.10.5",
-    "xlsx": "^0.15.1",
+    "xlsx": "^0.17.0",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
