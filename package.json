@@ -146,7 +146,7 @@
     "@types/node": "^12",
     "codelyzer": "~4.5.0",
     "cross-env": "^6.0.0",
-    "electron": "8.2.4",
+    "electron": "18.3.7",
     "electron-builder": "^22.3.2",
     "electron-builder-lib": "^20.23.1",
     "electron-packager": "^14.2.1",
